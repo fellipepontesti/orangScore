@@ -1,0 +1,33 @@
+<div class="w-full flex justify-center px-4">
+  <div class="w-full max-w-xl">
+    <div class="rounded-box shadow-lg bg-base-100 p-8">
+      <%= form_with(model: grupo, class: "space-y-6") do |form| %>
+
+        <% if grupo.errors.any? %>
+          <div class="alert alert-error text-sm">
+            <ul class="list-disc ml-5">
+              <% grupo.errors.each do |error| %>
+                <li><%= error.full_message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :nome, class: "label font-medium p-2" %>
+          <%= form.text_field :nome,
+            class: "input input-ghost bg-base-300 w-full #{grupo.errors[:nome].any? ? 'input-error' : ''}" %>
+        </div>
+
+        <div class="flex justify-between gap-4 pt-6">
+          <%= link_to "Voltar", grupos_path,
+            class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-error hover:bg-error/90! inline-block font-medium" %>
+
+          <%= form.submit "Salvar grupo",
+            class: "rounded-md px-6 py-3 bg-primary hover:bg-primary/90 font-medium text-white" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>

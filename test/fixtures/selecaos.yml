@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nome: MyString
+  pontos: 1
+  jogos: 1
+  vitorias: 1
+  derrotas: 1
+  empates: 1
+  logo: MyString
+
+two:
+  nome: MyString
+  pontos: 1
+  jogos: 1
+  vitorias: 1
+  derrotas: 1
+  empates: 1
+  logo: MyString

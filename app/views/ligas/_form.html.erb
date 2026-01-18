@@ -1,0 +1,48 @@
+<div id="<%= dom_id liga %>" class="w-full max-w-3xl mx-auto">
+  <div class="bg-base-100 rounded-box shadow-lg p-8 space-y-6">
+    <% if liga.errors.any? %>
+      <div class="rounded-box bg-error/50 text-white border border-error p-4">
+        <h3 class="font-semibold mb-2">
+          <%= pluralize(liga.errors.count, "erro") %> ao salvar a liga
+        </h3>
+
+        <ul class="list-disc list-inside text-sm space-y-1">
+          <% liga.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= form_with(model: liga) do |form| %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="stat rounded-box sm:col-span-2">
+          <div class="stat-title">Nome da liga</div>
+          <div class="stat-value">
+            <%= form.text_field :nome,
+              class: [
+                "input input-bordered input-ghost bg-base-200 w-full",
+                liga.errors[:nome].any? ? "input-error" : ""
+              ],
+              placeholder: "Digite o nome da liga" %>
+          </div>
+        </div>
+
+        <div class="stat sm:col-span-2 rounded-box flex flex-col sm:flex-row gap-4 items-center justify-center">
+
+          <%= link_to "Voltar",
+            ligas_path,
+            class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
+
+          <%= form.submit(
+            liga.persisted? ? "Salvar alterações" : "Criar liga",
+            class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80! font-medium text-white"
+          ) %>
+
+        </div>
+
+      </div>
+    <% end %>
+
+  </div>
+</div>

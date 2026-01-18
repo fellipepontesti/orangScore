@@ -1,0 +1,52 @@
+<div class="w-full mx-auto px-4">
+  <div class="rounded-box shadow-lg bg-base-100 p-8">
+    <%= form_with(model: jogo, class: "space-y-6") do |form| %>
+
+      <% if jogo.errors.any? %>
+        <div class="alert alert-error text-sm">
+          <ul class="list-disc ml-5">
+            <% jogo.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :mandante_id, "Mandante", class: "label font-medium p-2" %>
+        <%= form.collection_select :mandante_id,
+          @selecoes,
+          :id,
+          :nome,
+          { prompt: "Selecione o mandante" },
+          class: "select select-ghost select-bordered bg-base-300 w-full" %>
+      </div>
+
+      <div>
+        <%= form.label :visitante_id, "Visitante", class: "label font-medium p-2" %>
+        <%= form.collection_select :visitante_id,
+          @selecoes,
+          :id,
+          :nome,
+          { prompt: "Selecione o visitante" },
+          class: "select select-ghost select-bordered bg-base-300 w-full" %>
+      </div>
+
+      <div>
+        <%= form.label :data, "Data e hora", class: "label font-medium p-2" %>
+        <%= form.datetime_field :data,
+          class: "input input-ghost bg-base-300 w-full #{jogo.errors[:data].any? ? 'input-error' : ''}" %>
+      </div>
+
+      <div class="flex justify-between gap-4 pt-6">
+        <%= link_to "Voltar",
+          jogos_path,
+          class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-error hover:bg-error/90 font-medium text-white" %>
+
+        <%= form.submit "Salvar jogo",
+          class: "rounded-md px-6 py-3 bg-primary hover:bg-primary/90 font-medium text-white" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>

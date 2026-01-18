@@ -1,0 +1,79 @@
+pt-BR:
+  activerecord:
+    models:
+      machine_model: Modelo de Maquineta
+      contact: Contato
+      domain: Domínio
+      theme_color: Cor do Tema
+      theme_logo: Logotipo do Tema
+      theme_menu: Menu do Tema
+      theme: Tema
+      user: Usuário
+      whitelabel: Whitelabel
+      storage: Armazenamento
+      address: Endereço
+      contract_template: Template do contrato
+      user_permission: Permissão de usuário
+    attributes:
+      storage:
+        space_endpoint: Space endpoint
+        space_region: Space region
+        space_bucket: Space bucket
+      user:
+        email: E-mail
+      theme:
+        login_background_image: Imagem de background do login
+        favicon: Favicon
+        login_phrase: Frase do login
+        loading_gif: GIF de carregamento
+      theme_menu:
+        init_color: Cor inicial
+        end_color: Cor final
+        svg: SVG
+        active_svg: SVG ativo
+        icon_logo: Logotipo do ícone
+        icon_title: Logotipo do título
+      theme_logo:
+        logo_color: Cor da logo
+        logo_white: Logotipo branca
+        logo_title_white: Título logotipo branco
+        logo_icon_white: Ícone logotipo branco
+      theme_color:
+        primary_color: Cor primária
+        disabled_primary_color: Cor primária desabilitada
+        secondary_color: Cor secundária
+        chat_color: Cor do chat
+      address:
+        street: Logradouro
+        city: Cidade
+        uf: UF
+        number: Número
+        district: Bairro
+        cep: CEP
+      domain:
+        name: Nome
+        subdomain_application: Subdomínio aplicação
+        subdomain_application_v2: Subdomínio aplicação v2
+        subdomain_notify: Subdomínio notify
+      contact:
+        phone: Telefone
+        email: E-mail
+      whitelabel:
+        name: Nome
+        social_name: Razão social
+        remessa_name: Nome da remessa
+        cnpj: CNPJ
+        county_contract: Contrato da comarca
+        min_withdrawal: Saque mínimo
+        active: Ativo
+        maintenance: Em manutenção
+        contract_template: Template do contrato
+        anticipation_start_date: Horário inicial de antecipação
+        anticipation_end_date: Horário final de antecipação
+      machine_model:
+        name: Nome
+      user_permission:
+        email: E-mail
+        kind: Tipo
+      contract_template:
+        template_name: Nome do template

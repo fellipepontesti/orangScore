@@ -1,0 +1,67 @@
+<% content_for :title, "Ligas" %>
+
+<div class="flex-1 flex flex-col w-full">
+  <div class="flex items-center justify-between p-8">
+    <h1 class="font-bold text-4xl">Ligas</h1>
+
+    <%= link_to "Criar nova liga",
+      new_liga_path,
+      class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white"
+    %>
+  </div> 
+
+  <div id="ligas" class="divide-y divide-gray-200 space-y-5 p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
+      <ul class="list bg-base-100 rounded-box shadow-md w-full p-8">
+        <% if @ligas.any? %>
+          <% @ligas.each do |liga| %>
+            <li
+              class="list-row flex items-center justify-between hover:bg-base-300/50! cursor-pointer"
+              data-url="<%= liga_path(liga) %>"
+            >
+              <div class="flex items-center">
+                <div class="avatar avatar-placeholder">
+                  <div class="bg-base-300 text-neutral-content w-12 rounded-full">
+                    <span><%= liga.nome.first.upcase %></span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-6 flex-1 ml-4">
+                  <div class="font-medium">
+                    <%= liga.nome %>
+                  </div>
+
+                  <div class="text-xs uppercase font-semibold opacity-60 whitespace-nowrap">
+                    <%= liga.membros %> membros
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <%= link_to edit_liga_path(liga),
+                  class: "rounded-md p-2 bg-base-300 hover:bg-warning/80! flex items-center justify-center",
+                  onclick: "event.stopPropagation()" do %>
+                  <div class="h-5 w-5 invert">
+                    <%= image_tag "icons/editar.png" %>
+                  </div>
+                <% end %>
+
+                <%= button_to liga,
+                  method: :delete,
+                  class: "rounded-md p-2 bg-base-300 hover:bg-error/80! flex items-center justify-center",
+                  data: { turbo_confirm: "Você tem certeza?" },
+                  onclick: "event.stopPropagation()" do %>
+                  <div class="mask mask-squircle h-5 w-5 invert">
+                    <%= image_tag "icons/delete.png" %>
+                  </div>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        <% else %>
+          <p class="text-center my-10">Você não possui ligas.</p>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

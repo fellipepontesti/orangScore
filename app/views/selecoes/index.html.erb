@@ -1,0 +1,96 @@
+<% content_for :title, "Seleções" %>
+
+<div class="w-full">
+  <div class="flex justify-between items-center p-4 pb-8 pt-8">
+    <h1 class="font-bold text-4xl">Seleções</h1>
+
+    <%= link_to "Cadastrar seleção",
+      new_selecao_path,
+      class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium"
+    %>
+  </div>
+
+  <% if @selecoes.any? %>
+    <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
+      <table class="table table-zebra w-full text-center">
+        <thead>
+          <tr class="text-base">
+            <th>Nome</th>
+            <th>Jogos</th>
+            <th>Gols</th>
+            <th>Gols sofridos</th>
+            <th>Saldo</th>
+            <th>Vitórias</th>
+            <th>Derrotas</th>
+            <th>Empates</th>
+            <th>Logo</th>
+            <th>Grupo</th>
+            <th>Torcedores</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @selecoes.each do |selecao| %>
+            <tr class="hover">
+              <td class="font-bold"><%= selecao.nome %></td>
+              <td><%= selecao.qtd_jogos %></td>
+              <td><%= selecao.gols %></td>
+              <td><%= selecao.gols_sofridos %></td>
+              <td class="font-semibold"><%= selecao.gols - selecao.gols_sofridos %></td>
+              <td><%= selecao.vitorias %></td>
+              <td><%= selecao.derrotas %></td>
+              <td><%= selecao.empates %></td>
+
+              <td>
+                <div class="flex justify-center">
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-10 w-10">
+                      <%= image_tag "selecoes/#{selecao.logo}" %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td class="font-semibold">
+                <%= selecao.grupo.nome.last %>
+              </td>
+
+              <td class="font-semibold">
+                <%= selecao.qtd_torcedores %>
+              </td>
+
+              <td>
+                <div class="flex justify-center gap-3">
+                  <%= link_to edit_selecao_path(selecao),
+                    class: "hover:scale-110 transition" do %>
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-5 w-5 invert">
+                        <%= image_tag "icons/editar.png" %>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <%= button_to selecao,
+                    method: :delete,
+                    form: { data: { turbo_confirm: "Excluir esta seleção?" } },
+                    class: "bg-transparent hover:scale-110 transition" do %>
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-5 w-5 invert">
+                        <%= image_tag "icons/delete.png" %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">
+      Nenhuma seleção cadastrada.
+    </p>
+  <% end %>
+</div>

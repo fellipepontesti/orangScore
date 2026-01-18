@@ -1,0 +1,151 @@
+<% content_for :title, "Detalhes liga" %>
+
+<div class="w-full max-w-6xl mx-auto px-4">
+  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
+    Liga: <%= @liga.nome %>
+  </h1>
+
+  <% if @membros.any? %>
+    <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
+      <table class="table table-zebra w-full text-center">
+        <thead>
+          <tr class="text-base">
+            <th>Colocação</th>
+            <th>Cargo</th>
+            <th class="text-left">Nome</th>
+            <th>Pontuação</th>
+            <th>Seleção favorita</th>
+            <th>Status</th>
+            <% if @meu_vinculo&.role.in?(%w[owner admin])%>
+              <th>Excluir</th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @membros.each_with_index do |liga_membro, i| %>
+            <tr class="hover">
+              <td class="font-bold">
+                <%= i + 1 %>°
+                <% if i == 0 %>
+                  <span class="ml-1 text-yellow-500">👑</span>
+                <% end %>
+              </td>
+              <td class="uppercase text-xs font-semibold opacity-70">
+                <%= role_icon(liga_membro.role) %>
+              </td>
+              <td class="text-left font-medium">
+                <%= liga_membro.user.name %>
+              </td>
+              <td class="font-semibold">
+                <%= liga_membro.user.pontos %>
+              </td>
+              <td>
+                <div class="flex justify-center">
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-10 w-10">
+                      <%= image_tag "selecoes/#{liga_membro.user.logo_selecao}" %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="font-semibold">
+                <%= status_icon(liga_membro.status) %>
+              </td>
+              <td>
+                <% if liga_membro.role != "owner" %>
+                  <% is_owner = @meu_vinculo&.role == "owner" %>
+                  <% is_admin_allowed =
+                      @meu_vinculo&.role == "admin" &&
+                      liga_membro.status.in?(%w[invited accepted]) %>
+
+                  <% if is_owner || is_admin_allowed %>
+                      <% method = is_owner ? :delete : :patch %>
+                      <% confirm_message =
+                          is_owner ?
+                            "Remover este membro da liga?" :
+                            "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
+
+                      <%= button_to remove_member_liga_path(
+                            @liga,
+                            liga_membro_id: liga_membro.id
+                          ),
+                          method: method,
+                          form: { data: { turbo_confirm: confirm_message } },
+                          class: "bg-transparent hover:scale-110 transition" do %>
+
+                        <div class="avatar">
+                          <div class="mask mask-squircle h-6 w-6 invert">
+                            <%= image_tag "icons/delete.png" %>
+                          </div>
+                        </div>
+
+                      <% end %>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">
+      Nenhum outro membro nesta liga.
+    </p>
+  <% end %>
+
+  <div class="mt-10 flex flex-wrap justify-center gap-4">
+    <%= link_to "Voltar", ligas_path,
+      class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
+    
+    <% if @pode_convidar %>
+      <button
+        type="button"
+        class="rounded-md px-5 py-3 bg-success hover:bg-success/90! font-medium"
+        onclick="add_member_modal.showModal()">
+        Adicionar membro
+      </button>
+    <% end %>
+
+    <%= link_to "Editar liga", edit_liga_path(@liga),
+      class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+
+    <%= button_to "Sair",
+      quit_liga_path(@liga),
+      method: :delete,
+      class: "rounded-md px-5 py-3 text-white bg-red-600 hover:bg-red-600/80 font-medium",
+      data: { turbo_confirm: "Tem certeza que deseja sair dessa liga?" } %>
+  </div>
+
+  <dialog id="add_member_modal" class="modal">
+    <div class="modal-box max-w-md">
+      <h3 class="font-bold text-lg text-center mb-4">
+        Convidar membro
+      </h3>
+
+      <%= form_with url: invite_member_liga_path(@liga), method: :post do |f| %>
+        <div class="form-control mb-4">
+          <label class="label p-4">
+            <span class="label-text font-medium">Email do usuário</span>
+          </label>
+
+          <%= f.email_field :email,
+            class: "input input-ghost input-bordered w-full",
+            placeholder: "email@exemplo.com",
+            required: true %>
+        </div>
+
+        <div class="modal-action flex justify-between">
+          <button
+            type="button"
+            class="btn btn-ghost bg-error"
+            onclick="add_member_modal.close()">
+            Cancelar
+          </button>
+
+          <%= f.submit "Enviar convite", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+</div>

@@ -1,0 +1,53 @@
+<div class="w-full mx-auto px-4">
+  <div class="rounded-box shadow-lg bg-base-100 p-8">
+    <%= form_with(model: selecao, class: "space-y-6") do |form| %>
+
+      <% if selecao.errors.any? %>
+        <div class="alert alert-error text-sm">
+          <ul class="list-disc ml-5">
+            <% selecao.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :nome, class: "label font-medium p-2" %>
+        <%= form.text_field :nome,
+          class: "input input-ghost bg-base-300 w-full #{selecao.errors[:nome].any? ? 'input-error' : ''}" %>
+      </div>
+
+      <div>
+        <%= form.label :grupo_id, 'Grupo', class: "label font-medium p-2" %>
+        <%= form.collection_select :grupo_id,
+          @grupos,
+          :id,
+          :nome,
+          { prompt: 'Selecione um grupo' },
+          class: "select select-bordered select-ghost w-full bg-base-300" %>
+      </div>
+
+      <div>
+        <label class="label font-medium p-2">Logo da Seleção</label>
+
+        <div class="grid grid-cols-4 sm:grid-cols-12 gap-4">
+          <% @logos.each do |logo| %>
+            <label class="cursor-pointer flex flex-col items-center gap-2">
+              <%= form.radio_button :logo, logo, class: "hidden peer" %>
+              <div class="p-2 rounded-lg border transition peer-checked:border-primary peer-checked:bg-primary">
+                <%= image_tag "selecoes/#{logo}", class: "w-12 h-12 object-contain" %>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-4 pt-6">
+        <%= link_to "Voltar", selecoes_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-error hover:bg-error/90! inline-block font-medium" %>
+        <%= form.submit "Salvar seleção",
+          class: "rounded-md px-6 py-3 bg-primary hover:bg-primary/90 font-medium text-white" %>
+      </div>
+    <% end %>
+  </div>
+</div>

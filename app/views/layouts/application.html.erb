@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OrangScore</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body data-theme="orangScore" class="min-h-screen flex">
+
+    <div class="drawer lg:drawer-open w-full">
+
+      <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+
+      <!-- Conteúdo principal -->
+      <div class="drawer-content flex flex-col w-full">
+
+        <!-- Navbar -->
+        <div class="navbar bg-base-100 shadow-sm sticky top-0 z-20">
+          <div class="flex-1">
+            <a href="/" class="p-4 rounded-2xl text-xl font-bold text-primary hover:text-black hover:bg-primary">
+              OrangScore
+            </a>
+          </div>
+
+          <div class="flex gap-2">
+            <div class="dropdown dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary avatar">
+                <span>Seu nome</span>
+                <div class="bg-base-300 text-neutral-content w-8 rounded-full flex items-center justify-center">
+                  <span class="font-semibold"><%= current_user.name.first.upcase %></span>
+                </div>
+              </div>
+              <ul
+                tabindex="-1"
+                class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52"
+              >
+                <li class="menu-title">
+                  <span class="text-xs opacity-70">
+                    <%= current_user.name %>
+                  </span>
+                </li>
+
+                <li>
+                  <a class="justify-between">
+                    Perfil
+                  </a>
+                </li>
+
+                <li>
+                  <a>
+                    Configurações
+                  </a>
+                </li>
+
+                <div class="divider my-1"></div>
+
+                <li>
+                  <%= link_to destroy_user_session_path, method: :delete, class: "text-error" do %>
+                    Sair
+                  <% end %>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <main class="flex-1 flex flex-col p-6 overflow-auto bg-base-300">
+          <% if notice.present? %>
+            <div
+              role="alert"
+              class="alert alert-success relative flex items-center justify-center gap-2 mb-6"
+              data-alert
+            >
+              <svg xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.746 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/>
+              </svg>
+
+              <span class="font-bold text-center flex-1">
+                <%= notice %>
+              </span>
+
+              <button
+                type="button"
+                aria-label="Fechar alerta"
+                class="absolute right-5 text-lg font-bold"
+                onclick="this.closest('[data-alert]').remove()"
+              >
+                ×
+              </button>
+            </div>
+          <% end %>
+
+          <% if alert.present? %>
+            <div
+              role="alert"
+              class="alert alert-error relative flex items-center justify-center gap-2 mb-6"
+              data-alert
+            >
+              <svg xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.746 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/>
+              </svg>
+
+              <span class="font-bold text-center flex-1">
+                <%= alert %>
+              </span>
+
+              <button
+                type="button"
+                aria-label="Fechar alerta"
+                class="absolute right-5 text-lg font-bold"
+                onclick="this.closest('[data-alert]').remove()"
+              >
+                ×
+              </button>
+            </div>
+          <% end %>
+          <%= yield %>
+        </main>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="drawer-side is-drawer-close:overflow-visible">
+        <label for="my-drawer-4" class="drawer-overlay"></label>
+
+        <div class="flex min-h-full flex-col is-drawer-close:w-20 is-drawer-open:w-64 transition-all">
+          <ul class="menu bg-base-100 w-full grow p-4 gap-3">
+            <li>
+              <a href="/" class="flex items-center gap-4 hover:bg-primary">
+                <%= image_tag "icons/home.png", class: "w-6 h-6 invert transition" %>
+                <span class="hidden drawer-open:block">Página inicial</span>
+              </a>
+            </li>
+            <li>
+              <a href="/ligas" class="flex items-center gap-4 hover:bg-primary <%= 'active' if current_page?(ligas_path) %>">
+                <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert transition" %>
+                <span class="hidden drawer-open:block">Ligas</span>
+              </a>
+            </li>
+            <li>
+              <a href="/jogos" class="flex items-center gap-4 hover:bg-primary">
+                <%= image_tag "icons/ball.png", class: "w-6 h-6 invert transition" %>
+                <span class="hidden drawer-open:block">Jogos</span>
+              </a>
+            </li>
+            <li>
+              <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary">
+                <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert transition" %>
+                <span class="hidden drawer-open:block">Seleções</span>
+              </a>
+            </li>
+            <li>
+              <a href="/grupos" class="flex items-center gap-4 hover:bg-primary">
+                <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert transition" %>
+                <span class="hidden drawer-open:block">Grupos</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

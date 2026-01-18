@@ -1,0 +1,70 @@
+<div id="<%= dom_id jogo %>" class="w-full max-w-3xl mx-auto">
+  <div class="bg-base-100 rounded-box shadow-lg p-8 space-y-6">
+
+    <h1 class="font-bold text-center text-4xl">Detalhes do jogo</h1>
+
+    <h2 class="text-3xl font-bold text-center">
+      <div class="mask mask-squircle h-12 w-12">
+        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+      </div>
+      <%= jogo.mandante.nome %> × <%= jogo.visitante.nome %>
+      <div class="mask mask-squircle h-12 w-12">
+        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+      </div>
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Mandante</div>
+        <div class="stat-value text-lg">
+          <%= jogo.mandante.nome %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Visitante</div>
+        <div class="stat-value text-lg">
+          <%= jogo.visitante.nome %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Gols do Mandante</div>
+        <div class="stat-value">
+          <%= jogo.gols_mandante %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Gols do Visitante</div>
+        <div class="stat-value">
+          <%= jogo.gols_visitante %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 sm:col-span-2 rounded-box">
+        <div class="stat-title">Data do Jogo</div>
+        <div class="stat-value text-base">
+          <%= l(jogo.data, format: :long) %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 sm:col-span-2 rounded-box flex flex-wrap gap-4 justify-center">
+        <%= link_to "Voltar",
+          request.referer || jogos_path,
+          class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80 font-medium" %>
+
+        <%= link_to "Editar jogo",
+          edit_jogo_path(jogo),
+          class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+
+        <%= button_to "Excluir",
+          jogo,
+          method: :delete,
+          class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80 font-medium",
+          data: { turbo_confirm: "Tem certeza?" } %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div id="<%= dom_id selecao %>" class="w-full max-w-3xl mx-auto">
+  <div class="bg-base-100 rounded-box shadow-lg p-8 space-y-6">
+
+    <h2 class="text-3xl font-bold text-center mb-6">
+      Seleção: <%= selecao.nome %>
+      <div class="mask mask-squircle h-16 w-16">
+        <%= image_tag "selecoes/#{selecao.logo}" %>
+      </div>
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Pontos</div>
+        <div class="stat-value"><%= selecao.pontos %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Jogos</div>
+        <div class="stat-value"><%= selecao.qtd_jogos %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Vitórias</div>
+        <div class="stat-value"><%= selecao.vitorias %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Empates</div>
+        <div class="stat-value"><%= selecao.empates %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Derrotas</div>
+        <div class="stat-value"><%= selecao.derrotas %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box flex flex-col items-center justify-center">
+        <div class="stat-title mb-2">Grupo</div>
+       <div class="stat-value"><%= selecao.grupo.nome.last %></div>
+      </div>
+
+      <div class="stat bg-base-200 sm:col-span-2 rounded-box flex flex-col-2 items-center justify-center">
+        <%= link_to "Voltar",
+          :back,
+          class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
+
+        <%= link_to "Editar seleção",
+          edit_selecao_path(@selecao),
+          class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80! font-medium" %>
+
+        <%= button_to "Excluir",
+          @selecao,
+          method: :delete,
+          class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80! font-medium",
+          data: { turbo_confirm: "Tem certeza?" } %>
+      </div>
+    </div>
+  </div>
+</div>

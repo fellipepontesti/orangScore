@@ -1,0 +1,65 @@
+<div id="<%= dom_id grupo %>" class="w-full max-w-3xl mx-auto">
+  <div class="bg-base-100 rounded-box shadow-lg p-8 space-y-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Nome</div>
+        <div class="stat-value"><%= grupo.nome %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Rodadas</div>
+        <div class="stat-value"><%= grupo.rodadas %></div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box sm:col-span-2">
+        <div class="stat-title">Total de Seleções</div>
+        <div class="stat-value"><%= grupo.selecoes.count %></div>
+      </div>
+
+    </div>
+
+    <div class="mt-8">
+      <h3 class="text-xl font-semibold mb-4 text-center">
+        Seleções do Grupo
+      </h3>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <% grupo.selecoes.each do |selecao| %>
+          <%= link_to selecao_path(selecao),
+            class: "flex items-center gap-4 bg-base-200 rounded-box p-4 hover:bg-base-300 transition" do %>
+
+            <% if selecao.logo.present? %>
+              <div class="mask mask-squircle h-12 w-12">
+                <%= image_tag "selecoes/#{selecao.logo}" %>
+              </div>
+            <% end %>
+
+            <span class="font-medium"><%= selecao.nome %></span>
+
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="flex justify-center gap-4 pt-6">
+
+      <%= link_to "Voltar",
+        grupos_path,
+        class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
+
+      <%= link_to "Editar grupo",
+        edit_grupo_path(grupo),
+        class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80! font-medium" %>
+
+      <%= button_to "Excluir",
+        grupo,
+        method: :delete,
+        class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80! font-medium",
+        data: { turbo_confirm: "Tem certeza?" } %>
+
+    </div>
+
+  </div>
+</div>

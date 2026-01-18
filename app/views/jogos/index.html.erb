@@ -1,0 +1,172 @@
+<% content_for :title, "Jogos" %>
+
+<div class="w-full max-w-6xl mx-auto px-4">
+  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
+    Jogos
+  </h1>
+
+  <div class="flex justify-center items-center gap-4 mb-6">
+    <button
+      class="btn btn-outline btn-white hover:bg-primary"
+      onclick="showTab('grupos')">
+      Fase de grupos
+    </button>
+
+    <button
+      class="btn btn-outline btn-white hover:bg-primary"
+      onclick="showTab('oitavas')">
+      Oitavas
+    </button>
+
+    <button
+      class="btn btn-outline btn-white hover:bg-primary"
+      onclick="showTab('quartas')">
+      Quartas
+    </button>
+
+    <button
+      class="btn btn-outline btn-white hover:bg-primary"
+      onclick="showTab('semi')">
+      Semi
+    </button>
+
+    <button
+      class="btn btn-outline btn-white hover:bg-primary"
+      onclick="showTab('final')">
+      Final
+    </button>
+  </div>
+
+  <div id="tab-grupos">
+    <% if @jogos.any? %>
+      <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
+        <table class="table table-zebra w-full text-center">
+          <thead>
+            <tr class="text-base">
+              <th>Jogo</th>
+              <th>Data</th>
+              <th>Grupo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% @jogos.each do |jogo| %>
+              <tr class="hover">
+                <td class="font-medium">
+                  <div class="flex justify-center items-center gap-2">
+                    <%= jogo.mandante.nome %>
+
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-8 w-8">
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                      </div>
+                    </div>
+
+                    <%= jogo.gols_mandante %> x <%= jogo.gols_visitante %>
+
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-8 w-8">
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                      </div>
+                    </div>
+
+                    <%= jogo.visitante.nome %>
+                  </div>
+                </td>
+
+                <td class="uppercase text-xs font-semibold">
+                  <%= jogo.data.strftime("%d/%m/%Y %H:%M") %>
+                </td>
+
+                <td class="uppercase text-xs font-semibold">
+                  <%= jogo.mandante.grupo.nome.last %>
+                </td>
+
+                <td class="flex justify-center gap-3">
+                  <%= link_to edit_jogo_path(jogo), class: "hover:scale-110 transition" do %>
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-6 w-6 invert">
+                        <%= image_tag "icons/editar.png" %>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <%= button_to jogo,
+                    method: :delete,
+                    form: { data: { turbo_confirm: "Remover este jogo?" } },
+                    class: "bg-transparent hover:scale-110 transition" do %>
+
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-6 w-6 invert">
+                        <%= image_tag "icons/delete.png" %>
+                      </div>
+                    </div>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-center text-gray-500 mt-10">
+        Nenhum jogo encontrado.
+      </p>
+    <% end %>
+  </div>
+
+  <div id="tab-oitavas" class="hidden space-y-10">
+    <% @mata_mata.each do |fase, jogos| %>
+      <div>
+        <h2 class="text-xl font-bold mb-4 text-center">
+          <%= fase %>
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <% jogos.times do %>
+            <div class="p-4 border rounded-box bg-base-100 text-center opacity-70">
+              <div class="flex justify-between items-center">
+                <span>[ A definir ]</span>
+                <strong>x</strong>
+                <span>[ A definir ]</span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-10 flex justify-center gap-4">
+    <%= link_to "Voltar",
+      :back,
+      class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
+
+    <%= link_to "Novo jogo",
+      new_jogo_path,
+      class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/90 text-white font-medium" %>
+  </div>
+
+  <script>
+    function showTab(tab) {
+      const tabs = [
+        'grupos',
+        'oitavas',
+        'quartas',
+        'semi',
+        'final'
+      ]
+
+      tabs.forEach(t => {
+        document
+          .getElementById(`tab-${t}`)
+          .classList.add('hidden')
+      })
+
+      document
+        .getElementById(`tab-${tab}`)
+        .classList.remove('hidden')
+    }
+  </script>
+</div>
