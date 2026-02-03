@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_14_190701) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_25_220343) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -99,8 +99,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_14_190701) do
     t.string "logo_selecao"
     t.integer "pontos"
     t.integer "tipo", default: 0
+    t.bigint "selecao_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["selecao_id"], name: "index_users_on_selecao_id"
   end
 
   add_foreign_key "jogos", "grupos"
@@ -112,4 +114,5 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_14_190701) do
   add_foreign_key "palpites", "jogos"
   add_foreign_key "palpites", "users"
   add_foreign_key "selecoes", "grupos"
+  add_foreign_key "users", "selecoes"
 end

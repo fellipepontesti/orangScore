@@ -1,29 +1,218 @@
-<h2>Sign up</h2>
+<div class="min-h-screen flex items-center justify-center bg-base-300">
+  <div class="w-full max-w-md bg-base-100 shadow-lg rounded-2xl p-12">
+    <pre class="text-xs text-red-500">
+      <%= resource.errors.full_messages.inspect %>
+    </pre>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+    <h2 class="text-2xl font-bold text-center text-primary mb-6">
+      Criar conta no OrangScore
+    </h2>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <ul class="steps w-full mb-8">
+      <li class="step step-primary">Dados</li>
+      <li class="step">Senha</li>
+      <li class="step">Seleção</li>
+    </ul>
+
+    <%
+      step_with_error =
+        if resource.errors[:name].any? || resource.errors[:email].any?
+          1
+        elsif resource.errors[:password].any? || resource.errors[:password_confirmation].any?
+          2
+        elsif resource.errors[:selecao_id].any?
+          3
+        else
+          1
+        end
+    %>
+
+    <%= form_for(
+      resource,
+      as: resource_name,
+      url: registration_path(resource_name),
+      html: { class: "space-y-5" }
+    ) do |f| %>
+
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div data-step="1" class="space-y-5">
+        <div class="form-control w-full">
+          <%= f.label :name, class: "label" do %>
+            <span class="label-text font-medium pb-4">Nome</span>
+          <% end %>
+          <%= f.text_field :name,
+            autofocus: true,
+            class: "input input-ghost w-full",
+            placeholder: "Seu nome" %>
+        </div>
+
+        <div class="form-control w-full">
+          <%= f.label :email, class: "label" do %>
+            <span class="label-text font-medium pb-4">E-mail</span>
+          <% end %>
+
+          <%= f.email_field :email,
+            required: true,
+            autocomplete: "email",
+            placeholder: "seu@email.com",
+            class: "input input-ghost validator w-full" %>
+
+          <div class="validator-hint text-sm text-error mt-1">
+            Informe um endereço de e-mail válido
+          </div>
+        </div>
+
+        <button type="button"
+          class="btn btn-primary w-full"
+          onclick="nextStep()">
+          Continuar
+        </button>
+      </div>
+
+      <!-- STEP 2 -->
+      <div data-step="2" class="space-y-5 hidden">
+        <div class="form-control w-full">
+          <%= f.label :password, class: "label" do %>
+            <span class="label-text font-medium pb-4">Senha</span>
+          <% end %>
+
+          <%= f.password_field :password,
+            id: "password",
+            class: "input input-ghost w-full",
+            required: true,
+            autocomplete: "new-password" %>
+        </div>
+
+        <div class="form-control w-full">
+          <%= f.label :password_confirmation, class: "label" do %>
+            <span class="label-text font-medium pb-4">Confirmar senha</span>
+          <% end %>
+
+          <%= f.password_field :password_confirmation,
+            id: "password_confirmation",
+            class: "input input-ghost w-full",
+            required: true,
+            autocomplete: "new-password" %>
+
+          <div class="validator-hint">
+            As senhas precisam ser iguais
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button"
+            class="btn w-full"
+            onclick="prevStep()">
+            Voltar
+          </button>
+
+          <button type="button"
+            class="btn btn-primary w-full"
+            onclick="validatePasswordsAndContinue()">
+            Continuar
+          </button>
+
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div data-step="3" class="space-y-5 hidden">
+
+        <div class="form-control w-full">
+          <%= f.label :selecao_id, class: "label" do %>
+            <span class="label-text font-medium pb-4">
+              Qual seleção você acha que vai ser campeã?
+            </span>
+          <% end %>
+
+          <%= f.collection_select :selecao_id,
+            Selecao.order(:nome),
+            :id,
+            :nome,
+            { prompt: "Selecione sua seleção" },
+            class: "select select-bordered w-full" %>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button"
+            class="btn w-full"
+            onclick="prevStep()">
+            Voltar
+          </button>
+
+          <%= f.submit "Criar conta",
+            class: "btn btn-primary w-full" %>
+        </div>
+      </div>
+
+    <% end %>
+
+    <div class="divider my-6"></div>
+
+    <div class="text-center text-sm space-y-2">
+      <%= render "devise/shared/links" %>
+    </div>
+
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
+<script>
+  let currentStep = <%= step_with_error %>
+  const totalSteps = 3
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+  function updateSteps () {
+    document.querySelectorAll('[data-step]').forEach(el => {
+      el.classList.toggle(
+        'hidden',
+        Number(el.dataset.step) !== currentStep
+      )
+    })
 
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
+    document.querySelectorAll('.step').forEach((el, index) => {
+      el.classList.toggle(
+        'step-primary',
+        index + 1 <= currentStep
+      )
+    })
+  }
 
-<%= render "devise/shared/links" %>
+  function nextStep () {
+    if (currentStep < totalSteps) {
+      currentStep++
+      updateSteps()
+    }
+  }
+
+  function prevStep () {
+    if (currentStep > 1) {
+      currentStep--
+      updateSteps()
+    }
+  }
+
+  // 🔑 SINCRONIZA AO CARREGAR
+  document.addEventListener('DOMContentLoaded', updateSteps)
+
+  function validatePasswordsAndContinue () {
+    const password = document.getElementById('password')
+    const confirmation = document.getElementById('password_confirmation')
+
+    // limpa estados anteriores
+    password.setCustomValidity('')
+    confirmation.setCustomValidity('')
+
+    if (password.value !== confirmation.value) {
+      // ativa validação nativa
+      confirmation.setCustomValidity('As senhas não coincidem')
+
+      // força o browser a mostrar o erro
+      confirmation.reportValidity()
+      return
+    }
+
+    // se passou, avança
+    nextStep()
+  }
+</script>
+

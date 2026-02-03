@@ -2,6 +2,8 @@ class LigasController < ApplicationController
   before_action :set_liga, only: %i[ show edit update destroy ]
 
   def index
+    puts "===> LOGADO"
+    puts current_user.email
     @ligas = Liga.all
   end
 

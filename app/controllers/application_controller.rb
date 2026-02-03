@@ -1,7 +1,19 @@
 class ApplicationController < ActionController::Base
-  before_action :auto_login_dev_user
-
+  before_action :configure_permitted_parameters, if: :devise_controller?
+  
   protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(
+      :sign_up,
+      keys: [:name, :selecao_id]
+    )
+
+    devise_parameter_sanitizer.permit(
+      :account_update,
+      keys: [:name, :selecao_id]
+    )
+  end
 
   def after_sign_in_path_for(_resource)
     root_path
@@ -17,13 +29,5 @@ class ApplicationController < ActionController::Base
     return if current_user&.root?
 
     redirect_to root_path, alert: 'Acesso não autorizado.'
-  end
-
-  def auto_login_dev_user
-    return unless Rails.env.development?
-    return if user_signed_in?
-
-    user = User.find_by(email: "teste2@teste.com")
-    sign_in(user) if user
   end
 end

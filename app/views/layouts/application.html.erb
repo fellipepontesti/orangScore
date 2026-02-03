@@ -28,46 +28,51 @@
             </a>
           </div>
 
-          <div class="flex gap-2">
-            <div class="dropdown dropdown-end">
-              <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary avatar">
-                <span>Seu nome</span>
-                <div class="bg-base-300 text-neutral-content w-8 rounded-full flex items-center justify-center">
-                  <span class="font-semibold"><%= current_user.name.first.upcase %></span>
+          <% if current_user %>
+            <div class="flex gap-2">
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary avatar">
+                  <span>Seu nome</span>
+                  <div class="bg-base-300 text-neutral-content w-8 rounded-full flex items-center justify-center">
+                    <span class="font-semibold"><%= current_user.name.first.upcase %></span>
+                  </div>
                 </div>
+                <ul
+                  tabindex="-1"
+                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52"
+                >
+                  <li class="menu-title">
+                    <span class="text-xs opacity-70">
+                      <%= current_user.name %>
+                    </span>
+                  </li>
+
+                  <li>
+                    <a class="justify-between">
+                      Perfil
+                    </a>
+                  </li>
+
+                  <li>
+                    <a>
+                      Configurações
+                    </a>
+                  </li>
+
+                  <div class="divider my-1"></div>
+
+                  <li>
+                    <%= link_to "Sair",
+                      destroy_user_session_path,
+                      class: "text-error",
+                      data: {
+                        turbo_method: :delete
+                      } %>
+                  </li>
+                </ul>
               </div>
-              <ul
-                tabindex="-1"
-                class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52"
-              >
-                <li class="menu-title">
-                  <span class="text-xs opacity-70">
-                    <%= current_user.name %>
-                  </span>
-                </li>
-
-                <li>
-                  <a class="justify-between">
-                    Perfil
-                  </a>
-                </li>
-
-                <li>
-                  <a>
-                    Configurações
-                  </a>
-                </li>
-
-                <div class="divider my-1"></div>
-
-                <li>
-                  <%= link_to destroy_user_session_path, method: :delete, class: "text-error" do %>
-                    Sair
-                  <% end %>
-                </li>
-              </ul>
             </div>
-          </div>
+          <%end%>
         </div>
 
         <main class="flex-1 flex flex-col p-6 overflow-auto bg-base-300">
@@ -138,44 +143,46 @@
       </div>
 
       <!-- Sidebar -->
-      <div class="drawer-side is-drawer-close:overflow-visible">
-        <label for="my-drawer-4" class="drawer-overlay"></label>
+      <% if current_user %>
+        <div class="drawer-side is-drawer-close:overflow-visible">
+          <label for="my-drawer-4" class="drawer-overlay"></label>
 
-        <div class="flex min-h-full flex-col is-drawer-close:w-20 is-drawer-open:w-64 transition-all">
-          <ul class="menu bg-base-100 w-full grow p-4 gap-3">
-            <li>
-              <a href="/" class="flex items-center gap-4 hover:bg-primary">
-                <%= image_tag "icons/home.png", class: "w-6 h-6 invert transition" %>
-                <span class="hidden drawer-open:block">Página inicial</span>
-              </a>
-            </li>
-            <li>
-              <a href="/ligas" class="flex items-center gap-4 hover:bg-primary <%= 'active' if current_page?(ligas_path) %>">
-                <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert transition" %>
-                <span class="hidden drawer-open:block">Ligas</span>
-              </a>
-            </li>
-            <li>
-              <a href="/jogos" class="flex items-center gap-4 hover:bg-primary">
-                <%= image_tag "icons/ball.png", class: "w-6 h-6 invert transition" %>
-                <span class="hidden drawer-open:block">Jogos</span>
-              </a>
-            </li>
-            <li>
-              <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary">
-                <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert transition" %>
-                <span class="hidden drawer-open:block">Seleções</span>
-              </a>
-            </li>
-            <li>
-              <a href="/grupos" class="flex items-center gap-4 hover:bg-primary">
-                <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert transition" %>
-                <span class="hidden drawer-open:block">Grupos</span>
-              </a>
-            </li>
-          </ul>
+          <div class="flex min-h-full flex-col is-drawer-close:w-20 is-drawer-open:w-64 transition-all">
+            <ul class="menu bg-base-100 w-full grow p-4 gap-3">
+              <li>
+                <a href="/" class="flex items-center gap-4 hover:bg-primary">
+                  <%= image_tag "icons/home.png", class: "w-6 h-6 invert transition" %>
+                  <span class="hidden drawer-open:block">Página inicial</span>
+                </a>
+              </li>
+              <li>
+                <a href="/ligas" class="flex items-center gap-4 hover:bg-primary <%= 'active' if current_page?(ligas_path) %>">
+                  <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert transition" %>
+                  <span class="hidden drawer-open:block">Ligas</span>
+                </a>
+              </li>
+              <li>
+                <a href="/jogos" class="flex items-center gap-4 hover:bg-primary">
+                  <%= image_tag "icons/ball.png", class: "w-6 h-6 invert transition" %>
+                  <span class="hidden drawer-open:block">Jogos</span>
+                </a>
+              </li>
+              <li>
+                <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary">
+                  <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert transition" %>
+                  <span class="hidden drawer-open:block">Seleções</span>
+                </a>
+              </li>
+              <li>
+                <a href="/grupos" class="flex items-center gap-4 hover:bg-primary">
+                  <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert transition" %>
+                  <span class="hidden drawer-open:block">Grupos</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      <%end%>
 
     </div>
 
