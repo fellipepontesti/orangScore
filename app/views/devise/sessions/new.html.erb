@@ -45,8 +45,19 @@
     <div class="divider my-6"></div>
 
     <div class="text-center text-sm space-y-2">
-      <%= render "devise/shared/links" %>
-    </div>
+      <div class="space-y-2">
+        <div class="text-center">
+          <%= link_to 'Criar conta',
+            new_user_registration_path,
+            class: 'btn btn-ghost btn-sm hover:bg-primary' %>
+        </div>
 
+        <div class="text-center">
+          <%= link_to 'Esqueci minha senha',
+            new_password_path,
+            class: 'btn btn-ghost btn-sm hover:bg-primary' %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

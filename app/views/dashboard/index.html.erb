@@ -1,0 +1,83 @@
+<div class="space-y-6">
+
+<!-- Título -->
+<div>
+  <h1 class="text-3xl font-bold p-12">
+    Olá, <%= current_user.name %> 👋
+  </h1>
+  <p class="opacity-70 pl-12">
+    Aqui está um resumo do seu OrangScore
+  </p>
+</div>
+
+<!-- Cards de resumo -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pl-12 pr-12">
+  <!-- Card 1 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="flex justify-center card-title mb-2">Minha seleção</h2>
+
+      <div class="flex justify-center items-center gap-3">
+        <%= image_tag "selecoes/#{current_user.logo_selecao}",
+          class: "w-10 h-10 rounded-full object-cover",
+          alt: current_user.selecao.nome %>
+
+        <span class="text-lg font-semibold">
+          <%= current_user.logo_selecao %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Card 2 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title flex justify-center">Ligas ativas</h2>
+      <p class="flex justify-center text-3xl font-bold">0</p>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="flex justify-center card-title">Jogos hoje</h2>
+      <p class="flex justify-center text-3xl font-bold">0</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pl-12 pr-12">
+  <!-- Card 1 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="flex justify-center card-title mb-2">Minha seleção</h2>
+
+      <div class="flex justify-center items-center gap-3">
+        <%= image_tag "selecoes/#{current_user.logo_selecao}",
+          class: "w-10 h-10 rounded-full object-cover",
+          alt: current_user.selecao.nome %>
+
+        <span class="text-lg font-semibold">
+          <%= current_user.logo_selecao %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Card 2 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title flex justify-center">Ligas ativas</h2>
+      <p class="flex justify-center text-3xl font-bold">0</p>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="flex justify-center card-title">Jogos hoje</h2>
+      <p class="flex justify-center text-3xl font-bold">0</p>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
-  root to: "home#index"
+  root to: "dashboard#index"
 
   devise_for :users
+  get  '/password/forgot', to: 'passwords#new', as: :new_password
+  post '/password/forgot', to: 'passwords#request_recovery', as: :password_recovery
+
+  get   '/password/reset/:token', to: 'passwords#edit',   as: :edit_password
+  patch '/password/reset/:token', to: 'passwords#update'
 
   resources :ligas do
       member do

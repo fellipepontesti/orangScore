@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_25_220343) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_07_225824) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,6 +100,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_25_220343) do
     t.integer "pontos"
     t.integer "tipo", default: 0
     t.bigint "selecao_id"
+    t.string "password_recovery_token"
+    t.datetime "password_recovery_sent_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["selecao_id"], name: "index_users_on_selecao_id"

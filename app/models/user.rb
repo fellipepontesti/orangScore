@@ -17,6 +17,28 @@ class User < ApplicationRecord
 
   enum :tipo, { normal_user: 0, root: 1 }
 
+  def generate_password_recovery!
+    token = SecureRandom.urlsafe_base64(32)
+
+    update!(
+      password_recovery_token: token,
+      password_recovery_sent_at: Time.current
+    )
+
+    token
+  end
+
+  def password_recovery_expired?
+    password_recovery_sent_at < 2.hours.ago
+  end
+
+  def clear_password_recovery!
+    update!(
+      password_recovery_token: nil,
+      password_recovery_sent_at: nil
+    )
+  end
+
   before_validation :set_logo_selecao, on: :create
 
   private

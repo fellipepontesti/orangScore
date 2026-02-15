@@ -1,0 +1,42 @@
+<div class="min-h-screen flex items-center justify-center bg-base-300 px-4">
+  <div class="w-full max-w-md bg-base-100 shadow-lg rounded-2xl p-8">
+
+    <h2 class="text-2xl font-bold text-center text-white mb-6">
+      Recuperar senha
+    </h2>
+
+    <%= form_with url: '/password/forgot',
+      method: :post,
+      html: { class: "space-y-5" } do %>
+
+      <div class="form-control w-full">
+        <%= label_tag :email, class: "label" do %>
+          <span class="label-text font-medium pb-4">
+            E-mail
+          </span>
+        <% end %>
+
+        <%= email_field_tag :email, nil,
+          autofocus: true,
+          autocomplete: "email",
+          required: true,
+          class: "input input-ghost w-full" %>
+      </div>
+
+      <div class="pt-2">
+        <%= submit_tag 'Enviar instruções',
+          class: "btn btn-primary w-full rounded-xl" %>
+      </div>
+
+    <% end %>
+
+    <div class="divider my-6"></div>
+
+    <div class="text-center">
+      <%= link_to 'Voltar para o login',
+        new_user_session_path,
+        class: 'btn btn-ghost btn-sm hover:bg-primary' %>
+    </div>
+
+  </div>
+</div>

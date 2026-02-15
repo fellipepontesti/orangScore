@@ -22,6 +22,13 @@
 
         <!-- Navbar -->
         <div class="navbar bg-base-100 shadow-sm sticky top-0 z-20">
+          <% if current_user %>
+            <div class="flex-none lg:hidden">
+              <label for="my-drawer-4" class="btn btn-ghost">
+                ☰
+              </label>
+            </div>
+          <% end %>
           <div class="flex-1">
             <a href="/" class="p-4 rounded-2xl text-xl font-bold text-primary hover:text-black hover:bg-primary">
               OrangScore
