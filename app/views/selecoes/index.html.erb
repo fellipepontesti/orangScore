@@ -4,10 +4,12 @@
   <div class="flex justify-between items-center p-4 pb-8 pt-8">
     <h1 class="font-bold text-4xl">Seleções</h1>
 
-    <%= link_to "Cadastrar seleção",
-      new_selecao_path,
-      class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium"
-    %>
+    <% if current_user.root? %>
+      <%= link_to "Cadastrar seleção",
+        new_selecao_path,
+        class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium"
+      %>
+    <%end%>
   </div>
 
   <% if @selecoes.any? %>
@@ -26,7 +28,9 @@
             <th>Logo</th>
             <th>Grupo</th>
             <th>Torcedores</th>
-            <th>Ações</th>
+            <% if current_user.root? %>
+              <th>Ações</th>
+            <%end%>
           </tr>
         </thead>
 
@@ -60,29 +64,31 @@
                 <%= selecao.qtd_torcedores %>
               </td>
 
-              <td>
-                <div class="flex justify-center gap-3">
-                  <%= link_to edit_selecao_path(selecao),
-                    class: "hover:scale-110 transition" do %>
-                    <div class="avatar">
-                      <div class="mask mask-squircle h-5 w-5 invert">
-                        <%= image_tag "icons/editar.png" %>
+              <% if current_user.root? %>
+                <td>
+                  <div class="flex justify-center gap-3">
+                    <%= link_to edit_selecao_path(selecao),
+                      class: "hover:scale-110 transition" do %>
+                      <div class="avatar">
+                        <div class="mask mask-squircle h-5 w-5 invert">
+                          <%= image_tag "icons/editar.png" %>
+                        </div>
                       </div>
-                    </div>
-                  <% end %>
+                    <% end %>
 
-                  <%= button_to selecao,
-                    method: :delete,
-                    form: { data: { turbo_confirm: "Excluir esta seleção?" } },
-                    class: "bg-transparent hover:scale-110 transition" do %>
-                    <div class="avatar">
-                      <div class="mask mask-squircle h-5 w-5 invert">
-                        <%= image_tag "icons/delete.png" %>
+                    <%= button_to selecao,
+                      method: :delete,
+                      form: { data: { turbo_confirm: "Excluir esta seleção?" } },
+                      class: "bg-transparent hover:scale-110 transition" do %>
+                      <div class="avatar">
+                        <div class="mask mask-squircle h-5 w-5 invert">
+                          <%= image_tag "icons/delete.png" %>
+                        </div>
                       </div>
-                    </div>
-                  <% end %>
-                </div>
-              </td>
+                    <% end %>
+                  </div>
+                </td>
+              <%end%>
             </tr>
           <% end %>
         </tbody>

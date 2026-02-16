@@ -3,7 +3,10 @@
 <div class="w-full">
   <div class="flex justify-between items-center pl-12 pr-12">
     <h1 class="font-bold text-4xl text-center">Grupos</h1>
-    <%= link_to "Criar grupo", new_grupo_path, class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium" %>
+    <%= puts current_user %>
+    <% if current_user.root? %>
+      <%= link_to "Criar grupo", new_grupo_path, class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium" %>
+    <% end %>
   </div>
 
   <div id="grupos" class="divide-y divide-white space-y-5 p-4">

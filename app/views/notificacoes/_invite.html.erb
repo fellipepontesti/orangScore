@@ -1,0 +1,25 @@
+<div class="space-y-6">
+  <div>
+    <h2 class="text-xl font-semibold">
+      Convite para entrar na liga <%= notificacao.liga.nome %>
+    </h2>
+
+    <p class="text-sm opacity-70 mt-2">
+      Você foi convidado para participar desta liga.
+    </p>
+  </div>
+
+  <div class="flex gap-4">
+    <%= button_to "Aceitar",
+      accept_invite_liga_path(notificacao.liga),
+      method: :post,
+      class: "px-6 py-3 rounded-md bg-success hover:bg-success/80! text-white font-semibold"
+    %>
+
+    <%= button_to "Recusar",
+      recuse_invite_liga_path(notificacao.liga),
+      method: :post,
+      class: "px-6 py-3 rounded-md bg-error hover:bg-error/80! text-white font-semibold"
+    %>
+  </div>
+</div>

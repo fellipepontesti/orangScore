@@ -1,4 +1,5 @@
 class JogosController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_jogo, only: %i[ show edit update destroy ]
 
   def index

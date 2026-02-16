@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_07_225824) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,18 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_07_225824) do
     t.datetime "updated_at", null: false
     t.integer "membros", default: 0, null: false
     t.index ["owner_id"], name: "index_ligas_on_owner_id"
+  end
+
+  create_table "notificacoes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "tipo"
+    t.integer "sender_id"
+    t.text "texto"
+    t.integer "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "liga_id"
+    t.index ["user_id"], name: "index_notificacoes_on_user_id"
   end
 
   create_table "palpites", force: :cascade do |t|
@@ -113,6 +125,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_07_225824) do
   add_foreign_key "liga_membros", "ligas"
   add_foreign_key "liga_membros", "users"
   add_foreign_key "ligas", "users", column: "owner_id"
+  add_foreign_key "notificacoes", "users"
   add_foreign_key "palpites", "jogos"
   add_foreign_key "palpites", "users"
   add_foreign_key "selecoes", "grupos"

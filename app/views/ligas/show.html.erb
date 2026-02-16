@@ -17,7 +17,7 @@
             <th>Seleção favorita</th>
             <th>Status</th>
             <% if @meu_vinculo&.role.in?(%w[owner admin])%>
-              <th>Excluir</th>
+              <th>Ações</th>
             <% end %>
           </tr>
         </thead>
@@ -59,6 +59,34 @@
                       liga_membro.status.in?(%w[invited accepted]) %>
 
                   <% if is_owner || is_admin_allowed %>
+
+                    <div class="flex justify-center items-center gap-3">
+
+                      <% if is_owner %>
+                        <% if liga_membro.role == "admin"%>
+                          <% img_name="adm_red"%>
+                          <% message="Tem certeza que deseja remover o usuário #{liga_membro.user.name} da função de administrador da sua liga?"%>
+                        <%else%>
+                          <% message="Tem certeza que deseja adicionar o usuário #{liga_membro.user.name} como administrador da sua liga?"%>
+                          <% img_name="adm"%>
+                        <%end%>
+                        <%= button_to set_admin_liga_path(
+                              @liga,
+                              liga_membro_id: liga_membro.id
+                            ),
+                            method: :post,
+                            form: { data: { turbo_confirm: message } },
+                            class: "bg-transparent hover:scale-110 transition" do %>
+
+                          <div class="avatar">
+                            <div class="mask mask-squircle h-6 w-6">
+                              <%= image_tag "icons/#{img_name}.png" %>
+                            </div>
+                          </div>
+
+                        <% end %>
+                      <% end %>
+
                       <% method = is_owner ? :delete : :patch %>
                       <% confirm_message =
                           is_owner ?
@@ -80,9 +108,13 @@
                         </div>
 
                       <% end %>
+
+                    </div>
+
                   <% end %>
                 <% end %>
               </td>
+
             </tr>
           <% end %>
         </tbody>
@@ -107,8 +139,10 @@
       </button>
     <% end %>
 
-    <%= link_to "Editar liga", edit_liga_path(@liga),
-      class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+    <% if @meu_vinculo&.role == "owner" %>
+      <%= link_to "Editar liga", edit_liga_path(@liga),
+        class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+    <%end%>
 
     <%= button_to "Sair",
       quit_liga_path(@liga),

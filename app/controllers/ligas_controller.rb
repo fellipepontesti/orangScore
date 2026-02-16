@@ -1,10 +1,13 @@
 class LigasController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_liga, only: %i[ show edit update destroy ]
 
   def index
-    puts "===> LOGADO"
-    puts current_user.email
-    @ligas = Liga.all
+    if current_user.root?
+      @ligas = Liga.all
+    else 
+      @ligas = Liga.joins(:liga_membros).where(liga_membros: { user_id: current_user.id })
+    end
   end
 
   def show
@@ -129,9 +132,34 @@ class LigasController < ApplicationController
       role: :member
     )
 
+    Notificacao.create!(
+      sender_id: current_user.id,
+      user_id: user_invited.id,
+      texto: "Convite paga participar da liga: #{@liga.nome}",
+      tipo: :invite,
+      liga_id: @liga.id
+    )
+
     redirect_to @liga, notice: "Convite enviado para #{email}"
   end
 
+  def accept_invite
+    liga = Ligas::AcceptInvite
+              .new(params[:id], current_user.id)
+              .call
+
+    redirect_to liga_path(liga), notice: "Você entrou na liga."
+  end
+
+  def recuse_invite
+    liga = Liga.find(params[:id])
+
+    current_user.notificacoes
+                .where(notificavel: liga, tipo: :convite_liga)
+                .update_all(status: :read)
+
+    redirect_to notificacoes_path, notice: "Convite recusado."
+  end
 
   def new
     @liga = Liga.new
@@ -162,7 +190,29 @@ class LigasController < ApplicationController
     end
   end
 
-  # PATCH/PUT /ligas/1 or /ligas/1.json
+  def set_admin
+    @liga = Liga.find(params[:id])
+
+    meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
+
+    unless meu_vinculo&.role.in?(%w[owner])
+      redirect_to @liga, alert: "Você não tem permissão para promover membros."
+      return
+    end
+
+    liga_membro = @liga.liga_membros.find_by(id: params[:liga_membro_id])
+    contexto = ""
+    if liga_membro.admin? 
+      liga_membro.member!
+      contexto = "membro"
+    else
+      liga_membro.admin!
+      contexto = "administrador"
+    end
+
+    redirect_to @liga, notice: "Usuário #{liga_membro.user.name} agora é #{contexto} da liga."
+  end
+
   def update
     respond_to do |format|
       if @liga.update(liga_params)

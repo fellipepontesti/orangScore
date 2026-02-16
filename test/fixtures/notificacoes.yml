@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  tipo: MyString
+  integer: MyString
+   text: MyString
+  text: MyString
+   status: MyString
+  integer: MyString
+   sender_id: MyString
+  integer: MyString
+
+two:
+  user: two
+  tipo: MyString
+  integer: MyString
+   text: MyString
+  text: MyString
+   status: MyString
+  integer: MyString
+   sender_id: MyString
+  integer: MyString

@@ -37,25 +37,27 @@
                 </div>
               </div>
 
-              <div class="flex gap-2">
-                <%= link_to edit_liga_path(liga),
-                  class: "rounded-md p-2 bg-base-300 hover:bg-warning/80! flex items-center justify-center",
-                  onclick: "event.stopPropagation()" do %>
-                  <div class="h-5 w-5 invert">
-                    <%= image_tag "icons/editar.png" %>
-                  </div>
-                <% end %>
+              <% if current_user.root? || current_user.id == liga.owner_id %>
+                <div class="flex gap-2">
+                  <%= link_to edit_liga_path(liga),
+                    class: "rounded-md p-2 bg-base-300 hover:bg-warning/80! flex items-center justify-center",
+                    onclick: "event.stopPropagation()" do %>
+                    <div class="h-5 w-5 invert">
+                      <%= image_tag "icons/editar.png" %>
+                    </div>
+                  <% end %>
 
-                <%= button_to liga,
-                  method: :delete,
-                  class: "rounded-md p-2 bg-base-300 hover:bg-error/80! flex items-center justify-center",
-                  data: { turbo_confirm: "Você tem certeza?" },
-                  onclick: "event.stopPropagation()" do %>
-                  <div class="mask mask-squircle h-5 w-5 invert">
-                    <%= image_tag "icons/delete.png" %>
-                  </div>
-                <% end %>
-              </div>
+                  <%= button_to liga,
+                    method: :delete,
+                    class: "rounded-md p-2 bg-base-300 hover:bg-error/80! flex items-center justify-center",
+                    data: { turbo_confirm: "Você tem certeza?" },
+                    onclick: "event.stopPropagation()" do %>
+                    <div class="mask mask-squircle h-5 w-5 invert">
+                      <%= image_tag "icons/delete.png" %>
+                    </div>
+                  <% end %>
+                </div>
+              <%end%>
             </li>
           <% end %>
         <% else %>

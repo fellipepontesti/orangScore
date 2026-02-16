@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :notificacoes
   root to: "dashboard#index"
 
   devise_for :users
@@ -10,6 +11,9 @@ Rails.application.routes.draw do
 
   resources :ligas do
       member do
+        post :set_admin
+        post :accept_invite
+        post :recuse_invite
         post :invite_member
         match :remove_member, via: [:delete, :patch]
         delete :quit

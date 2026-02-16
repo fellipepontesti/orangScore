@@ -1,0 +1,62 @@
+<%= form_with(model: notificacao, class: "contents") do |form| %>
+  <% if notificacao.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(notificacao.errors.count, "error") %> prohibited this notificacao from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% notificacao.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :user_id %>
+    <%= form.text_field :user_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:user_id].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:user_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :tipo %>
+    <%= form.text_field :tipo, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:tipo].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:tipo].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :integer %>
+    <%= form.text_field :integer, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:integer].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:integer].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label : text %>
+    <%= form.text_field : text, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[: text].none?, "border-red-400 focus:outline-red-600": notificacao.errors[: text].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :text %>
+    <%= form.text_field :text, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:text].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:text].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label : status %>
+    <%= form.text_field : status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[: status].none?, "border-red-400 focus:outline-red-600": notificacao.errors[: status].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :integer %>
+    <%= form.text_field :integer, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:integer].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:integer].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label : sender_id %>
+    <%= form.text_field : sender_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[: sender_id].none?, "border-red-400 focus:outline-red-600": notificacao.errors[: sender_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :integer %>
+    <%= form.text_field :integer, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": notificacao.errors[:integer].none?, "border-red-400 focus:outline-red-600": notificacao.errors[:integer].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
