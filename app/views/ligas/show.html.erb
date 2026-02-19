@@ -5,7 +5,132 @@
     Liga: <%= @liga.nome %>
   </h1>
 
-  <% if @membros.any? %>
+  <dialog id="modal_users_pending" class="modal">
+    <div class="modal-box max-w-3xl">
+      <h3 class="text-lg font-bold mb-4">
+        Gestão de Pendências
+      </h3>
+
+      <div role="tablist" class="tabs tabs-bordered">
+
+        <!-- ========================= -->
+        <!-- ABA CONVIDADOS -->
+        <!-- ========================= -->
+
+        <input type="radio"
+              name="tabs_pendencias"
+              role="tab"
+              class="tab"
+              aria-label="Convidados (<%= @membros_pendentes.count %>)"
+              checked />
+
+        <div role="tabpanel" class="tab-content p-4 border-base-300 bg-base-100">
+
+          <% if @membros_pendentes.any? %>
+
+            <% @membros_pendentes.each do |liga_membro| %>
+              <div class="flex justify-between items-center border-b py-2">
+
+                <div>
+                  <p class="font-medium">
+                    <%= liga_membro.user.name %>
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    Convidado em
+                    <%= liga_membro.created_at.strftime("%d/%m/%Y às %H:%M") %>
+                  </p>
+                </div>
+
+                <%= button_to remove_member_liga_path(
+                        @liga,
+                        liga_membro_id: liga_membro.id
+                      ),
+                      method: :delete,
+                      form: {
+                        data: {
+                          turbo_confirm: "Cancelar este convite?"
+                        }
+                      },
+                      class: "btn btn-error btn-sm" do %>
+                  Remover
+                <% end %>
+
+              </div>
+            <% end %>
+
+          <% else %>
+            <p class="text-sm text-gray-500">
+              Nenhum convite pendente.
+            </p>
+          <% end %>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ABA SOLICITAÇÕES DE EXCLUSÃO -->
+        <!-- ========================= -->
+
+        <input type="radio"
+              name="tabs_pendencias"
+              role="tab"
+              class="tab"
+              aria-label="Solicitações de Exclusão (<%= @membros_excluir.count %>)" />
+
+        <div role="tabpanel" class="tab-content p-4 border-base-300 bg-base-100">
+
+          <% if @membros_excluir.any? %>
+
+            <% @membros_excluir.each do |liga_membro| %>
+              <div class="flex justify-between items-center border-b py-2">
+
+                <div>
+                  <p class="font-medium">
+                    <%= liga_membro.user.name %>
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    Solicitação feita em
+                    <%= liga_membro.updated_at.strftime("%d/%m/%Y às %H:%M") %>
+                  </p>
+                </div>
+
+                <%= button_to remove_member_liga_path(
+                        @liga,
+                        liga_membro_id: liga_membro.id
+                      ),
+                      method: :delete,
+                      form: {
+                        data: {
+                          turbo_confirm: "Confirmar exclusão deste membro?"
+                        }
+                      },
+                      class: "btn btn-error btn-sm" do %>
+                  Confirmar Exclusão
+                <% end %>
+
+              </div>
+            <% end %>
+
+          <% else %>
+            <p class="text-sm text-gray-500">
+              Nenhuma solicitação de exclusão.
+            </p>
+          <% end %>
+
+        </div>
+
+      </div>
+
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">Fechar</button>
+        </form>
+      </div>
+
+    </div>
+  </dialog>
+
+  <% if @membros_ativos.any? %>
     <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
       <table class="table table-zebra w-full text-center">
         <thead>
@@ -22,7 +147,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @membros.each_with_index do |liga_membro, i| %>
+          <% @membros_ativos.each_with_index do |liga_membro, i| %>
             <tr class="hover">
               <td class="font-bold">
                 <%= i + 1 %>°
@@ -92,21 +217,21 @@
                           is_owner ?
                             "Remover este membro da liga?" :
                             "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
+                      <% if is_owner || current_user.id != liga_membro.user_id %>
+                        <%= button_to remove_member_liga_path(
+                              @liga,
+                              liga_membro_id: liga_membro.id
+                            ),
+                            method: method,
+                            form: { data: { turbo_confirm: confirm_message } },
+                            class: "bg-transparent hover:scale-110 transition" do %>
 
-                      <%= button_to remove_member_liga_path(
-                            @liga,
-                            liga_membro_id: liga_membro.id
-                          ),
-                          method: method,
-                          form: { data: { turbo_confirm: confirm_message } },
-                          class: "bg-transparent hover:scale-110 transition" do %>
-
-                        <div class="avatar">
-                          <div class="mask mask-squircle h-6 w-6 invert">
-                            <%= image_tag "icons/delete.png" %>
+                          <div class="avatar">
+                            <div class="mask mask-squircle h-6 w-6 invert">
+                              <%= image_tag "icons/delete.png" %>
+                            </div>
                           </div>
-                        </div>
-
+                        <% end %>
                       <% end %>
 
                     </div>
@@ -142,9 +267,13 @@
     <% if @meu_vinculo&.role == "owner" %>
       <%= link_to "Editar liga", edit_liga_path(@liga),
         class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+
+      <button class="rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" onclick="modal_users_pending.showModal()">
+        Gerenciar pendências
+      </button>
     <%end%>
 
-    <%= button_to "Sair",
+    <%= button_to "Sair da liga",
       quit_liga_path(@liga),
       method: :delete,
       class: "rounded-md px-5 py-3 text-white bg-red-600 hover:bg-red-600/80 font-medium",

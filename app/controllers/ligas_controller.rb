@@ -11,19 +11,17 @@ class LigasController < ApplicationController
   end
 
   def show
-    @membros = @liga.liga_membros
-                .includes(:user)
-                .joins(:user)
-                .order(
-                  Arel.sql(
-                    "CASE liga_membros.status
-                    WHEN 1 THEN 1
-                    WHEN 0 THEN 2
-                    WHEN 2 THEN 3
-                    END"
-                    )
-                    )
-                .order('users.pontos DESC')
+    @membros_ativos = @liga.liga_membros
+                          .includes(:user)
+                          .where(status: :accepted)
+
+    @membros_pendentes = @liga.liga_membros
+                              .includes(:user)
+                              .invited
+
+    @membros_excluir = @liga.liga_membros
+                              .includes(:user)
+                              .pending_deletion
 
     @meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
     @pode_convidar = @meu_vinculo&.role.in?(%w[owner admin])
