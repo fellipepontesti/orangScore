@@ -13,4 +13,3 @@ class CreatePalpites < ActiveRecord::Migration[7.1]
     add_index :palpites, [:user_id, :jogo_id], unique: true
   end
 end
-r
