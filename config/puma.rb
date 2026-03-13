@@ -15,6 +15,8 @@ preload_app!
 # Socket usado pelo Nginx para conversar com o Puma
 bind "unix:///home/upontes/orangScore/tmp/sockets/puma.sock"
 
+umask 0007
+
 # Arquivo que guarda o PID do processo
 pidfile "/home/upontes/orangScore/tmp/pids/puma.pid"
 
