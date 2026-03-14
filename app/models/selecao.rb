@@ -1,5 +1,5 @@
 class Selecao < ApplicationRecord
-  belongs_to :grupo
+  belongs_to :grupo, optional: true
   has_many :jogos_como_mandante,
            class_name: 'Jogo',
            foreign_key: :mandante_id,
