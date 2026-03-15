@@ -87,17 +87,6 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.delivery_method = :resend
-  config.action_mailer.delivery_method_options = {
-    api_key: ENV['RESEND_API_KEY']
-  }
-
-  # Garanta que os links gerados nos e-mails usem HTTPS
-  config.action_mailer.default_url_options = { 
-    host: ENV['RESEND_HOST'], 
-    protocol: 'https' 
-  }
-
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
