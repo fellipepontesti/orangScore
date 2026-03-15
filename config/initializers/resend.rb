@@ -1,5 +1,7 @@
 require 'resend'
 
+Resend.api_key = ENV['RESEND_API_KEY']
+
 if Rails.env.production?
   ActionMailer::Base.delivery_method = :resend
   ActionMailer::Base.resend_settings = {
