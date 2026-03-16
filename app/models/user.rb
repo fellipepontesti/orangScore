@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
 
   has_many :ligas, foreign_key: :owner_id
   has_many :liga_membros
@@ -40,8 +40,14 @@ class User < ApplicationRecord
   end
 
   before_validation :set_logo_selecao, on: :create
+  before_create :generate_confirmation_token
 
   private
+
+  def generate_confirmation_token
+    self.confirmation_token = SecureRandom.urlsafe_base64
+    self.confirmation_sent_at = Time.current
+  end
 
   def set_logo_selecao
     return if selecao.nil?
