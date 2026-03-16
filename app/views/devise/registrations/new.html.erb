@@ -1,8 +1,10 @@
 <div class="min-h-screen flex items-center justify-center bg-base-300">
   <div class="w-full max-w-md bg-base-100 shadow-lg rounded-2xl p-12">
-    <pre class="text-xs text-red-500">
-      <%= resource.errors.full_messages.inspect %>
-    </pre>
+    <% if resource.errors.any? %>
+      <pre class="text-xs text-red-500">
+        <%= resource.errors.full_messages.inspect %>
+      </pre>
+    <% end %>
 
     <h2 class="text-2xl font-bold text-center text-primary mb-6">
       Criar conta no OrangScore
@@ -191,7 +193,6 @@
     }
   }
 
-  // 🔑 SINCRONIZA AO CARREGAR
   document.addEventListener('DOMContentLoaded', updateSteps)
 
   function validatePasswordsAndContinue () {
@@ -211,7 +212,6 @@
       return
     }
 
-    // se passou, avança
     nextStep()
   }
 </script>
