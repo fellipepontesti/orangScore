@@ -43,7 +43,7 @@ pt-BR:
       not_found_in_database: "%{authentication_keys} ou senha inválidos."
       timeout: A sua sessão expirou, por favor, faça login novamente para continuar.
       unauthenticated: ""
-      unconfirmed: Antes de continuar, confirme a sua conta.
+      unconfirmed: Antes de continuar, confirme a sua conta no seu e-mail.
     mailer:
       confirmation_instructions:
         action: Confirmar minha conta
