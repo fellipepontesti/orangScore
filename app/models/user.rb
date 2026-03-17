@@ -40,14 +40,8 @@ class User < ApplicationRecord
   end
 
   before_validation :set_logo_selecao, on: :create
-  before_create :generate_confirmation_token
 
   private
-
-  def generate_confirmation_token
-    self.confirmation_token = SecureRandom.urlsafe_base64
-    self.confirmation_sent_at = Time.current
-  end
 
   def set_logo_selecao
     return if selecao.nil?

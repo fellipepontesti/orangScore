@@ -3,8 +3,8 @@ max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
-# Ambiente do Rails
-environment ENV.fetch("RAILS_ENV") { "production" }
+# Ambiente do Rails - Mudei de "production" para "development" como padrão para facilitar sua vida local
+environment ENV.fetch("RAILS_ENV") { "development" }
 
 # Número de workers (processos)
 workers ENV.fetch("WEB_CONCURRENCY") { 2 }
@@ -12,14 +12,17 @@ workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 # Carrega a aplicação antes de criar workers
 preload_app!
 
-# Socket usado pelo Nginx para conversar com o Puma
-bind "unix:///home/upontes/orangScore/tmp/sockets/puma.sock"
-
-# Arquivo que guarda o PID do processo
-pidfile "/home/upontes/orangScore/tmp/pids/puma.pid"
-
-# Arquivo de estado do Puma
-state_path "/home/upontes/orangScore/tmp/pids/puma.state"
+# Lógica inteligente para o Socket ou Porta
+if ENV.fetch("RAILS_ENV", "development") == "production"
+  bind "unix:///home/upontes/orangScore/tmp/sockets/puma.sock"
+  # No servidor, usamos caminhos absolutos para o systemd não se perder
+  pidfile "/home/upontes/orangScore/tmp/pids/puma.pid"
+  state_path "/home/upontes/orangScore/tmp/pids/puma.state"
+else
+  port ENV.fetch("PORT") { 3000 }
+  # Localmente, usamos caminhos relativos à pasta do projeto
+  pidfile "tmp/pids/server.pid"
+end
 
 # Permite reiniciar com `rails restart`
 plugin :tmp_restart
