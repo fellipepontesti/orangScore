@@ -50,7 +50,7 @@
             id: "user_name",
             value: (resource.errors.any? ? '' : resource.name),
             autofocus: true,
-            class: "input input-ghost w-full",
+            class: "input input-ghost bg-base-300 w-full",
             placeholder: "Seu nome" %>
         </div>
 
@@ -65,7 +65,7 @@
             required: true,
             autocomplete: "email",
             placeholder: "seu@email.com",
-            class: "input input-ghost validator w-full" %>
+            class: "input input-ghost  bg-base-300 validator w-full" %>
 
           <div class="validator-hint text-sm text-error mt-1">
             Informe um endereço de e-mail válido
@@ -88,7 +88,8 @@
 
           <%= f.password_field :password,
             id: "password",
-            class: "input input-ghost w-full",
+            placeholder: "Digite sua senha",
+            class: "input input-ghost bg-base-300 w-full",
             required: true,
             autocomplete: "new-password" %>
         </div>
@@ -100,7 +101,8 @@
 
           <%= f.password_field :password_confirmation,
             id: "password_confirmation",
-            class: "input input-ghost w-full",
+            placeholder: "Confirme sua senha",
+            class: "input bg-base-300 input-ghost w-full",
             required: true,
             autocomplete: "new-password" %>
 
@@ -144,7 +146,7 @@
             },
             {
               id: "user_selecao_id",
-              class: "select select-bordered w-full"
+              class: "select bg-base-300 select-bordered w-full"
             } %>
         </div>
 

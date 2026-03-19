@@ -3,14 +3,30 @@
 
     <h1 class="font-bold text-center text-4xl">Detalhes do jogo</h1>
 
-    <h2 class="text-3xl font-bold text-center">
+    <h2 class="text-3xl font-bold text-center flex items-center justify-center gap-4">
+
       <div class="mask mask-squircle h-12 w-12">
-        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+        <% if jogo.mandante&.logo.present? %>
+          <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+        <% else %>
+          <div class="w-full h-full flex items-center justify-center bg-base-300 text-sm">?</div>
+        <% end %>
       </div>
-      <%= jogo.mandante.nome %> × <%= jogo.visitante.nome %>
+
+      <span>
+        <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
+        ×
+        <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
+      </span>
+
       <div class="mask mask-squircle h-12 w-12">
-        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+        <% if jogo.visitante&.logo.present? %>
+          <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+        <% else %>
+          <div class="w-full h-full flex items-center justify-center bg-base-300 text-sm">?</div>
+        <% end %>
       </div>
+
     </h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
@@ -18,53 +34,115 @@
       <div class="stat bg-base-200 rounded-box">
         <div class="stat-title">Mandante</div>
         <div class="stat-value text-lg">
-          <%= jogo.mandante.nome %>
+          <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
         </div>
       </div>
 
       <div class="stat bg-base-200 rounded-box">
         <div class="stat-title">Visitante</div>
         <div class="stat-value text-lg">
-          <%= jogo.visitante.nome %>
+          <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
         </div>
       </div>
 
       <div class="stat bg-base-200 rounded-box">
         <div class="stat-title">Gols do Mandante</div>
         <div class="stat-value">
-          <%= jogo.gols_mandante %>
+          <%= jogo.gols_mandante.presence || "-" %>
         </div>
       </div>
 
       <div class="stat bg-base-200 rounded-box">
         <div class="stat-title">Gols do Visitante</div>
         <div class="stat-value">
-          <%= jogo.gols_visitante %>
+          <%= jogo.gols_visitante.presence || "-" %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title">Fase</div>
+        <div class="stat-value text-base">
+          <%=
+            case jogo.tipo
+            when "grupo"
+              jogo.mandante&.grupo.present? ? "Grupo #{jogo.mandante.grupo.nome.last}" : "[ Grupo indefinido ]"
+            when "oitavas"
+              "Oitavas de final"
+            when "quartas"
+              "Quartas de final"
+            when "semi"
+              "Semifinal"
+            when "final"
+              "Final"
+            else
+              "[ A definir ]"
+            end
+          %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 rounded-box">
+        <div class="stat-title text-center">Status</div>
+
+        <div class="stat-value text-base flex items-center justify-center gap-2 w-full">
+          <div class="inline-grid *:[grid-area:1/1]">
+            <% if jogo.programado? %>
+              <div class="status status-info animate-ping"></div>
+              <div class="status status-info"></div>
+            <% elsif jogo.em_andamento? %>
+              <div class="status status-success animate-ping"></div>
+              <div class="status status-success"></div>
+            <% elsif jogo.finalizado? %>
+              <div class="status status-error animate-ping"></div>
+              <div class="status status-error"></div>
+            <% elsif jogo.times_a_definir? %>
+              <div class="status status-primary animate-ping"></div>
+              <div class="status status-primary"></div>
+            <% end %>
+          </div>
+
+          <span>
+            <%= jogo.status.humanize %>
+          </span>
+        </div>
+
+        <div class="stat-desc text-center">
+          <%= jogo.definir? ? "Jogo a definir" : "Times definidos" %>
+        </div>
+      </div>
+
+      <div class="stat bg-base-200 sm:col-span-2 rounded-box">
+        <div class="stat-title">Estádio</div>
+        <div class="stat-value text-base">
+          <%= jogo.estadio.presence || "[ A definir ]" %>
         </div>
       </div>
 
       <div class="stat bg-base-200 sm:col-span-2 rounded-box">
         <div class="stat-title">Data do Jogo</div>
         <div class="stat-value text-base">
-          <%= l(jogo.data, format: :long) %>
+          <%= jogo.data.present? ? l(jogo.data, format: :long) : "[ A definir ]" %>
         </div>
       </div>
 
-      <div class="stat bg-base-200 sm:col-span-2 rounded-box flex flex-wrap gap-4 justify-center">
+      <div class="stat sm:col-span-2 rounded-box flex flex-wrap gap-4 justify-center">
         <%= link_to "Voltar",
-          request.referer || jogos_path,
-          class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80 font-medium" %>
+          jogos_path,
+          class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-medium" %>
 
-        <%= link_to "Editar jogo",
-          edit_jogo_path(jogo),
-          class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
+        <% if current_user.root? %>
+          <%= link_to "Editar jogo",
+            edit_jogo_path(jogo),
+            class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
 
-        <%= button_to "Excluir",
-          jogo,
-          method: :delete,
-          class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80 font-medium",
-          data: { turbo_confirm: "Tem certeza?" } %>
+          <%= button_to "Excluir",
+            jogo,
+            method: :delete,
+            class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80 font-medium",
+            data: { turbo_confirm: "Tem certeza?" } %>
+        <% end %>
       </div>
+
     </div>
   </div>
 </div>

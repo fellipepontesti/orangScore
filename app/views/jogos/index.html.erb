@@ -6,35 +6,29 @@
   </h1>
 
   <div class="flex justify-center items-center gap-4 mb-6">
-    <button
-      class="btn btn-outline btn-white hover:bg-primary"
-      onclick="showTab('grupos')">
-      Fase de grupos
-    </button>
+    <%= link_to "Fase de grupos",
+      jogos_path(tipo: :grupo),
+      class: "btn #{ @tipo_ativo == 'grupo' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
 
-    <button
-      class="btn btn-outline btn-white hover:bg-primary"
-      onclick="showTab('oitavas')">
-      Oitavas
-    </button>
+    <%= link_to "Segunda fase",
+      jogos_path(tipo: :segunda_fase),
+      class: "btn #{ @tipo_ativo == 'segunda_fase' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
 
-    <button
-      class="btn btn-outline btn-white hover:bg-primary"
-      onclick="showTab('quartas')">
-      Quartas
-    </button>
+    <%= link_to "Oitavas",
+      jogos_path(tipo: :oitavas),
+      class: "btn #{ @tipo_ativo == 'oitavas' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
 
-    <button
-      class="btn btn-outline btn-white hover:bg-primary"
-      onclick="showTab('semi')">
-      Semi
-    </button>
+    <%= link_to "Quartas",
+      jogos_path(tipo: :quartas),
+      class: "btn #{ @tipo_ativo == 'quartas' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
 
-    <button
-      class="btn btn-outline btn-white hover:bg-primary"
-      onclick="showTab('final')">
-      Final
-    </button>
+    <%= link_to "Semi",
+      jogos_path(tipo: :semi),
+      class: "btn #{ @tipo_ativo == 'semi' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+
+    <%= link_to "Final",
+      jogos_path(tipo: :final),
+      class: "btn #{ @tipo_ativo == 'final' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
   </div>
 
   <div id="tab-grupos">
@@ -45,23 +39,27 @@
             <tr class="text-base">
               <th>Jogo</th>
               <th>Data</th>
-              <th>Grupo</th>
-              <% if current_user.root? %>
-                <th>Ações</th>
-              <%end%>
+              <th>Local</th>
+              <th>Status</th>
             </tr>
           </thead>
 
           <tbody>
             <% @jogos.each do |jogo| %>
-              <tr class="hover">
+              <tr class="hover cursor-pointer hover:bg-primary" onclick="window.location='<%= jogo_path(jogo) %>'">
                 <td class="font-medium">
                   <div class="flex justify-center items-center gap-2">
-                    <%= jogo.mandante.nome %>
+                    <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
 
                     <div class="avatar">
                       <div class="mask mask-squircle h-8 w-8">
-                        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                        <% if jogo.mandante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                        <% else %>
+                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
+                            ?
+                          </div>
+                        <% end %>
                       </div>
                     </div>
 
@@ -69,11 +67,17 @@
 
                     <div class="avatar">
                       <div class="mask mask-squircle h-8 w-8">
-                        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                        <% if jogo.visitante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                        <% else %>
+                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
+                            ?
+                          </div>
+                        <% end %>
                       </div>
                     </div>
 
-                    <%= jogo.visitante.nome %>
+                    <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
                   </div>
                 </td>
 
@@ -82,32 +86,31 @@
                 </td>
 
                 <td class="uppercase text-xs font-semibold">
-                  <%= jogo.mandante.grupo.nome.last %>
+                  <%= jogo.estadio %>
                 </td>
 
-                <% if current_user.root? %>
-                  <td class="flex justify-center gap-3">
-                    <%= link_to edit_jogo_path(jogo), class: "hover:scale-110 transition" do %>
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-6 w-6 invert">
-                          <%= image_tag "icons/editar.png" %>
-                        </div>
-                      </div>
-                    <% end %>
-
-                    <%= button_to jogo,
-                      method: :delete,
-                      form: { data: { turbo_confirm: "Remover este jogo?" } },
-                      class: "bg-transparent hover:scale-110 transition" do %>
-
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-6 w-6 invert">
-                          <%= image_tag "icons/delete.png" %>
-                        </div>
-                      </div>
-                    <% end %>
-                  </td>
-                <%end%>
+                <td class="uppercase text-xs font-semibold">
+                  <div class="flex items-center gap-2 justify-center">
+                    <div class="inline-grid *:[grid-area:1/1]">
+                      <% if jogo.programado? %>
+                        <div class="status status-info animate-ping"></div>
+                        <div class="status status-info"></div>
+                      <% elsif jogo.em_andamento? %>
+                        <div class="status status-success animate-ping"></div>
+                        <div class="status status-success"></div>
+                      <% elsif jogo.finalizado? %>
+                        <div class="status status-error animate-ping"></div>
+                        <div class="status status-error"></div>
+                      <% elsif jogo.times_a_definir? %>
+                        <div class="status status-primary animate-ping"></div>
+                        <div class="status status-primary"></div>
+                      <% end %>
+                    </div>
+                    <span>
+                      <%= jogo.status.humanize %>
+                    </span>
+                  </div>
+                </td>
               </tr>
             <% end %>
           </tbody>
@@ -120,28 +123,6 @@
     <% end %>
   </div>
 
-  <div id="tab-oitavas" class="hidden space-y-10">
-    <% @mata_mata.each do |fase, jogos| %>
-      <div>
-        <h2 class="text-xl font-bold mb-4 text-center">
-          <%= fase %>
-        </h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <% jogos.times do %>
-            <div class="p-4 border rounded-box bg-base-100 text-center opacity-70">
-              <div class="flex justify-between items-center">
-                <span>[ A definir ]</span>
-                <strong>x</strong>
-                <span>[ A definir ]</span>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
   <div class="mt-10 flex justify-center gap-4">
     <%= link_to "Voltar",
       :back,
@@ -151,28 +132,42 @@
       <%= link_to "Novo jogo",
         new_jogo_path,
         class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/90 text-white font-medium" %>
-    <%end%>
+    <% end %>
   </div>
 
   <script>
     function showTab(tab) {
-      const tabs = [
-        'grupos',
-        'oitavas',
-        'quartas',
-        'semi',
-        'final'
-      ]
+      const tabs = ['grupos', 'oitavas', 'quartas', 'semi', 'final']
 
       tabs.forEach(t => {
-        document
-          .getElementById(`tab-${t}`)
-          .classList.add('hidden')
+        const element = document.getElementById(`tab-${t}`)
+
+        if (element) {
+          element.classList.add('hidden')
+        }
       })
 
-      document
-        .getElementById(`tab-${tab}`)
-        .classList.remove('hidden')
+      const selectedTab = document.getElementById(`tab-${tab}`)
+
+      if (selectedTab) {
+        selectedTab.classList.remove('hidden')
+      }
+
+      document.querySelectorAll('[data-tab]').forEach(button => {
+        button.classList.remove('bg-primary', 'text-white', 'border-primary')
+        button.classList.add('btn-outline', 'btn-white')
+      })
+
+      const activeButton = document.querySelector(`[data-tab="${tab}"]`)
+
+      if (activeButton) {
+        activeButton.classList.remove('btn-outline', 'btn-white')
+        activeButton.classList.add('bg-primary', 'text-white', 'border-primary')
+      }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showTab('grupos')
+    })
   </script>
 </div>

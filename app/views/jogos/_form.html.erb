@@ -13,23 +13,99 @@
       <% end %>
 
       <div>
+        <%= form.label :tipo, "Fase", class: "label font-medium p-2" %>
+        <%= form.select :tipo,
+          [
+            ["Fase de grupos", "grupo"],
+            ["Segunda fase", "segunda_fase"],
+            ["Oitavas de final", "oitavas"],
+            ["Quartas de final", "quartas"],
+            ["Semifinal", "semi"],
+            ["Final", "final"]
+          ],
+          { prompt: "Selecione a fase" },
+          {
+            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:tipo].any? ? 'select-error' : ''}",
+            id: "jogo_tipo"
+          } %>
+      </div>
+
+      <div id="campo_definir" class="<%= 'hidden' if jogo.tipo == 'grupo' %>">
+        <label class="label cursor-pointer justify-start gap-3">
+          <%= form.check_box :definir, class: "checkbox checkbox-primary", id: "jogo_definir" %>
+          <span class="label-text font-medium">
+            Jogo ainda a definir
+          </span>
+        </label>
+      </div>
+
+      <div id="campo_mandante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :mandante_id, "Mandante", class: "label font-medium p-2" %>
         <%= form.collection_select :mandante_id,
           @selecoes,
           :id,
           :nome,
           { prompt: "Selecione o mandante" },
-          class: "select select-ghost select-bordered bg-base-300 w-full" %>
+          {
+            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:mandante].any? || jogo.errors[:mandante_id].any? ? 'select-error' : ''}",
+            id: "jogo_mandante_id"
+          } %>
       </div>
 
-      <div>
+      <div id="campo_visitante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :visitante_id, "Visitante", class: "label font-medium p-2" %>
         <%= form.collection_select :visitante_id,
           @selecoes,
           :id,
           :nome,
           { prompt: "Selecione o visitante" },
-          class: "select select-ghost select-bordered bg-base-300 w-full" %>
+          {
+            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:visitante].any? || jogo.errors[:visitante_id].any? ? 'select-error' : ''}",
+            id: "jogo_visitante_id"
+          } %>
+      </div>
+
+      <div id="campo_nome_provisorio_mandante" class="<%= jogo.definir? ? '' : 'hidden' %>">
+        <%= form.label :nome_provisorio_mandante, "Nome provisório do mandante", class: "label font-medium p-2" %>
+        <%= form.text_field :nome_provisorio_mandante,
+          placeholder: "Ex.: Vencedor jogo 1",
+          class: "input input-ghost bg-base-300 w-full #{jogo.errors[:nome_provisorio_mandante].any? ? 'input-error' : ''}",
+          id: "jogo_nome_provisorio_mandante" %>
+      </div>
+
+      <div id="campo_nome_provisorio_visitante" class="<%= jogo.definir? ? '' : 'hidden' %>">
+        <%= form.label :nome_provisorio_visitante, "Nome provisório do visitante", class: "label font-medium p-2" %>
+        <%= form.text_field :nome_provisorio_visitante,
+          placeholder: "Ex.: Vencedor jogo 2",
+          class: "input input-ghost bg-base-300 w-full #{jogo.errors[:nome_provisorio_visitante].any? ? 'input-error' : ''}",
+          id: "jogo_nome_provisorio_visitante" %>
+      </div>
+
+      <div>
+        <%= form.label :estadio, "Estádio", class: "label font-medium p-2" %>
+        <%= form.select :estadio,
+          [
+            "MetLife Stadium (New York/New Jersey, EUA)",
+            "SoFi Stadium (Los Angeles, EUA)",
+            "AT&T Stadium (Dallas, EUA)",
+            "NRG Stadium (Houston, EUA)",
+            "Mercedes-Benz Stadium (Atlanta, EUA)",
+            "Hard Rock Stadium (Miami, EUA)",
+            "Lincoln Financial Field (Philadelphia, EUA)",
+            "Lumen Field (Seattle, EUA)",
+            "Levi's Stadium (San Francisco Bay Area, EUA)",
+            "Gillette Stadium (Boston, EUA)",
+            "Arrowhead Stadium (Kansas City, EUA)",
+            "BC Place (Vancouver, Canadá)",
+            "BMO Field (Toronto, Canadá)",
+            "Estadio Azteca (Cidade do México, México)",
+            "Estadio BBVA (Monterrey, México)",
+            "Estadio Akron (Guadalajara, México)"
+          ],
+          { prompt: "Selecione o estádio" },
+          {
+            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:estadio].any? ? 'select-error' : ''}"
+          } %>
       </div>
 
       <div>
@@ -37,6 +113,23 @@
         <%= form.datetime_field :data,
           class: "input input-ghost bg-base-300 w-full #{jogo.errors[:data].any? ? 'input-error' : ''}" %>
       </div>
+
+      <% if jogo.persisted? %>
+        <div>
+          <%= form.label :status, "Status", class: "label font-medium p-2" %>
+          <%= form.select :status,
+            [
+              ["Programado", "programado"],
+              ["Em andamento", "em_andamento"],
+              ["Finalizado", "finalizado"],
+              ["A definir", "times_a_definir"]
+            ],
+            {},
+            {
+              class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:status].any? ? 'select-error' : ''}"
+            } %>
+        </div>
+      <% end %>
 
       <div class="flex justify-between gap-4 pt-6">
         <%= link_to "Voltar",
@@ -50,3 +143,74 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  function toggleCamposJogo() {
+    const tipo = document.getElementById('jogo_tipo')
+    const definir = document.getElementById('jogo_definir')
+    const campoDefinir = document.getElementById('campo_definir')
+    const campoMandante = document.getElementById('campo_mandante')
+    const campoVisitante = document.getElementById('campo_visitante')
+    const campoNomeProvisorioMandante = document.getElementById('campo_nome_provisorio_mandante')
+    const campoNomeProvisorioVisitante = document.getElementById('campo_nome_provisorio_visitante')
+    const mandanteSelect = document.getElementById('jogo_mandante_id')
+    const visitanteSelect = document.getElementById('jogo_visitante_id')
+    const nomeProvisorioMandante = document.getElementById('jogo_nome_provisorio_mandante')
+    const nomeProvisorioVisitante = document.getElementById('jogo_nome_provisorio_visitante')
+
+    if (!tipo || !campoDefinir || !campoMandante || !campoVisitante || !campoNomeProvisorioMandante || !campoNomeProvisorioVisitante) return
+
+    const ehGrupo = tipo.value === 'grupo'
+    const podeDefinir = !ehGrupo
+
+    if (podeDefinir) {
+      campoDefinir.classList.remove('hidden')
+    } else {
+      campoDefinir.classList.add('hidden')
+
+      if (definir) {
+        definir.checked = false
+      }
+    }
+
+    const estaADefinir = podeDefinir && definir && definir.checked
+
+    if (estaADefinir) {
+      campoMandante.classList.add('hidden')
+      campoVisitante.classList.add('hidden')
+      campoNomeProvisorioMandante.classList.remove('hidden')
+      campoNomeProvisorioVisitante.classList.remove('hidden')
+
+      if (mandanteSelect) mandanteSelect.value = ''
+      if (visitanteSelect) visitanteSelect.value = ''
+    } else {
+      campoMandante.classList.remove('hidden')
+      campoVisitante.classList.remove('hidden')
+      campoNomeProvisorioMandante.classList.add('hidden')
+      campoNomeProvisorioVisitante.classList.add('hidden')
+
+      if (nomeProvisorioMandante) nomeProvisorioMandante.value = ''
+      if (nomeProvisorioVisitante) nomeProvisorioVisitante.value = ''
+    }
+  }
+
+  function bindCamposJogo() {
+    const tipo = document.getElementById('jogo_tipo')
+    const definir = document.getElementById('jogo_definir')
+
+    if (tipo) {
+      tipo.removeEventListener('change', toggleCamposJogo)
+      tipo.addEventListener('change', toggleCamposJogo)
+    }
+
+    if (definir) {
+      definir.removeEventListener('change', toggleCamposJogo)
+      definir.addEventListener('change', toggleCamposJogo)
+    }
+
+    toggleCamposJogo()
+  }
+
+  document.addEventListener('DOMContentLoaded', bindCamposJogo)
+  document.addEventListener('turbo:load', bindCamposJogo)
+</script>

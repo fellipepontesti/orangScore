@@ -1,16 +1,11 @@
 class JogosController < ApplicationController
   before_action :authenticate_user!
   before_action :set_jogo, only: %i[ show edit update destroy ]
+  before_action :load_selecoes, only: %i[new create edit update]
 
   def index
-    @jogos = Jogo.all.order(:data)
-
-    @mata_mata = {
-      "Oitavas de final" => 8,
-      "Quartas de final" => 4,
-      "Semifinal" => 2,
-      "Final" => 1
-    }
+    @tipo_ativo = params[:tipo].presence || 'grupo'
+    @jogos = Jogos::List.new(params: { tipo: @tipo_ativo }).call
   end
 
   def show
@@ -26,13 +21,14 @@ class JogosController < ApplicationController
   end
 
   def create
-    @jogo = Jogo.new(jogo_params)
+    @jogo = Jogos::Create.new(params: jogo_params).call
 
     respond_to do |format|
-      if @jogo.save
+      if @jogo.persisted?
         format.html { redirect_to @jogo, notice: "Jogo criado com sucesso!." }
         format.json { render :show, status: :created, location: @jogo }
       else
+        @selecoes = Selecao.order(:nome)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @jogo.errors, status: :unprocessable_entity }
       end
@@ -40,10 +36,10 @@ class JogosController < ApplicationController
   end
 
   def update
-    @selecoes = Selecao.order(:nome)
+    @jogo = Jogos::Update.new(jogo: @jogo, params: jogo_params).call
 
     respond_to do |format|
-      if @jogo.update(jogo_params)
+      if @jogo.errors.empty?
         format.html { redirect_to @jogo, notice: "Jogo atualizado com sucesso!.", status: :see_other }
         format.json { render :show, status: :ok, location: @jogo }
       else
@@ -67,7 +63,23 @@ class JogosController < ApplicationController
       @jogo = Jogo.find(params[:id])
     end
 
+    def load_selecoes
+      @selecoes = Selecao.order(:nome)
+    end
+
     def jogo_params
-      params.require(:jogo).permit(:mandante_id, :visitante_id, :gols_mandante, :gols_visitante, :data)
+      params.require(:jogo).permit(
+        :mandante_id, 
+        :visitante_id, 
+        :gols_mandante, 
+        :gols_visitante, 
+        :data, 
+        :tipo, 
+        :definir,
+        :estadio,
+        :nome_provisorio_mandante,
+        :nome_provisorio_visitante,
+        :status
+      )
     end
 end
