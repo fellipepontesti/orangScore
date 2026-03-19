@@ -1,5 +1,5 @@
 module Exceptions
-  class ServiceResult
+  class ServiceError
     attr_reader :data, :errors
 
     def initialize(success:, data: nil, errors: nil)
