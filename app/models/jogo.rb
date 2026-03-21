@@ -2,6 +2,7 @@ class Jogo < ApplicationRecord
   belongs_to :mandante, class_name: 'Selecao', optional: true
   belongs_to :visitante, class_name: 'Selecao', optional: true
   belongs_to :grupo, optional: true
+  has_many :palpites, dependent: :destroy
 
   enum :tipo, { grupo: 0, segunda_fase: 1, oitavas: 2, quartas: 3, semi: 4, final: 5 }
   enum :status, { programado: 0, em_andamento: 1, finalizado: 2, times_a_definir: 3 }

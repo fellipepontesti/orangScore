@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :palpites
   resources :notificacoes
   root to: "dashboard#index"
 
