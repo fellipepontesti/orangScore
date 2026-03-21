@@ -31,6 +31,16 @@
       class: "btn #{ @tipo_ativo == 'final' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
   </div>
 
+  <% if @tipo_ativo == 'grupo' %>
+    <div class="flex justify-center items-center gap-2 mb-6 flex-wrap">
+      <% ('A'..'L').each do |grupo| %>
+        <%= link_to "Grupo #{grupo}",
+          jogos_path(tipo: :grupo, grupo: grupo),
+          class: "btn btn-sm #{ @grupo_ativo == grupo ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+      <% end %>
+    </div>
+  <% end %>
+
   <div id="tab-grupos">
     <% if @jogos.any? %>
       <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
@@ -41,11 +51,13 @@
               <th>Data</th>
               <th>Local</th>
               <th>Status</th>
+              <th>Palpite</th>
             </tr>
           </thead>
 
           <tbody>
             <% @jogos.each do |jogo| %>
+              <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
               <tr class="hover cursor-pointer hover:bg-primary" onclick="window.location='<%= jogo_path(jogo) %>'">
                 <td class="font-medium">
                   <div class="flex justify-center items-center gap-2">
@@ -110,6 +122,22 @@
                       <%= jogo.status.humanize %>
                     </span>
                   </div>
+                </td>
+
+                <td class="uppercase text-xs font-semibold" onclick="event.stopPropagation()">
+                  <% if jogo.finalizado? || jogo.em_andamento? %>
+                    <span class="badge badge-neutral">Fechado</span>
+                  <% elsif jogo.times_a_definir? %>
+                    <span class="badge badge-neutral">Indisponível</span>
+                  <% elsif palpite.present? %>
+                    <%= link_to "Editar palpite",
+                      edit_palpite_path(palpite),
+                      class: "btn btn-sm bg-warning hover:bg-warning/80 text-white border-none" %>
+                  <% else %>
+                    <%= link_to "Palpitar",
+                      new_palpite_path(jogo_id: jogo.id),
+                      class: "btn btn-sm bg-primary hover:bg-primary/90 text-white border-none" %>
+                  <% end %>
                 </td>
               </tr>
             <% end %>

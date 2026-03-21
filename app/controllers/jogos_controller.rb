@@ -5,7 +5,9 @@ class JogosController < ApplicationController
 
   def index
     @tipo_ativo = params[:tipo].presence || 'grupo'
-    @jogos = Jogos::List.new(params: { tipo: @tipo_ativo }).call
+    @grupo_ativo = @tipo_ativo == 'grupo' ? (params[:grupo].presence || 'A') : nil
+
+    @jogos = Jogos::List.new(params: { tipo: @tipo_ativo, grupo: @grupo_ativo }).call
   end
 
   def show

@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   has_many :ligas, foreign_key: :owner_id
   has_many :liga_membros
+  has_many :palpites, dependent: :destroy
   has_many :ligas_participadas, through: :liga_membros, source: :liga
   belongs_to :selecao_favorita, class_name: 'Selecao', optional: true
   belongs_to :selecao
