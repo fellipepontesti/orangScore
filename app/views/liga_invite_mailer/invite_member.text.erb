@@ -1,0 +1,10 @@
+Convite para participar de liga
+
+Olá, <%= @user.name.presence || @user.email %>!
+
+Você recebeu um convite de <%= @invited_by.name.presence || @invited_by.email %> para participar da liga <%= @liga.nome %>.
+
+Acesse a plataforma para visualizar o convite:
+<%= liga_url(@liga) %>
+
+Caso você não reconheça esse convite, basta ignorar este e-mail.
