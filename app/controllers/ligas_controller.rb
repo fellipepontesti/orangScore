@@ -108,37 +108,16 @@ class LigasController < ApplicationController
 
   def invite_member
     @liga = Liga.find(params[:id])
-    email = params[:email]
 
-    user_invited = User.find_by(email: email)
-
-    unless user_invited
-      redirect_to @liga, alert: "Usuário com esse e-mail não encontrado"
-      return
-    end
-
-    if @liga.users.exists?(user_invited.id)
-      redirect_to @liga, alert: "Esse usuário já faz parte da liga"
-      return
-    end
-
-    LigaMembro.create!(
+    user_invited = Ligas::InviteMember.new(
       liga: @liga,
-      user: user_invited,
-      invited_by_id: current_user.id,
-      status: :invited,
-      role: :member
-    )
+      current_user: current_user,
+      email: params[:email]
+    ).call
 
-    Notificacao.create!(
-      sender_id: current_user.id,
-      user_id: user_invited.id,
-      texto: "Convite paga participar da liga: #{@liga.nome}",
-      tipo: :invite,
-      liga_id: @liga.id
-    )
-
-    redirect_to @liga, notice: "Convite enviado para #{email}"
+    redirect_to @liga, notice: "Convite enviado para #{user_invited.email}"
+  rescue Exceptions::ServiceError => e
+    redirect_to @liga, alert: e.message
   end
 
   def accept_invite

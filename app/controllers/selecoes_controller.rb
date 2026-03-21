@@ -33,7 +33,6 @@ class SelecoesController < ApplicationController
         format.html { redirect_to @selecao, notice: "Seleção criada com sucesso!" }
         format.json { render :show, status: :created, location: @selecao }
       else
-        puts @selecao.errors
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @selecao.errors, status: :unprocessable_entity }
       end
