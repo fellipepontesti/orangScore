@@ -12,12 +12,11 @@ class Selecao < ApplicationRecord
 
   validates :nome, presence: true, uniqueness: {
     message: 'já está sendo utilizado por outra seleção'
-  }
+  }, unless: -> { nome == 'A definir' }
 
   validates :logo, presence: true, uniqueness: {
     message: 'já está sendo utilizada por outra seleção'
-  }
+  }, unless: -> { logo == 'sem-escudo.png' }
   
-  validates :nome, presence: true
   scope :ordenadas, -> { order(pontos: :desc, nome: :asc) }
 end
