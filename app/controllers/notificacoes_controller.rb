@@ -13,14 +13,11 @@ class NotificacoesController < ApplicationController
   end
 
   def new
-    # @notificacao = Notificacao.new
   end
 
-  # GET /notificacoes/1/edit
   def edit
   end
 
-  # POST /notificacoes or /notificacoes.json
   def create
     @notificacao = Notificacao.new(notificacao_params)
 
@@ -35,7 +32,6 @@ class NotificacoesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /notificacoes/1 or /notificacoes/1.json
   def update
     respond_to do |format|
       if @notificacao.update(notificacao_params)
@@ -48,7 +44,6 @@ class NotificacoesController < ApplicationController
     end
   end
 
-  # DELETE /notificacoes/1 or /notificacoes/1.json
   def destroy
     @notificacao.destroy!
 
@@ -58,14 +53,46 @@ class NotificacoesController < ApplicationController
     end
   end
 
+  def accept_admin_invite
+    notificacao = current_user.notificacoes.find(params[:id])
+
+    unless notificacao.admin_invite? && notificacao.unread?
+      redirect_to notificacoes_path, alert: 'Convite inválido.'
+      return
+    end
+
+    liga_membro = notificacao.liga.liga_membros.find_by(user_id: current_user.id)
+
+    unless liga_membro
+      redirect_to notificacoes_path, alert: 'Vínculo com a liga não encontrado.'
+      return
+    end
+
+    liga_membro.admin!
+    notificacao.read!
+
+    redirect_to notificacao.liga, notice: 'Você agora é administrador da liga.'
+  end
+
+  def reject_admin_invite
+    notificacao = current_user.notificacoes.find(params[:id])
+
+    unless notificacao.admin_invite? && notificacao.unread?
+      redirect_to notificacoes_path, alert: 'Convite inválido.'
+      return
+    end
+
+    notificacao.read!
+
+    redirect_to notificacoes_path, notice: 'Convite recusado.'
+  end
+
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_notificacao
       @notificacao = Notificacao.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def notificacao_params
-      params.require(:notificacao).permit(:user_id, :sender_id, :tipo, :texto, :status)
+      params.require(:notificacao).permit(:user_id, :sender_id, :tipo, :texto, :status, :answered)
     end
 end

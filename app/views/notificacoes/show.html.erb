@@ -5,6 +5,21 @@
 
   <div class="bg-base-100 shadow-md rounded-box p-8">
     <%= render partial: @notificacao.partial_name, locals: { notificacao: @notificacao } %>
+    <% if @notificacao.tipo == "admin_invite" && @notificacao.answered == false %>
+      <div class="flex gap-4 mt-6">
+        
+        <%= button_to "Aceitar",
+          aceitar_admin_liga_path(@notificacao.liga_id),
+          method: :post,
+          class: "btn bg-success hover:bg-success/80 text-white border-none" %>
+
+        <%= button_to "Recusar",
+          recusar_admin_liga_path(@notificacao.liga_id),
+          method: :post,
+          class: "btn bg-error hover:bg-error/80 text-white border-none" %>
+
+      </div>
+    <% end %>
     <div class="p-12"></div>
     <%= link_to "Voltar", notificacoes_path,
           class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90! inline-block font-medium" %>

@@ -6,7 +6,7 @@ class LigasController < ApplicationController
     if current_user.root?
       @ligas = Liga.all
     else 
-      @ligas = Liga.joins(:liga_membros).where(liga_membros: { user_id: current_user.id })
+      @ligas = Liga.joins(:liga_membros).where(liga_membros: { user_id: current_user.id, status: 1 })
     end
   end
 
@@ -27,42 +27,52 @@ class LigasController < ApplicationController
     @pode_convidar = @meu_vinculo&.role.in?(%w[owner admin])
   end
 
-  def quit
-    @liga = Liga.find(params[:id])
+  def accept_admin
+    liga = Liga.find(params[:id])
 
-    meu_vinculo = @liga.liga_membros.find_by!(user_id: current_user.id)
+    liga_membro = liga.liga_membros.find_by(user_id: current_user.id)
 
-    ActiveRecord::Base.transaction do
-
-      # Se NÃO for owner → apenas sai da liga
-      unless meu_vinculo.owner?
-        meu_vinculo.destroy!
-        redirect_to ligas_path, notice: "Você saiu da liga."
-        return
-      end
-
-      # Se for owner, busca o membro mais antigo (exceto ele)
-      novo_owner = @liga.liga_membros
-        .where.not(id: meu_vinculo.id)
-        .order(:created_at)
-        .first
-
-      # Se existir outro membro → transfere ownership
-      if novo_owner
-        novo_owner.update!(role: :owner)
-        meu_vinculo.destroy!
-
-        redirect_to ligas_path,
-          notice: "Você saiu da liga. A liga foi transferida para: #{novo_owner.user.name}."
-        return
-      end
-
-      # Se NÃO existir outro membro → remove a liga
-      @liga.destroy!
-
-      redirect_to ligas_path,
-        notice: "Você saiu da liga. Como não havia outros membros, a liga foi encerrada."
+    unless liga_membro
+      redirect_to notificacoes_path, alert: "Vínculo não encontrado"
+      return
     end
+
+    liga_membro.update!(role: :admin)
+
+    current_user.notificacoes
+                .where(liga: liga, tipo: :admin_invite)
+                .update_all(status: Notificacao.statuses[:read])
+
+    redirect_to liga_path(liga), notice: "Agora você é administrador da liga."
+  end
+
+  def accept_admin
+    liga = Liga.find(params[:id])
+
+    liga_membro = liga.liga_membros.find_by(user_id: current_user.id)
+
+    unless liga_membro
+      redirect_to notificacoes_path, alert: "Vínculo não encontrado"
+      return
+    end
+
+    liga_membro.update!(role: :admin)
+
+    current_user.notificacoes
+                .where(liga: liga, tipo: :admin_invite)
+                .update_all(answered: true)
+
+    redirect_to liga_path(liga), notice: "Agora você é administrador da liga."
+  end
+
+  def recuse_admin
+    liga = Liga.find(params[:id])
+
+    current_user.notificacoes
+                .where(liga: liga, tipo: :admin_invite)
+                .update_all(answered: true)
+
+    redirect_to notificacoes_path, notice: "Convite de administrador recusado."
   end
 
   def remove_member
@@ -129,13 +139,13 @@ class LigasController < ApplicationController
   end
 
   def recuse_invite
-    liga = Liga.find(params[:id])
-
-    current_user.notificacoes
-                .where(notificavel: liga, tipo: :convite_liga)
-                .update_all(status: :read)
+    Ligas::RecuseInvite
+      .new(params[:id], current_user.id)
+      .call
 
     redirect_to notificacoes_path, notice: "Convite recusado."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to notificacoes_path, alert: "Convite não encontrado."
   end
 
   def new
@@ -170,24 +180,15 @@ class LigasController < ApplicationController
   def set_admin
     @liga = Liga.find(params[:id])
 
-    meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
+    liga_membro = Ligas::InviteAdmin.new(
+      liga: @liga,
+      current_user: current_user,
+      liga_membro_id: params[:liga_membro_id]
+    ).call
 
-    unless meu_vinculo&.role.in?(%w[owner])
-      redirect_to @liga, alert: "Você não tem permissão para promover membros."
-      return
-    end
-
-    liga_membro = @liga.liga_membros.find_by(id: params[:liga_membro_id])
-    contexto = ""
-    if liga_membro.admin? 
-      liga_membro.member!
-      contexto = "membro"
-    else
-      liga_membro.admin!
-      contexto = "administrador"
-    end
-
-    redirect_to @liga, notice: "Usuário #{liga_membro.user.name} agora é #{contexto} da liga."
+    redirect_to @liga, notice: "Convite para administrador enviado para #{liga_membro.user.name}."
+  rescue Exceptions::ServiceError => e
+    redirect_to @liga, alert: e.message
   end
 
   def update
@@ -202,7 +203,6 @@ class LigasController < ApplicationController
     end
   end
 
-  # DELETE /ligas/1 or /ligas/1.json
   def destroy
     @liga.destroy!
 
@@ -217,7 +217,6 @@ class LigasController < ApplicationController
       @liga = Liga.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def liga_params
       params.require(:liga).permit(:owner_id, :nome)
     end

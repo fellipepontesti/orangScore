@@ -1,0 +1,24 @@
+<li class="list-row flex items-center justify-between">
+  <div>
+    <p class="font-medium"><%= notificacao.texto %></p>
+    <p class="text-sm opacity-70">
+      Liga: <%= notificacao.liga.nome %>
+    </p>
+  </div>
+
+  <% if notificacao.unread? %>
+    <div class="flex gap-2">
+      <%= button_to "Aceitar",
+        accept_admin_invite_notificacao_path(notificacao),
+        method: :patch,
+        class: "rounded-md px-4 py-2 bg-primary hover:bg-primary/80 text-white font-bold" %>
+
+      <%= button_to "Recusar",
+        reject_admin_invite_notificacao_path(notificacao),
+        method: :patch,
+        class: "rounded-md px-4 py-2 bg-error hover:bg-error/80 text-white font-bold" %>
+    </div>
+  <% else %>
+    <span class="badge badge-neutral">Respondido</span>
+  <% end %>
+</li>
