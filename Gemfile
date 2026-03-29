@@ -54,19 +54,17 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-
+  gem "debug"
   gem 'dotenv-rails'
 end
 
 group :test do
-  gem 'dotenv-rails'
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
 end
 
 gem "tailwindcss-rails", "~> 4.4"
-
 gem "devise", "~> 4.9"
-
 gem 'will_paginate', '~> 3.1'
+gem "resend"

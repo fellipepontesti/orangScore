@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_29_143614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,8 +22,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
   end
 
   create_table "jogos", force: :cascade do |t|
-    t.bigint "mandante_id", null: false
-    t.bigint "visitante_id", null: false
+    t.bigint "mandante_id"
+    t.bigint "visitante_id"
     t.integer "gols_mandante", default: 0
     t.integer "gols_visitante", default: 0
     t.datetime "data"
@@ -31,6 +31,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
     t.datetime "updated_at", null: false
     t.integer "tipo", default: 0, null: false
     t.bigint "grupo_id"
+    t.boolean "definir", default: false, null: false
+    t.string "estadio"
+    t.string "nome_provisorio_mandante"
+    t.string "nome_provisorio_visitante"
+    t.integer "status", default: 0
     t.index ["grupo_id"], name: "index_jogos_on_grupo_id"
     t.index ["mandante_id"], name: "index_jogos_on_mandante_id"
     t.index ["visitante_id"], name: "index_jogos_on_visitante_id"
@@ -67,6 +72,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "liga_id"
+    t.boolean "answered", default: true
     t.index ["user_id"], name: "index_notificacoes_on_user_id"
   end
 
@@ -114,6 +120,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_16_031859) do
     t.bigint "selecao_id"
     t.string "password_recovery_token"
     t.datetime "password_recovery_sent_at"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string "unconfirmed_email"
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["selecao_id"], name: "index_users_on_selecao_id"

@@ -1,0 +1,72 @@
+<div class="w-full max-w-2xl mx-auto px-4">
+  <div class="rounded-box shadow-lg bg-base-100 p-8">
+    <%= form_with(model: palpite, class: "space-y-8") do |form| %>
+      <%= form.hidden_field :jogo_id %>
+
+      <% if palpite.errors.any? %>
+        <div class="alert alert-error text-sm">
+          <ul class="list-disc ml-5">
+            <% palpite.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if @jogo.present? %>
+        <div class="rounded-box bg-base-200 p-5 text-center">
+          <div class="text-sm opacity-70 mb-2">
+            Jogo selecionado
+          </div>
+
+          <div class="flex items-center justify-center gap-3 text-2xl font-bold">
+            <span><%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "[ A definir ]" %></span>
+            <span class="opacity-60">x</span>
+            <span><%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "[ A definir ]" %></span>
+          </div>
+
+          <div class="text-sm opacity-70 mt-2">
+            <%= @jogo.data.strftime("%d/%m/%Y %H:%M") %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="flex items-center justify-center gap-8">
+        <div class="flex flex-col items-center gap-2">
+          <span class="text-sm font-medium opacity-80">
+            <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
+          </span>
+
+          <%= form.number_field :gols_casa,
+            min: 0,
+            max: 99,
+            class: "input input-ghost bg-base-300 w-16 h-16 text-center text-2xl font-bold #{palpite.errors[:gols_casa].any? ? 'input-error' : ''}" %>
+        </div>
+
+        <div class="text-3xl font-bold opacity-70 mt-6">
+          x
+        </div>
+
+        <div class="flex flex-col items-center gap-2">
+          <span class="text-sm font-medium opacity-80">
+            <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+          </span>
+
+          <%= form.number_field :gols_fora,
+            min: 0,
+            max: 99,
+            class: "input input-ghost bg-base-300 w-16 h-16 text-center text-2xl font-bold #{palpite.errors[:gols_fora].any? ? 'input-error' : ''}" %>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-4 pt-2">
+        <%= link_to "Voltar",
+          jogos_path(tipo: @jogo&.tipo || params[:tipo]),
+          class: "rounded-md px-5 py-3 bg-error hover:bg-error/80 font-bold text-white min-w-32 text-center" %>
+
+        <%= form.submit "Salvar palpite",
+          class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-bold text-white min-w-40" %>
+      </div>
+    <% end %>
+  </div>
+</div>

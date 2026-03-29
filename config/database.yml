@@ -13,4 +13,5 @@ test:
 
 production:
   <<: *default
-  database: storage/production.sqlite3
+  database: <%= ENV["DB_NAME"] %>
+  username: <%= ENV["DB_USER"] %>

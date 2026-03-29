@@ -1,0 +1,120 @@
+<div class="rounded-box shadow-lg bg-base-100 p-6 hover:bg-base-200/40 transition">
+  <div class="flex items-start justify-between gap-4">
+    <div class="flex-1">
+      <div class="text-sm uppercase font-semibold opacity-60 mb-3">
+        Palpite #<%= palpite.id %>
+      </div>
+
+      <div class="flex items-center justify-center gap-4 mb-4 text-center">
+        <div class="flex flex-col items-center min-w-28">
+          <div class="avatar mb-2">
+            <div class="mask mask-squircle h-12 w-12">
+              <% if palpite.jogo.mandante&.logo.present? %>
+                <%= image_tag "selecoes/#{palpite.jogo.mandante.logo}" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
+                  ?
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <span class="font-bold">
+            <%= palpite.jogo.mandante&.nome || palpite.jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
+          </span>
+        </div>
+
+        <div class="flex flex-col items-center">
+          <div class="text-xs uppercase font-semibold opacity-60 mb-1">
+            Seu placar
+          </div>
+
+          <div class="text-3xl font-bold">
+            <%= palpite.gols_casa %>
+            <span class="mx-2 opacity-60">x</span>
+            <%= palpite.gols_fora %>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center min-w-28">
+          <div class="avatar mb-2">
+            <div class="mask mask-squircle h-12 w-12">
+              <% if palpite.jogo.visitante&.logo.present? %>
+                <%= image_tag "selecoes/#{palpite.jogo.visitante.logo}" %>
+              <% else %>
+                <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
+                  ?
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <span class="font-bold">
+            <%= palpite.jogo.visitante&.nome || palpite.jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="rounded-box bg-base-200 p-3 text-center">
+          <div class="text-xs uppercase font-semibold opacity-60">Data</div>
+          <div class="font-bold">
+            <%= palpite.jogo.data.strftime("%d/%m/%Y %H:%M") %>
+          </div>
+        </div>
+
+        <div class="rounded-box bg-base-200 p-3 text-center">
+          <div class="text-xs uppercase font-semibold opacity-60">Estádio</div>
+          <div class="font-bold truncate">
+            <%= palpite.jogo.estadio.presence || "[ Não definido ]" %>
+          </div>
+        </div>
+
+        <div class="rounded-box bg-base-200 p-3 text-center">
+          <div class="text-xs uppercase font-semibold opacity-60">Status</div>
+          <div class="flex items-center justify-center gap-2 font-bold">
+            <div class="inline-grid *:[grid-area:1/1]">
+              <% if palpite.jogo.programado? %>
+                <div class="status status-info animate-ping"></div>
+                <div class="status status-info"></div>
+              <% elsif palpite.jogo.em_andamento? %>
+                <div class="status status-success animate-ping"></div>
+                <div class="status status-success"></div>
+              <% elsif palpite.jogo.finalizado? %>
+                <div class="status status-error animate-ping"></div>
+                <div class="status status-error"></div>
+              <% elsif palpite.jogo.times_a_definir? %>
+                <div class="status status-primary animate-ping"></div>
+                <div class="status status-primary"></div>
+              <% end %>
+            </div>
+
+            <span><%= palpite.jogo.status.humanize %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center sm:justify-end gap-3 pt-6">
+    <%= link_to "Detalhes",
+      palpite_path(palpite),
+      class: "rounded-md px-4 py-3 bg-base-300 hover:bg-base-300/80 font-bold" %>
+
+    <% if palpite.jogo.finalizado? || palpite.jogo.em_andamento? %>
+      <button class="rounded-md px-4 py-3 bg-base-300 text-base-content/50 font-bold cursor-not-allowed" disabled>
+        Editar bloqueado
+      </button>
+    <% else %>
+      <%= link_to "Editar",
+        edit_palpite_path(palpite),
+        class: "rounded-md px-4 py-3 bg-warning hover:bg-warning/80 text-white font-bold" %>
+    <% end %>
+
+    <%= button_to "Excluir",
+      palpite_path(palpite),
+      method: :delete,
+      class: "rounded-md px-4 py-3 bg-error hover:bg-error/80 text-white font-bold cursor-pointer",
+      data: { turbo_confirm: "Tem certeza que deseja excluir este palpite?" } %>
+  </div>
+</div>

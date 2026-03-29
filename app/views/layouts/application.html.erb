@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= asset_path('icons/oslogo.png') %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= asset_path('icons/oslogo.png') %>">
     <title>OrangScore</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
@@ -36,17 +38,29 @@
           </div>
 
           <% if current_user %>
+            <% unread_count = current_user.notificacoes.where(status: :unread).count %>
+
             <div class="flex gap-2">
               <div class="dropdown dropdown-end">
-                <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary avatar">
-                  <span>Seu nome</span>
-                  <div class="bg-base-300 text-neutral-content w-8 rounded-full flex items-center justify-center">
+                <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary relative flex items-center gap-2 overflow-visible">
+                  <span>
+                    <%= current_user.name %>
+                  </span>
+
+                  <div class="bg-base-300 text-neutral-content w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                     <span class="font-semibold"><%= current_user.name.first.upcase %></span>
                   </div>
+
+                  <% if unread_count > 0 %>
+                    <span class="absolute -top-2 -right-2 bg-error text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center z-10">
+                      <%= unread_count > 9 ? "9+" : unread_count %>
+                    </span>
+                  <% end %>
                 </div>
+
                 <ul
                   tabindex="-1"
-                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52"
+                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52 z-[999]"
                 >
                   <li class="menu-title">
                     <span class="text-xs opacity-70">
@@ -55,21 +69,15 @@
                   </li>
 
                   <li>
-                    <%= link_to "Notificações",
-                      notificacoes_path,
-                      class: "text" %>
-                  </li>
+                    <%= link_to notificacoes_path, class: "flex justify-between items-center" do %>
+                      <span>Notificações</span>
 
-                  <li>
-                    <a class="justify-between">
-                      Perfil
-                    </a>
-                  </li>
-
-                  <li>
-                    <a>
-                      Configurações
-                    </a>
+                      <% if unread_count > 0 %>
+                        <span class="badge badge-error text-white text-xs">
+                          <%= unread_count > 9 ? "9+" : unread_count %>
+                        </span>
+                      <% end %>
+                    <% end %>
                   </li>
 
                   <div class="divider my-1"></div>
@@ -78,14 +86,12 @@
                     <%= link_to "Sair",
                       destroy_user_session_path,
                       class: "text-error",
-                      data: {
-                        turbo_method: :delete
-                      } %>
+                      data: { turbo_method: :delete } %>
                   </li>
                 </ul>
               </div>
             </div>
-          <%end%>
+          <% end %>
         </div>
 
         <main class="flex-1 flex flex-col p-6 overflow-auto bg-base-300">
@@ -196,9 +202,6 @@
           </div>
         </div>
       <%end%>
-
     </div>
-
   </body>
-
 </html>

@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
-  resources :notificacoes
   root to: "dashboard#index"
+
+  resources :palpites
+  resources :notificacoes do
+    member do
+      patch :accept_admin_invite
+      patch :reject_admin_invite
+    end
+  end
 
   devise_for :users
   get  '/password/forgot', to: 'passwords#new', as: :new_password
@@ -8,6 +15,8 @@ Rails.application.routes.draw do
 
   get   '/password/reset/:token', to: 'passwords#edit',   as: :edit_password
   patch '/password/reset/:token', to: 'passwords#update'
+  post '/ligas/:id/aceitar_admin', to: 'ligas#accept_admin', as: :aceitar_admin_liga
+  post '/ligas/:id/recusar_admin', to: 'ligas#recuse_admin', as: :recusar_admin_liga
 
   resources :ligas do
       member do

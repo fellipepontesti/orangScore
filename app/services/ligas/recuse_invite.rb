@@ -6,12 +6,19 @@ module Ligas
     end
 
     def call
-      @liga_membro = LigaMembro.find_by!(
-        user_id: @user_id, 
-        liga_id: @liga_id
-      )
+      ActiveRecord::Base.transaction do
+        liga_membro = LigaMembro.find_by!(
+          user_id: @user_id,
+          liga_id: @liga_id,
+          status: :invited
+        )
 
-      @liga_membro.destroy!
+        liga_membro.destroy!
+
+        Notificacao
+          .where(user_id: @user_id, liga_id: @liga_id, tipo: :invite, status: :unread)
+          .update_all(status: Notificacao.statuses[:read])
+      end
     end
   end
 end
