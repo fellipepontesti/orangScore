@@ -1,11 +1,13 @@
 module Exceptions
-  class ServiceError
+  class ServiceError < StandardError
     attr_reader :data, :errors
 
-    def initialize(success:, data: nil, errors: nil)
+    def initialize(message = nil, success: false, data: nil, errors: nil)
+      super(message)
+
       @success = success
       @data = data
-      @errors = errors
+      @errors = errors || message
     end
 
     def success?
