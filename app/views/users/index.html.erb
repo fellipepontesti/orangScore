@@ -1,0 +1,181 @@
+<% content_for :title, "Usuários" %>
+
+<div class="w-full max-w-6xl mx-auto px-4">
+  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
+    Usuários
+  </h1>
+
+  <dialog id="modal_filtros_usuarios" class="modal">
+    <div class="modal-box max-w-lg">
+
+      <h3 class="font-bold text-lg mb-4 text-center">
+        Filtrar usuários
+      </h3>
+
+      <%= form_with url: users_path, method: :get do |f| %>
+
+        <div class="space-y-4">
+
+          <!-- 🔍 Nome -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Nome</span>
+            </label>
+            <%= f.text_field :nome,
+              value: params[:nome],
+              class: "input input-bordered w-full",
+              placeholder: "Digite o nome" %>
+          </div>
+
+          <!-- 📧 Email -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Email</span>
+            </label>
+            <%= f.text_field :email,
+              value: params[:email],
+              class: "input input-bordered w-full",
+              placeholder: "Digite o email" %>
+          </div>
+
+          <!-- 🌍 Seleção -->
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Seleção</span>
+            </label>
+            <%= f.select :selecao,
+              options_for_select(User.distinct.pluck(:logo_selecao), params[:selecao]),
+              { include_blank: "Todas" },
+              class: "select select-bordered w-full" %>
+          </div>
+
+        </div>
+
+        <!-- 🔘 Ações -->
+        <div class="modal-action flex justify-between mt-6">
+
+          <%= link_to "Limpar",
+            users_path,
+            class: "btn btn-ghost bg-error text-white" %>
+
+          <div class="flex gap-2">
+            <button type="button"
+              class="btn"
+              onclick="modal_filtros_usuarios.close()">
+              Cancelar
+            </button>
+
+            <%= f.submit "Aplicar",
+              class: "btn btn-primary" %>
+          </div>
+
+        </div>
+
+      <% end %>
+
+    </div>
+  </dialog>
+
+  <div class="flex justify-end mb-4">
+    <button
+      class="btn btn-primary p-6"
+      onclick="modal_filtros_usuarios.showModal()">
+      Filtros
+    </button>
+  </div>
+
+  <% if @usuarios.any? %>
+    <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
+      <table class="table table-zebra w-full text-center">
+        
+        <thead>
+          <tr class="text-base">
+            <th>#</th>
+            <th class="text-left">Nome</th>
+            <th>Email</th>
+            <th>Pontos</th>
+            <th>Seleção</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% @usuarios.each_with_index do |usuario, i| %>
+            <tr class="hover cursor-pointer"
+                onclick="window.location='<%= edit_user_path(usuario) %>'">
+
+              <td class="font-bold">
+                <%= i + 1 %>
+              </td>
+
+              <td class="text-left font-medium">
+                <%= usuario.name %>
+              </td>
+
+              <td class="text-sm text-gray-500">
+                <%= usuario.email %>
+              </td>
+
+              <td class="font-semibold">
+                <%= usuario.pontos %>
+              </td>
+
+              <td>
+                <div class="flex justify-center">
+                  <div class="avatar">
+                    <div class="mask mask-squircle h-10 w-10">
+                      <%= image_tag "selecoes/#{usuario.logo_selecao}" %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div class="flex justify-center gap-3">
+
+                  <%= link_to edit_user_path(usuario),
+                    class: "hover:scale-110 transition" do %>
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-6 w-6 invert transition">
+                        <%= image_tag "icons/editar.png" %>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <%= button_to user_path(usuario),
+                    method: :delete,
+                    form: {
+                      data: {
+                        turbo_confirm: "Remover usuário?"
+                      }
+                    },
+                    class: "bg-transparent hover:scale-110 transition" do %>
+
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-6 w-6 invert">
+                        <%= image_tag "icons/delete.png" %>
+                      </div>
+                    </div>
+
+                  <% end %>
+
+                </div>
+              </td>
+
+            </tr>
+          <% end %>
+        </tbody>
+
+      </table>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">
+      Nenhum usuário encontrado.
+    </p>
+  <% end %>
+
+  <div class="mt-10 flex justify-center">
+    <%= link_to "Voltar", root_path,
+      class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
+  </div>
+</div>

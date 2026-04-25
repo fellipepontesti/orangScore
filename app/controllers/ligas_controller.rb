@@ -14,6 +14,7 @@ class LigasController < ApplicationController
     @membros_ativos = @liga.liga_membros
                           .includes(:user)
                           .where(status: :accepted)
+                          .order('users.pontos DESC')
 
     @membros_pendentes = @liga.liga_membros
                               .includes(:user)
