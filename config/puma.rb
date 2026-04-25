@@ -1,5 +1,5 @@
 # Número de threads por worker
-max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
+max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 2 }
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
@@ -7,7 +7,7 @@ threads min_threads_count, max_threads_count
 environment ENV.fetch("RAILS_ENV") { "development" }
 
 # Número de workers (processos)
-workers ENV.fetch("WEB_CONCURRENCY") { 2 }
+workers ENV.fetch("WEB_CONCURRENCY") { 1 }
 
 # Carrega a aplicação antes de criar workers
 preload_app!
