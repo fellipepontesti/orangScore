@@ -20,7 +20,7 @@ FROM base as build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libyaml-dev
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libyaml-dev nodejs npm
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
