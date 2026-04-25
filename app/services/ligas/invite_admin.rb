@@ -9,7 +9,7 @@ module Ligas
     def call
       meu_vinculo = liga.liga_membros.find_by(user_id: current_user.id)
 
-      unless meu_vinculo&.owner?
+      unless meu_vinculo&.owner? || current_user.root?
         raise Exceptions::ServiceError, 'Você não tem permissão para promover membros.'
       end
 

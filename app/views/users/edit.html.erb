@@ -1,0 +1,67 @@
+<% content_for :title, "Editar usuário" %>
+
+<div class="w-full max-w-3xl mx-auto px-4">
+
+  <h1 class="font-bold text-4xl text-center mb-8 p-4">
+    Editar usuário
+  </h1>
+
+  <div class="bg-base-100 shadow-lg rounded-box p-8">
+
+    <%= form_with model: @usuario do |f| %>
+
+      <!-- 🔹 Nome -->
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Nome</span>
+        </label>
+        <%= f.text_field :name,
+          class: "input input-bordered w-full" %>
+      </div>
+
+      <!-- 🔹 Email -->
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Email</span>
+        </label>
+        <%= f.email_field :email,
+          class: "input input-bordered w-full" %>
+      </div>
+
+      <!-- 🔹 Pontos -->
+      <div class="form-control mb-4">
+        <label class="label">
+          <span class="label-text">Pontos</span>
+        </label>
+        <%= f.number_field :pontos,
+          class: "input input-bordered w-full" %>
+      </div>
+
+      <!-- 🔹 Seleção -->
+      <div class="form-control mb-6">
+        <label class="label">
+          <span class="label-text">Seleção favorita</span>
+        </label>
+        <%= f.select :logo_selecao,
+          options_for_select(User.distinct.pluck(:logo_selecao), @usuario.logo_selecao),
+          {},
+          class: "select select-bordered w-full" %>
+      </div>
+
+      <!-- 🔘 Botões -->
+      <div class="flex justify-between">
+
+        <%= link_to "Voltar",
+          usuarios_path,
+          class: "btn btn-ghost" %>
+
+        <%= f.submit "Salvar alterações",
+          class: "btn btn-primary" %>
+
+      </div>
+
+    <% end %>
+
+  </div>
+
+</div>

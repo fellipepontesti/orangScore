@@ -14,13 +14,11 @@ preload_app!
 
 # Lógica inteligente para o Socket ou Porta
 if ENV.fetch("RAILS_ENV", "development") == "production"
-  bind "unix:///home/upontes/orangScore/tmp/sockets/puma.sock"
-  # No servidor, usamos caminhos absolutos para o systemd não se perder
-  pidfile "/home/upontes/orangScore/tmp/pids/puma.pid"
-  state_path "/home/upontes/orangScore/tmp/pids/puma.state"
+  bind "unix://#{Dir.pwd}/tmp/sockets/puma.sock"
+  pidfile "#{Dir.pwd}/tmp/pids/puma.pid"
+  state_path "#{Dir.pwd}/tmp/pids/puma.state"
 else
   port ENV.fetch("PORT") { 3000 }
-  # Localmente, usamos caminhos relativos à pasta do projeto
   pidfile "tmp/pids/server.pid"
 end
 

@@ -141,7 +141,7 @@
             <th>Pontuação</th>
             <th>Seleção favorita</th>
             <th>Status</th>
-            <% if @meu_vinculo&.role.in?(%w[owner admin])%>
+            <% if current_user.root? || @meu_vinculo&.role.in?(%w[owner admin])%>
               <th>Ações</th>
             <% end %>
           </tr>
@@ -183,11 +183,11 @@
                       @meu_vinculo&.role == "admin" &&
                       liga_membro.status.in?(%w[invited accepted]) %>
 
-                  <% if is_owner || is_admin_allowed %>
+                  <% if current_user.root? || is_owner || is_admin_allowed %>
 
                     <div class="flex justify-center items-center gap-3">
 
-                      <% if is_owner %>
+                      <% if is_owner || current_user.root? %>
                         <% if liga_membro.role == "admin"%>
                           <% img_name="adm_red"%>
                           <% message="Tem certeza que deseja remover o usuário #{liga_membro.user.name} da função de administrador da sua liga?"%>
@@ -217,7 +217,7 @@
                           is_owner ?
                             "Remover este membro da liga?" :
                             "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
-                      <% if is_owner || current_user.id != liga_membro.user_id %>
+                      <% if current_user.root? || is_owner || current_user.id != liga_membro.user_id %>
                         <%= button_to remove_member_liga_path(
                               @liga,
                               liga_membro_id: liga_membro.id
