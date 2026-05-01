@@ -1,7 +1,21 @@
 Rails.application.routes.draw do
-  root to: "dashboard#index"
+  devise_for :users, path: "", path_names: {
+    sign_in: "login",
+    sign_out: "logout"
+  }
+
+  authenticated :user do
+    root to: "dashboard#index", as: :authenticated_root
+  end
+
+  unauthenticated do
+    devise_scope :user do
+      root to: "devise/sessions#new"
+    end
+  end
 
   resources :palpites
+
   resources :notificacoes do
     member do
       patch :accept_admin_invite
@@ -9,7 +23,6 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy]
 
   get  '/password/forgot', to: 'passwords#new', as: :new_password
@@ -17,18 +30,19 @@ Rails.application.routes.draw do
 
   get   '/password/reset/:token', to: 'passwords#edit',   as: :edit_password
   patch '/password/reset/:token', to: 'passwords#update'
+
   post '/ligas/:id/aceitar_admin', to: 'ligas#accept_admin', as: :aceitar_admin_liga
   post '/ligas/:id/recusar_admin', to: 'ligas#recuse_admin', as: :recusar_admin_liga
 
   resources :ligas do
-      member do
-        post :set_admin
-        post :accept_invite
-        post :recuse_invite
-        post :invite_member
-        match :remove_member, via: [:delete, :patch]
-        delete :quit
-      end
+    member do
+      post :set_admin
+      post :accept_invite
+      post :recuse_invite
+      post :invite_member
+      match :remove_member, via: [:delete, :patch]
+      delete :quit
+    end
   end
   
   resources :jogos do
@@ -38,6 +52,7 @@ Rails.application.routes.draw do
       patch :finish
     end
   end
+
   resources :grupos
   resources :selecoes
 
