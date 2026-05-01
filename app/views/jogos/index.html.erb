@@ -75,10 +75,10 @@
 
   <% if @tipo_ativo == 'grupo' %>
     <div class="flex justify-center items-center gap-2 mb-6 flex-wrap">
-      <% ('A'..'L').each do |grupo| %>
-        <%= link_to "Grupo #{grupo}",
-          jogos_path(tipo: :grupo, grupo: grupo),
-          class: "btn btn-sm #{ @grupo_ativo == grupo ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+      <% Grupo.order(:nome).each do |grupo| %>
+        <%= link_to grupo.nome,
+          jogos_path(tipo: :grupo, grupo: grupo.id),
+          class: "btn btn-sm #{ @grupo_ativo.to_s == grupo.id.to_s ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
       <% end %>
     </div>
   <% end %>
