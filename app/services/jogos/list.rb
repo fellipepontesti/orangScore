@@ -17,17 +17,16 @@ module Jogos
 
     def filtered_query(query)
       if params[:tipo].present?
-        query = query.where(tipo: Jogo.tipos[params[:tipo]])
+        query = query.where(tipo: params[:tipo])
       end
 
       if params[:tipo] == 'grupo' && params[:grupo].present?
-        query = query.joins(:mandante)
-                     .joins("INNER JOIN grupos ON grupos.id = selecoes.grupo_id")
-                     .where(grupos: { nome: params[:grupo] })
+        grupo = Grupo.find_by(nome: params[:grupo])
+        query = query.where(grupo_id: grupo.id) if grupo
       end
 
       if params[:status].present?
-        query = query.where(status: Jogo.statuses[params[:status]])
+        query = query.where(status: params[:status])
       end
 
       if params[:start_date].present?
