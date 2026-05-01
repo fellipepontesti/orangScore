@@ -72,9 +72,9 @@ class SelecoesController < ApplicationController
     end
 
     def logos_disponiveis
-      @logos = Dir.glob(
-        Rails.root.join('app/assets/images/selecoes/*')
-      ).map { |path| File.basename(path) }
+      @logos = Dir.entries(Rails.root.join('app/assets/images/selecoes'))
+        .select { |f| f.ends_with?('.png') }
+        .sort_by { |f| f.downcase }
     end
 
     def load_grupos
