@@ -140,6 +140,18 @@
             method: :delete,
             class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80 font-medium",
             data: { turbo_confirm: "Tem certeza?" } %>
+
+          <% if jogo.programado? %>
+            <%= button_to "Iniciar Jogo",
+              start_jogo_path(jogo),
+              method: :patch,
+              class: "rounded-md px-5 py-3 text-white bg-success hover:bg-success/80 font-medium",
+              data: { turbo_confirm: "Deseja iniciar a partida? Todos os palpiteiros serão notificados." } %>
+          <% elsif jogo.em_andamento? %>
+            <%= link_to "Finalizar Jogo",
+              finalize_jogo_path(jogo),
+              class: "rounded-md px-5 py-3 text-white bg-info hover:bg-info/80 font-medium" %>
+          <% end %>
         <% end %>
       </div>
 

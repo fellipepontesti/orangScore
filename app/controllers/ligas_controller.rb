@@ -5,8 +5,12 @@ class LigasController < ApplicationController
   def index
     if current_user.root?
       @ligas = Liga.all
-    else 
+    else
       @ligas = Liga.joins(:liga_membros).where(liga_membros: { user_id: current_user.id, status: 1 })
+    end
+
+    if params[:nome].present?
+      @ligas = @ligas.where('ligas.nome ILIKE ?', "%#{params[:nome]}%")
     end
   end
 
@@ -30,48 +34,16 @@ class LigasController < ApplicationController
 
   def accept_admin
     liga = Liga.find(params[:id])
-
-    liga_membro = liga.liga_membros.find_by(user_id: current_user.id)
-
-    unless liga_membro
-      redirect_to notificacoes_path, alert: "Vínculo não encontrado"
-      return
-    end
-
-    liga_membro.update!(role: :admin)
-
-    current_user.notificacoes
-                .where(liga: liga, tipo: :admin_invite)
-                .update_all(status: Notificacao.statuses[:read])
+    Ligas::AcceptAdmin.new(liga: liga, current_user: current_user).call
 
     redirect_to liga_path(liga), notice: "Agora você é administrador da liga."
-  end
-
-  def accept_admin
-    liga = Liga.find(params[:id])
-
-    liga_membro = liga.liga_membros.find_by(user_id: current_user.id)
-
-    unless liga_membro
-      redirect_to notificacoes_path, alert: "Vínculo não encontrado"
-      return
-    end
-
-    liga_membro.update!(role: :admin)
-
-    current_user.notificacoes
-                .where(liga: liga, tipo: :admin_invite)
-                .update_all(answered: true)
-
-    redirect_to liga_path(liga), notice: "Agora você é administrador da liga."
+  rescue Exceptions::ServiceError => e
+    redirect_to notificacoes_path, alert: e.message
   end
 
   def recuse_admin
     liga = Liga.find(params[:id])
-
-    current_user.notificacoes
-                .where(liga: liga, tipo: :admin_invite)
-                .update_all(answered: true)
+    Ligas::RecuseAdmin.new(liga: liga, current_user: current_user).call
 
     redirect_to notificacoes_path, notice: "Convite de administrador recusado."
   end
@@ -79,42 +51,19 @@ class LigasController < ApplicationController
   def remove_member
     @liga = Liga.find(params[:id])
 
-    meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
+    result = Ligas::RemoveMember.new(
+      liga: @liga, 
+      current_user: current_user, 
+      liga_membro_id: params[:liga_membro_id]
+    ).call
 
-    unless meu_vinculo&.role.in?(%w[owner admin])
-      redirect_to @liga, alert: "Você não tem permissão para remover membros."
-      return
-    end
-
-    liga_membro = @liga.liga_membros.find_by(id: params[:liga_membro_id])
-
-    if liga_membro.nil?
-      redirect_to @liga, alert: "Membro não encontrado."
-      return
-    end
-
-    if liga_membro.role == "owner"
-      redirect_to @liga, alert: "O dono da liga não pode ser removido."
-      return
-    end
-
-    # OWNER → remove direto
-    if meu_vinculo.role == "owner"
-      liga_membro.destroy!
-
+    if result[:status] == :removed
       redirect_to @liga, notice: "Membro removido com sucesso."
-      return
-    end
-
-    # ADMIN → solicita remoção
-    if meu_vinculo.role == "admin" && liga_membro.role == "member"
-      liga_membro.update!(status: :pending_deletion)
-
+    else
       redirect_to @liga, notice: "Solicitação de remoção enviada ao dono da liga."
-      return
     end
-
-    redirect_to @liga, alert: "Ação não permitida."
+  rescue Exceptions::ServiceError => e
+    redirect_to @liga, alert: e.message
   end
 
   def invite_member
@@ -157,18 +106,10 @@ class LigasController < ApplicationController
   end
 
   def create
-    @liga = Liga.new(liga_params)
-    @liga.owner_id = current_user.id
-    @liga.membros = 1
+    @liga = Ligas::Create.new(params: liga_params, current_user: current_user).call
 
     respond_to do |format|
-      if @liga.save
-        LigaMembro.create!(
-          liga: @liga,
-          user_id: current_user.id,
-          role: :owner,
-          status: :accepted
-        )
+      if @liga.persisted?
         format.html { redirect_to @liga, notice: "Liga criada com sucesso!" }
         format.json { render :show, status: :created, location: @liga }
       else
@@ -193,8 +134,10 @@ class LigasController < ApplicationController
   end
 
   def update
+    @liga = Ligas::Update.new(liga: @liga, params: liga_params).call
+
     respond_to do |format|
-      if @liga.update(liga_params)
+      if @liga.errors.empty?
         format.html { redirect_to @liga, notice: "Liga editada com sucesso.", status: :see_other }
         format.json { render :show, status: :ok, location: @liga }
       else
@@ -205,7 +148,7 @@ class LigasController < ApplicationController
   end
 
   def destroy
-    @liga.destroy!
+    Ligas::Destroy.new(liga: @liga).call
 
     respond_to do |format|
       format.html { redirect_to ligas_path, notice: "Liga excluída com sucesso.", status: :see_other }

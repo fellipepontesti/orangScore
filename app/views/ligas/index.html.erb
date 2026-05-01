@@ -4,12 +4,36 @@
   <div class="flex items-center justify-between p-8">
     <h1 class="font-bold text-4xl">Ligas</h1>
 
-    <%= link_to "Criar nova liga",
-      new_liga_path,
-      class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white"
-    %>
-  </div> 
+    <div class="flex gap-2">
+      <button class="btn btn-outline" onclick="modal_filtros_ligas.showModal()">
+        Filtros
+      </button>
 
+      <%= link_to "Criar nova liga",
+        new_liga_path,
+        class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white flex items-center"
+      %>
+    </div>
+  </div>
+
+  <dialog id="modal_filtros_ligas" class="modal">
+    <div class="modal-box max-w-lg">
+      <h3 class="font-bold text-lg mb-4 text-center">Filtrar Ligas</h3>
+      <%= form_with url: ligas_path, method: :get, local: true do |f| %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Nome</span></label>
+          <%= f.text_field :nome, value: params[:nome], class: "input input-bordered w-full", placeholder: "Buscar por nome..." %>
+        </div>
+        <div class="modal-action flex justify-between mt-6">
+          <%= link_to "Limpar", ligas_path, class: "btn btn-ghost bg-error text-white" %>
+          <div class="flex gap-2">
+            <button type="button" class="btn" onclick="modal_filtros_ligas.close()">Cancelar</button>
+            <%= f.submit "Aplicar", class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
   <div id="ligas" class="divide-y divide-gray-200 space-y-5 p-4">
     <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
       <ul class="list bg-base-100 rounded-box shadow-md w-full p-8">

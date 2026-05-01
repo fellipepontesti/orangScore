@@ -3,9 +3,7 @@ class GruposController < ApplicationController
   before_action :set_grupo, only: %i[ show edit update destroy ]
 
   def index
-    @grupos = Grupo.includes(:selecoes)
-      .includes(selecoes: :grupo)
-      .order(:nome)
+    @grupos = Grupos::List.new(params).call
       .paginate(page: params[:page], per_page: 1)
     
     @grupo_labels = Grupo.order(:nome).pluck(:nome)
@@ -23,10 +21,10 @@ class GruposController < ApplicationController
   end
 
   def create
-    @grupo = Grupo.new(grupo_params)
+    @grupo = Grupos::Create.new(params: grupo_params).call
 
     respond_to do |format|
-      if @grupo.save
+      if @grupo.persisted?
         format.html { redirect_to @grupo, notice: "Grupo criado com sucesso!." }
         format.json { render :show, status: :created, location: @grupo }
       else
@@ -37,8 +35,10 @@ class GruposController < ApplicationController
   end
 
   def update
+    @grupo = Grupos::Update.new(grupo: @grupo, params: grupo_params).call
+
     respond_to do |format|
-      if @grupo.update(grupo_params)
+      if @grupo.errors.empty?
         format.html { redirect_to @grupo, notice: "Grupo editado com sucesso!.", status: :see_other }
         format.json { render :show, status: :ok, location: @grupo }
       else
@@ -49,7 +49,7 @@ class GruposController < ApplicationController
   end
 
   def destroy
-    @grupo.destroy!
+    Grupos::Destroy.new(grupo: @grupo).call
 
     respond_to do |format|
       format.html { redirect_to grupos_path, notice: "Grupo excluído com sucesso!.", status: :see_other }

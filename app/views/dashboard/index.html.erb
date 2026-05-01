@@ -1,83 +1,160 @@
-<div class="space-y-6">
+<div class="space-y-8 max-w-7xl mx-auto">
 
-<!-- Título -->
-<div>
-  <h1 class="text-3xl font-bold p-12">
-    Olá, <%= current_user.name %> 👋
-  </h1>
-  <p class="opacity-70 pl-12">
-    Aqui está um resumo do seu OrangScore
-  </p>
-</div>
+  <!-- Cabeçalho -->
+  <div class="flex flex-col gap-2">
+    <h1 class="text-4xl font-bold">
+      Olá, <%= current_user.name %> 👋
+    </h1>
+    <p class="opacity-70 text-lg">
+      Aqui está um resumo do seu OrangScore
+    </p>
+  </div>
 
-<!-- Cards de resumo -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pl-12 pr-12">
-  <!-- Card 1 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="flex justify-center card-title mb-2">Minha seleção</h2>
+  <!-- Cards de Resumo -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Card 1 -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider mb-2">Sua Seleção</h2>
+        <div class="flex flex-col items-center gap-3">
+          <div class="avatar">
+            <div class="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden bg-base-200">
+              <%= image_tag "selecoes/#{current_user.logo_selecao}", class: "w-full h-full object-cover", alt: current_user.selecao.nome if current_user.logo_selecao.present? %>
+            </div>
+          </div>
+          <span class="text-xl font-bold">
+            <%= current_user.selecao.nome %>
+          </span>
+        </div>
+      </div>
+    </div>
 
-      <div class="flex justify-center items-center gap-3">
-        <%= image_tag "selecoes/#{current_user.logo_selecao}",
-          class: "w-10 h-10 rounded-full object-cover",
-          alt: current_user.selecao.nome %>
+    <!-- Card 2 -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition">
+      <div class="card-body items-center text-center justify-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Seus Pontos</h2>
+        <p class="text-6xl font-black text-warning"><%= current_user.total_pontos %></p>
+      </div>
+    </div>
 
-        <span class="text-lg font-semibold">
-          <%= current_user.selecao.nome %>
-        </span>
+    <!-- Card 3 -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition">
+      <div class="card-body items-center text-center justify-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Ligas Ativas</h2>
+        <p class="text-6xl font-black text-primary"><%= @ligas_ativas %></p>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition">
+      <div class="card-body items-center text-center justify-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Jogos Hoje</h2>
+        <p class="text-6xl font-black text-secondary"><%= @jogos_hoje %></p>
       </div>
     </div>
   </div>
 
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <!-- Próximos Jogos -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-2xl font-bold flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+        Próximos Jogos
+      </h2>
+      
+      <% if @proximos_jogos.any? %>
+        <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full">
+          <% @proximos_jogos.each do |jogo| %>
+            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex justify-between items-center hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= jogo_path(jogo) %>'">
+              <div class="flex items-center gap-3 w-1/3">
+                <div class="avatar">
+                  <div class="mask mask-squircle w-8 h-8">
+                    <% if jogo.mandante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                    <% else %>
+                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
+                    <% end %>
+                  </div>
+                </div>
+                <span class="font-bold text-sm truncate"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
+              </div>
 
-  <!-- Card 2 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="card-title flex justify-center">Ligas ativas</h2>
-      <p class="flex justify-center text-3xl font-bold">0</p>
+              <div class="flex flex-col items-center justify-center w-1/3">
+                <span class="text-[10px] font-bold opacity-70 uppercase tracking-wider mb-1"><%= jogo.data.strftime("%d/%m %H:%M") %></span>
+                <span class="text-xl font-black font-mono opacity-20">VS</span>
+              </div>
+
+              <div class="flex items-center gap-3 w-1/3 justify-end">
+                <span class="font-bold text-sm truncate text-right"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
+                <div class="avatar">
+                  <div class="mask mask-squircle w-8 h-8">
+                    <% if jogo.visitante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                    <% else %>
+                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="bg-base-100 p-8 rounded-box shadow text-center border border-base-200">
+          <p class="opacity-70">Nenhum jogo programado para os próximos dias.</p>
+        </div>
+      <% end %>
     </div>
-  </div>
 
-  <!-- Card 3 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="flex justify-center card-title">Jogos hoje</h2>
-      <p class="flex justify-center text-3xl font-bold">0</p>
+    <!-- Ranking da Liga Principal -->
+    <div class="flex flex-col gap-4">
+      <h2 class="text-2xl font-bold flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+        Ranking - <%= @liga_principal ? @liga_principal.nome : "Sem Liga" %>
+      </h2>
+
+      <% if @liga_principal && @ranking_liga.any? %>
+        <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full">
+          <% @ranking_liga.each_with_index do |membro, index| %>
+            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between <%= 'bg-warning/10' if index == 0 %>">
+              <div class="flex items-center gap-4">
+                <div class="w-8 text-center font-black text-xl <%= index == 0 ? 'text-warning' : 'opacity-50' %>">
+                  <%= index + 1 %>º
+                </div>
+                
+                <div class="avatar placeholder">
+                  <div class="bg-neutral text-neutral-content w-10 h-10 rounded-full">
+                    <span class="font-bold"><%= membro.user.name.first.upcase %></span>
+                  </div>
+                </div>
+                
+                <div class="flex flex-col">
+                  <span class="font-bold"><%= membro.user.name %></span>
+                  <% if membro.user.id == current_user.id %>
+                    <span class="badge badge-primary badge-sm mt-1">Você</span>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="flex flex-col items-end">
+                <span class="text-2xl font-black text-primary"><%= membro.user.total_pontos %></span>
+                <span class="text-[10px] uppercase font-bold opacity-70">pts</span>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+        
+        <div class="mt-2 text-right">
+          <%= link_to "Ver ranking completo →", liga_path(@liga_principal), class: "text-sm font-bold text-primary hover:underline" %>
+        </div>
+      <% else %>
+        <div class="bg-base-100 p-8 rounded-box shadow text-center border border-base-200 h-full flex flex-col justify-center items-center gap-4">
+          <p class="opacity-70">Você ainda não está em nenhuma liga.</p>
+          <%= link_to "Encontrar Ligas", ligas_path, class: "btn btn-primary btn-sm" %>
+        </div>
+      <% end %>
     </div>
-  </div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pl-12 pr-12">
-  <!-- Card 1 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="flex justify-center card-title mb-2">Minha seleção</h2>
 
-      <div class="flex justify-center items-center gap-3">
-        <%= image_tag "selecoes/#{current_user.logo_selecao}",
-          class: "w-10 h-10 rounded-full object-cover",
-          alt: current_user.selecao.nome %>
-
-        <span class="text-lg font-semibold">
-          <%= current_user.selecao.nome %>
-        </span>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Card 2 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="card-title flex justify-center">Ligas ativas</h2>
-      <p class="flex justify-center text-3xl font-bold">0</p>
-    </div>
-  </div>
-
-  <!-- Card 3 -->
-  <div class="card bg-base-100 shadow">
-    <div class="card-body">
-      <h2 class="flex justify-center card-title">Jogos hoje</h2>
-      <p class="flex justify-center text-3xl font-bold">0</p>
-    </div>
   </div>
 </div>

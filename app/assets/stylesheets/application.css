@@ -13,3 +13,29 @@
  *= require_tree .
  *= require_self
  */
+
+body {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.btn {
+  border-radius: 1rem !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn:not(.btn-disabled):hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.btn:not(.btn-disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card {
+  border-radius: 1.5rem !important;
+}
+
+.input, .select, .textarea {
+  border-radius: 1rem !important;
+}

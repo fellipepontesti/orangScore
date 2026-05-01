@@ -4,95 +4,122 @@
   <div class="flex justify-between items-center p-4 pb-8 pt-8">
     <h1 class="font-bold text-4xl">Seleções</h1>
 
-    <% if current_user.root? %>
-      <%= link_to "Cadastrar seleção",
-        new_selecao_path,
-        class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium"
-      %>
-    <%end%>
+    <div class="flex gap-2">
+      <% if current_user.root? %>
+        <button class="btn btn-outline" onclick="modal_filtros_selecoes.showModal()">
+          Filtros
+        </button>
+        <%= link_to "Cadastrar seleção",
+          new_selecao_path,
+          class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium flex items-center"
+        %>
+      <% end %>
+    </div>
   </div>
 
+  <dialog id="modal_filtros_selecoes" class="modal">
+    <div class="modal-box max-w-lg">
+      <h3 class="font-bold text-lg mb-4 text-center">Filtrar Seleções</h3>
+      <%= form_with url: selecoes_path, method: :get, local: true do |f| %>
+        <div class="space-y-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Nome</span></label>
+            <%= f.text_field :nome, value: params[:nome], class: "input input-bordered w-full", placeholder: "Buscar por nome..." %>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Grupo</span></label>
+            <%= f.select :grupo_id, options_from_collection_for_select(Grupo.order(:nome), :id, :nome, params[:grupo_id]), { include_blank: "Todos os Grupos" }, class: "select select-bordered w-full" %>
+          </div>
+        </div>
+        <div class="modal-action flex justify-between mt-6">
+          <%= link_to "Limpar", selecoes_path, class: "btn btn-ghost bg-error text-white" %>
+          <div class="flex gap-2">
+            <button type="button" class="btn" onclick="modal_filtros_selecoes.close()">Cancelar</button>
+            <%= f.submit "Aplicar", class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+
   <% if @selecoes.any? %>
-    <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
-      <table class="table table-zebra w-full text-center">
-        <thead>
-          <tr class="text-base">
-            <th>Nome</th>
-            <th>Jogos</th>
-            <th>Gols</th>
-            <th>Gols sofridos</th>
-            <th>Saldo</th>
-            <th>Vitórias</th>
-            <th>Derrotas</th>
-            <th>Empates</th>
-            <th>Logo</th>
-            <th>Grupo</th>
-            <th>Torcedores</th>
-            <% if current_user.root? %>
-              <th>Ações</th>
-            <%end%>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% @selecoes.each do |selecao| %>
-            <tr class="hover">
-              <td class="font-bold"><%= selecao.nome %></td>
-              <td><%= selecao.qtd_jogos %></td>
-              <td><%= selecao.gols %></td>
-              <td><%= selecao.gols_sofridos %></td>
-              <td class="font-semibold"><%= selecao.gols - selecao.gols_sofridos %></td>
-              <td><%= selecao.vitorias %></td>
-              <td><%= selecao.derrotas %></td>
-              <td><%= selecao.empates %></td>
-
-              <td>
-                <div class="flex justify-center">
-                  <div class="avatar">
-                    <div class="mask mask-squircle h-10 w-10">
-                      <%= image_tag "selecoes/#{selecao.logo}" %>
-                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <% @selecoes.each do |selecao| %>
+        <div class="card bg-base-100 shadow-lg border border-base-200 hover:shadow-xl transition">
+          <div class="card-body p-5">
+            
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex items-center gap-4">
+                <div class="avatar">
+                  <div class="mask mask-squircle h-14 w-14 bg-base-200">
+                    <%= image_tag "selecoes/#{selecao.logo}" %>
                   </div>
                 </div>
-              </td>
-
-              <td class="font-semibold">
-                <%= selecao.grupo.nome.last %>
-              </td>
-
-              <td class="font-semibold">
-                <%= selecao.qtd_torcedores %>
-              </td>
-
+                <div>
+                  <h2 class="card-title text-lg leading-tight"><%= selecao.nome %></h2>
+                  <div class="badge badge-primary badge-outline text-xs mt-1">Grupo <%= selecao.grupo.nome.last %></div>
+                </div>
+              </div>
+              
               <% if current_user.root? %>
-                <td>
-                  <div class="flex justify-center gap-3">
-                    <%= link_to edit_selecao_path(selecao),
-                      class: "hover:scale-110 transition" do %>
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-5 w-5 invert">
-                          <%= image_tag "icons/editar.png" %>
-                        </div>
-                      </div>
-                    <% end %>
+                <div class="flex gap-1">
+                  <%= link_to edit_selecao_path(selecao), class: "btn btn-ghost btn-xs btn-square hover:bg-base-300" do %>
+                    <div class="h-4 w-4 invert"><%= image_tag "icons/editar.png" %></div>
+                  <% end %>
+                  <%= button_to selecao, method: :delete, form: { data: { turbo_confirm: "Excluir esta seleção?" } }, class: "btn btn-ghost btn-xs btn-square hover:bg-error/20" do %>
+                    <div class="h-4 w-4 invert"><%= image_tag "icons/delete.png" %></div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
 
-                    <%= button_to selecao,
-                      method: :delete,
-                      form: { data: { turbo_confirm: "Excluir esta seleção?" } },
-                      class: "bg-transparent hover:scale-110 transition" do %>
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-5 w-5 invert">
-                          <%= image_tag "icons/delete.png" %>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                </td>
-              <%end%>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+            <div class="grid grid-cols-4 gap-2 text-center my-4 bg-base-200 rounded-box p-3">
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold opacity-60">J</span>
+                <span class="font-bold"><%= selecao.qtd_jogos %></span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold opacity-60 text-success">V</span>
+                <span class="font-bold text-success"><%= selecao.vitorias %></span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold opacity-60 text-warning">E</span>
+                <span class="font-bold text-warning"><%= selecao.empates %></span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold opacity-60 text-error">D</span>
+                <span class="font-bold text-error"><%= selecao.derrotas %></span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center text-sm">
+              <div class="flex flex-col border border-base-200 rounded-box py-1">
+                <span class="text-[10px] font-bold opacity-60">GP</span>
+                <span class="font-bold"><%= selecao.gols %></span>
+              </div>
+              <div class="flex flex-col border border-base-200 rounded-box py-1">
+                <span class="text-[10px] font-bold opacity-60">GC</span>
+                <span class="font-bold"><%= selecao.gols_sofridos %></span>
+              </div>
+              <div class="flex flex-col border border-base-200 rounded-box py-1 bg-base-200">
+                <span class="text-[10px] font-bold opacity-60">SG</span>
+                <span class="font-bold"><%= selecao.gols - selecao.gols_sofridos %></span>
+              </div>
+            </div>
+
+            <div class="mt-4 flex justify-between items-center text-sm border-t border-base-200 pt-3">
+              <div class="flex items-center gap-2 opacity-70 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Torcedores
+              </div>
+              <div class="font-bold bg-base-200 px-2 rounded-full"><%= selecao.qtd_torcedores %></div>
+            </div>
+
+          </div>
+        </div>
+      <% end %>
     </div>
   <% else %>
     <p class="text-center text-gray-500 mt-10">

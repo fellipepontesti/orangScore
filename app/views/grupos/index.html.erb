@@ -3,83 +3,139 @@
 <div class="w-full">
   <div class="flex justify-between items-center pl-12 pr-12">
     <h1 class="font-bold text-4xl text-center">Grupos</h1>
-    <% if current_user.root? %>
-      <%= link_to "Criar grupo", new_grupo_path, class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium" %>
-    <% end %>
+    
+    <div class="flex gap-2">
+      <% if current_user.root? %>
+        <button class="btn btn-outline" onclick="modal_filtros_grupos.showModal()">
+          Filtros
+        </button>
+        <%= link_to "Criar grupo", new_grupo_path, class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium flex items-center" %>
+      <% end %>
+    </div>
   </div>
 
-  <div id="grupos" class="divide-y divide-white space-y-5 p-4">
-    <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-      <ul class="list bg-base-300 rounded-box w-full p-8">
-        <% if @grupos.any? %>
-          <% @grupos.each do |grupo| %>
-            <div class="overflow-x-auto rounded-box shadow-lg bg-base-100 pt-4 border border-white">
-              <table class="table table-zebra w-full text-center border-separate border-spacing-0 border-white pb-8">
-                <thead class="border-b border-white">
-                  <tr class="text-xs uppercase text-base-content/70">
-                    <th>Bandeira</th>
-                    <th>Nome</th>
-                    <th>Pontos</th>
-                    <th>Jogos</th>
-                    <th>Vitórias</th>
-                    <th>Empates</th>
-                    <th>Derrotas</th>
-                    <th>Gols feitos</th>
-                    <th>Gols sofridos</th>
-                    <th>Saldo de gols</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% grupo.selecoes.ordenadas.each do |selecao| %>
-                    <%= link_to selecao_path(selecao), class: "contents" do %>
-                      <tr class="hover:bg-primary transition cursor-pointer" data-url="<%= selecao_path(selecao) %>">
-                        <td class="py-3">
-                          <div class="flex justify-center">
-                            <div class="avatar">
-                              <div class="mask mask-squircle h-8 w-8">
-                                <%= image_tag "selecoes/#{selecao.logo}" %>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td class="font-medium">
-                          <%= selecao.nome %>
-                        </td>
-
-                        <td class="font-semibold">
-                          <%= selecao.pontos %>
-                        </td>
-
-                        <td><%= selecao.qtd_jogos %></td>
-                        <td><%= selecao.vitorias %></td>
-                        <td><%= selecao.empates %></td>
-                        <td><%= selecao.derrotas %></td>
-                        <td><%= selecao.gols %></td>
-                        <td><%= selecao.gols_sofridos %></td>
-
-                        <td class="font-semibold">
-                          <%= selecao.gols - selecao.gols_sofridos %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  <% end %>
-                </tbody>
-
-              </table>
-              <div class="flex justify-center items-center">
-                <%= will_paginate @grupos,
-                  renderer: GrupoPaginationRenderer,
-                  labels: @grupo_labels,
-                  class: 'join gap-4 pb-8',
-                  link_options: { class: 'join-item btn btn-sm hover:bg-primary btn-outline' } %>
-              </div>
-            </div>
-          <% end %>
-        <% else %>
-          <p class="text-center my-10">Você não possui grupos.</p>
-        <% end %>
-      </ul>
+  <dialog id="modal_filtros_grupos" class="modal">
+    <div class="modal-box max-w-lg">
+      <h3 class="font-bold text-lg mb-4 text-center">Filtrar Grupos</h3>
+      <%= form_with url: grupos_path, method: :get, local: true do |f| %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Nome</span></label>
+          <%= f.text_field :nome, value: params[:nome], class: "input input-bordered w-full", placeholder: "Buscar por nome..." %>
+        </div>
+        <div class="modal-action flex justify-between mt-6">
+          <%= link_to "Limpar", grupos_path, class: "btn btn-ghost bg-error text-white" %>
+          <div class="flex gap-2">
+            <button type="button" class="btn" onclick="modal_filtros_grupos.close()">Cancelar</button>
+            <%= f.submit "Aplicar", class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
     </div>
+  </dialog>
+
+  <div id="grupos" class="p-4 sm:p-8">
+    <% if @grupos.any? %>
+      <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Navegação de Grupos -->
+        <div class="flex flex-col items-center gap-4 bg-base-100 p-6 rounded-box shadow-lg border border-base-200">
+          <div class="flex items-center justify-between w-full">
+            <% if @grupos.current_page > 1 %>
+              <%= link_to grupos_path(page: @grupos.current_page - 1), class: "btn btn-circle btn-outline btn-primary" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+              <% end %>
+            <% else %>
+              <button class="btn btn-circle btn-disabled"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+            <% end %>
+
+            <h2 class="text-3xl font-black text-primary uppercase tracking-tighter">
+              <%= @grupos.first.nome %>
+            </h2>
+
+            <% if @grupos.current_page < @grupos.total_pages %>
+              <%= link_to grupos_path(page: @grupos.current_page + 1), class: "btn btn-circle btn-outline btn-primary" do %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+              <% end %>
+            <% else %>
+              <button class="btn btn-circle btn-disabled"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+            <% end %>
+          </div>
+
+          <!-- Atalhos Rápidos (Letras) -->
+          <div class="flex flex-wrap justify-center gap-2 mt-2">
+            <%= will_paginate @grupos,
+              renderer: GrupoPaginationRenderer,
+              labels: @grupo_labels,
+              class: 'join gap-2',
+              link_options: { class: 'join-item btn btn-sm hover:bg-primary hover:text-white btn-outline' } %>
+          </div>
+        </div>
+
+        <% @grupos.each do |grupo| %>
+          <div class="bg-base-100 shadow-xl rounded-box border border-base-200 overflow-hidden">
+            <ul class="list w-full">
+              <% grupo.selecoes.ordenadas.each_with_index do |selecao, index| %>
+                <li class="list-row flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-b last:border-b-0 border-base-200 hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= selecao_path(selecao) %>'">
+                  
+                  <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="font-bold text-lg w-6 flex justify-center shrink-0">
+                      <% case index %>
+                      <% when 0 %>
+                        <span class="text-warning text-2xl">🥇</span>
+                      <% when 1 %>
+                        <span class="text-gray-400 text-2xl">🥈</span>
+                      <% else %>
+                        <%= index + 1 %>
+                      <% end %>
+                    </div>
+                    
+                    <div class="avatar">
+                      <div class="mask mask-squircle h-12 w-12 bg-base-200">
+                        <%= image_tag "selecoes/#{selecao.logo}" %>
+                      </div>
+                    </div>
+                    
+                    <div class="font-bold text-lg">
+                      <%= selecao.nome %>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-end w-full sm:w-auto gap-4 sm:gap-6 mt-2 sm:mt-0">
+                    <div class="flex gap-4 sm:gap-6 text-center">
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70">Pts</span>
+                        <span class="font-bold text-lg text-primary"><%= selecao.pontos %></span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70">J</span>
+                        <span class="font-semibold text-lg"><%= selecao.qtd_jogos %></span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70 text-success">V</span>
+                        <span class="font-semibold text-lg text-success"><%= selecao.vitorias %></span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70 text-warning">E</span>
+                        <span class="font-semibold text-lg text-warning"><%= selecao.empates %></span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70 text-error">D</span>
+                        <span class="font-semibold text-lg text-error"><%= selecao.derrotas %></span>
+                      </div>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] uppercase font-bold opacity-70">SG</span>
+                        <span class="font-semibold text-lg"><%= selecao.gols - selecao.gols_sofridos %></span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-center text-gray-500 my-10">Você não possui grupos.</p>
+    <% end %>
   </div>
 </div>

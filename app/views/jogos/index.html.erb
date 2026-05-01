@@ -29,7 +29,49 @@
     <%= link_to "Final",
       jogos_path(tipo: :final),
       class: "btn #{ @tipo_ativo == 'final' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+
+    <% if current_user.root? %>
+      <button class="btn btn-outline" onclick="modal_filtros_jogos.showModal()">
+        Filtros
+      </button>
+    <% end %>
   </div>
+
+  <dialog id="modal_filtros_jogos" class="modal">
+    <div class="modal-box max-w-lg">
+      <h3 class="font-bold text-lg mb-4 text-center">Filtrar Jogos</h3>
+      <%= form_with url: jogos_path, method: :get, local: true do |f| %>
+        <%= f.hidden_field :tipo, value: @tipo_ativo %>
+        <%= f.hidden_field :grupo, value: @grupo_ativo %>
+        
+        <div class="space-y-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text">Status</span></label>
+            <%= f.select :status, Jogo.statuses.keys.map { |s| [s.humanize, s] }, { include_blank: "Todos os Status", selected: params[:status] }, class: "select select-bordered w-full" %>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label"><span class="label-text">Data Início</span></label>
+              <%= f.date_field :start_date, value: params[:start_date], class: "input input-bordered w-full" %>
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Data Fim</span></label>
+              <%= f.date_field :end_date, value: params[:end_date], class: "input input-bordered w-full" %>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-action flex justify-between mt-6">
+          <%= link_to "Limpar", jogos_path(tipo: @tipo_ativo, grupo: @grupo_ativo), class: "btn btn-ghost bg-error text-white" %>
+          <div class="flex gap-2">
+            <button type="button" class="btn" onclick="modal_filtros_jogos.close()">Cancelar</button>
+            <%= f.submit "Aplicar", class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
 
   <% if @tipo_ativo == 'grupo' %>
     <div class="flex justify-center items-center gap-2 mb-6 flex-wrap">
@@ -43,66 +85,20 @@
 
   <div id="tab-grupos">
     <% if @jogos.any? %>
-      <div class="overflow-x-auto rounded-box shadow-lg bg-base-100">
-        <table class="table table-zebra w-full text-center">
-          <thead>
-            <tr class="text-base">
-              <th>Jogo</th>
-              <th>Data</th>
-              <th>Local</th>
-              <th>Status</th>
-              <th>Palpite</th>
-            </tr>
-          </thead>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        <% @jogos.each do |jogo| %>
+          <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
+          <div class="card bg-base-100 shadow-lg hover:shadow-xl transition cursor-pointer border border-base-200" onclick="window.location='<%= jogo_path(jogo) %>'">
+            <div class="card-body p-4 sm:p-6">
+              
+              <div class="flex justify-between items-start mb-4">
+                <div class="text-xs font-semibold opacity-70">
+                  <div><%= jogo.data.strftime("%d/%m/%Y %H:%M") %></div>
+                  <div><%= jogo.estadio %></div>
+                </div>
 
-          <tbody>
-            <% @jogos.each do |jogo| %>
-              <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
-              <tr class="hover cursor-pointer hover:bg-primary" onclick="window.location='<%= jogo_path(jogo) %>'">
-                <td class="font-medium">
-                  <div class="flex justify-center items-center gap-2">
-                    <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
-
-                    <div class="avatar">
-                      <div class="mask mask-squircle h-8 w-8">
-                        <% if jogo.mandante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
-                        <% else %>
-                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
-                            ?
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-
-                    <%= jogo.gols_mandante %> x <%= jogo.gols_visitante %>
-
-                    <div class="avatar">
-                      <div class="mask mask-squircle h-8 w-8">
-                        <% if jogo.visitante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
-                        <% else %>
-                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xs">
-                            ?
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-
-                    <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
-                  </div>
-                </td>
-
-                <td class="uppercase text-xs font-semibold">
-                  <%= jogo.data.strftime("%d/%m/%Y %H:%M") %>
-                </td>
-
-                <td class="uppercase text-xs font-semibold">
-                  <%= jogo.estadio %>
-                </td>
-
-                <td class="uppercase text-xs font-semibold">
-                  <div class="flex items-center gap-2 justify-center">
+                <div class="uppercase text-[10px] sm:text-xs font-bold">
+                  <div class="flex items-center gap-2 justify-end">
                     <div class="inline-grid *:[grid-area:1/1]">
                       <% if jogo.programado? %>
                         <div class="status status-info animate-ping"></div>
@@ -122,27 +118,66 @@
                       <%= jogo.status.humanize %>
                     </span>
                   </div>
-                </td>
+                </div>
+              </div>
 
-                <td class="uppercase text-xs font-semibold" onclick="event.stopPropagation()">
-                  <% if jogo.finalizado? || jogo.em_andamento? %>
-                    <span class="badge badge-neutral">Fechado</span>
-                  <% elsif jogo.times_a_definir? %>
-                    <span class="badge badge-neutral">Indisponível</span>
-                  <% elsif palpite.present? %>
-                    <%= link_to "Editar palpite",
-                      edit_palpite_path(palpite),
-                      class: "btn btn-sm bg-warning hover:bg-warning/80 text-white border-none" %>
-                  <% else %>
-                    <%= link_to "Palpitar",
-                      new_palpite_path(jogo_id: jogo.id),
-                      class: "btn btn-sm bg-primary hover:bg-primary/90 text-white border-none" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+              <div class="flex justify-between items-center bg-base-200/50 rounded-box p-3 sm:p-4 mb-4">
+                <div class="flex flex-col items-center flex-1 w-1/3">
+                  <div class="avatar mb-2">
+                    <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
+                      <% if jogo.mandante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                      <% else %>
+                        <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="font-bold text-center text-xs sm:text-sm leading-tight">
+                    <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
+                  </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center px-2 sm:px-4">
+                  <div class="text-2xl sm:text-3xl font-black font-mono tracking-widest whitespace-nowrap">
+                    <%= jogo.gols_mandante %> - <%= jogo.gols_visitante %>
+                  </div>
+                </div>
+
+                <div class="flex flex-col items-center flex-1 w-1/3">
+                  <div class="avatar mb-2">
+                    <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
+                      <% if jogo.visitante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                      <% else %>
+                        <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="font-bold text-center text-xs sm:text-sm leading-tight">
+                    <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-actions justify-center mt-auto" onclick="event.stopPropagation()">
+                <% if jogo.finalizado? || jogo.em_andamento? %>
+                  <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Fechado</span>
+                <% elsif jogo.times_a_definir? || jogo.definir? %>
+                  <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Indisponível</span>
+                <% elsif palpite.present? %>
+                  <%= link_to "Editar palpite",
+                    edit_palpite_path(palpite),
+                    class: "btn btn-sm btn-warning w-full font-bold" %>
+                <% else %>
+                  <%= link_to "Palpitar",
+                    new_palpite_path(jogo_id: jogo.id),
+                    class: "btn btn-sm btn-primary w-full font-bold" %>
+                <% end %>
+              </div>
+
+            </div>
+          </div>
+        <% end %>
       </div>
     <% else %>
       <p class="text-center text-gray-500 mt-10">

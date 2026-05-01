@@ -1,13 +1,23 @@
 class JogosController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_jogo, only: %i[ show edit update destroy ]
-  before_action :load_selecoes, only: %i[new create edit update]
+  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish ]
+  before_action :load_selecoes, only: %i[new create edit update finalize]
+  before_action :authorize_root!, only: %i[new create edit update destroy start finalize finish]
 
   def index
     @tipo_ativo = params[:tipo].presence || 'grupo'
     @grupo_ativo = @tipo_ativo == 'grupo' ? (params[:grupo].presence || 'A') : nil
+    @status_filtro = params[:status]
+    @data_inicio = params[:start_date]
+    @data_fim = params[:end_date]
 
-    @jogos = Jogos::List.new(params: { tipo: @tipo_ativo, grupo: @grupo_ativo }).call
+    @jogos = Jogos::List.new(params: {
+      tipo: @tipo_ativo,
+      grupo: @grupo_ativo,
+      status: @status_filtro,
+      start_date: @data_inicio,
+      end_date: @data_fim
+    }).call
   end
 
   def show
@@ -51,8 +61,28 @@ class JogosController < ApplicationController
     end
   end
 
+  def start
+    Jogos::Start.new(jogo: @jogo).call
+    redirect_to @jogo, notice: "Jogo iniciado com sucesso! Notificações enviadas."
+  rescue => e
+    redirect_to @jogo, alert: e.message
+  end
+
+  def finalize
+  end
+
+  def finish
+    @jogo = Jogos::Update.new(jogo: @jogo, params: jogo_params.merge(status: 'finalizado')).call
+
+    if @jogo.errors.empty?
+      redirect_to @jogo, notice: "Jogo finalizado com sucesso! Pontuações calculadas."
+    else
+      render :finalize, status: :unprocessable_entity
+    end
+  end
+
   def destroy
-    @jogo.destroy!
+    Jogos::Destroy.new(jogo: @jogo).call
 
     respond_to do |format|
       format.html { redirect_to jogos_path, notice: "Jogo excluído com sucesso!.", status: :see_other }

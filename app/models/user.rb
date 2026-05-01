@@ -11,6 +11,11 @@ class User < ApplicationRecord
   has_many :ligas_participadas, through: :liga_membros, source: :liga
   belongs_to :selecao_favorita, class_name: 'Selecao', optional: true
   belongs_to :selecao
+  has_many :user_points, dependent: :destroy
+
+  def total_pontos
+    user_points.sum(:pontos)
+  end
 
   validates :name, 
             :selecao_id,

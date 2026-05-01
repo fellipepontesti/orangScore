@@ -11,9 +11,12 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
 
-  <body data-theme="orangScore" class="min-h-screen flex">
+  <body data-theme="orangScore" class="min-h-screen flex antialiased" style="font-family: 'Outfit', sans-serif;">
 
     <div class="drawer lg:drawer-open w-full">
 
@@ -163,47 +166,49 @@
 
       <!-- Sidebar -->
       <% if current_user %>
-        <div class="drawer-side is-drawer-close:overflow-visible">
+        <div class="drawer-side lg:overflow-visible z-40">
           <label for="my-drawer-4" class="drawer-overlay"></label>
 
-          <div class="flex min-h-full flex-col is-drawer-close:w-20 is-drawer-open:w-64 transition-all">
-            <ul class="menu bg-base-100 w-full grow p-4 gap-3">
+          <div class="flex min-h-full flex-col w-64 lg:w-20 lg:hover:w-64 transition-[width] duration-300 ease-in-out bg-base-100 group shadow-2xl">
+            <ul class="menu w-full grow p-4 gap-3 overflow-hidden flex-nowrap mt-4">
               <li>
-                <a href="/" class="flex items-center gap-4 hover:bg-primary">
-                  <%= image_tag "icons/home.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Página inicial</span>
+                <a href="/" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(root_path) %>">
+                  <%= image_tag "icons/home.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Página inicial</span>
                 </a>
               </li>
               <li>
-                <a href="/ligas" class="flex items-center gap-4 hover:bg-primary <%= 'active' if current_page?(ligas_path) %>">
-                  <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Ligas</span>
+                <a href="/ligas" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(ligas_path) %>">
+                  <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Ligas</span>
                 </a>
               </li>
               <li>
-                <a href="/jogos" class="flex items-center gap-4 hover:bg-primary">
-                  <%= image_tag "icons/ball.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Jogos</span>
+                <a href="/jogos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(jogos_path) %>">
+                  <%= image_tag "icons/ball.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Jogos</span>
                 </a>
               </li>
               <li>
-                <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary">
-                  <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Seleções</span>
+                <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(selecoes_path) %>">
+                  <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Seleções</span>
                 </a>
               </li>
               <li>
-                <a href="/grupos" class="flex items-center gap-4 hover:bg-primary">
-                  <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Grupos</span>
+                <a href="/grupos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(grupos_path) %>">
+                  <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Grupos</span>
                 </a>
               </li>
-              <li>
-                <a href="/usuarios" class="flex items-center gap-4 hover:bg-primary">
-                  <%= image_tag "icons/user.png", class: "w-6 h-6 invert transition" %>
-                  <span class="hidden drawer-open:block">Usuários</span>
-                </a>
-              </li>
+              <% if current_user.root? %>
+                <li>
+                  <a href="/usuarios" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(users_path) %>">
+                    <%= image_tag "icons/user.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                    <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Usuários</span>
+                  </a>
+                </li>
+              <% end %>
             </ul>
           </div>
         </div>

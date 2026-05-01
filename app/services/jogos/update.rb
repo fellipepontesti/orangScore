@@ -6,7 +6,11 @@ module Jogos
     end
 
     def call
-      jogo.update(params)
+      if jogo.update(params)
+        if jogo.saved_change_to_status? && jogo.finalizado?
+          Jogos::CalculaPontuacao.new(jogo: jogo).call
+        end
+      end
       jogo
     end
 

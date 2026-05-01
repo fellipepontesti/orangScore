@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   devise_for :users
-  resources :users, path: 'usuarios', only: [:index, :edit, :show]
+  resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy]
 
   get  '/password/forgot', to: 'passwords#new', as: :new_password
   post '/password/forgot', to: 'passwords#request_recovery', as: :password_recovery
@@ -31,7 +31,13 @@ Rails.application.routes.draw do
       end
   end
   
-  resources :jogos
+  resources :jogos do
+    member do
+      patch :start
+      get :finalize
+      patch :finish
+    end
+  end
   resources :grupos
   resources :selecoes
 

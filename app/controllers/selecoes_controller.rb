@@ -5,7 +5,7 @@ class SelecoesController < ApplicationController
   before_action :set_selecao, only: %i[ show edit update destroy ]
 
   def index
-    @selecoes = Selecao.all
+    @selecoes = Selecoes::List.new(params).call
   end
 
   def show
@@ -20,16 +20,16 @@ class SelecoesController < ApplicationController
   end
 
   def create
-    @selecao = Selecao.new(selecao_params)
+    @selecao = Selecoes::Create.new(params: selecao_params).call
 
-    if Selecao.where(grupo_id: selecao_params[:grupo_id]).count >= 4
+    if @selecao.errors[:base].include?("Grupo cheio!")
       flash.now[:alert] = "Grupo cheio!"
       render :new, status: :unprocessable_entity
       return
     end
 
     respond_to do |format|
-      if @selecao.save
+      if @selecao.persisted?
         format.html { redirect_to @selecao, notice: "Seleção criada com sucesso!" }
         format.json { render :show, status: :created, location: @selecao }
       else
@@ -40,8 +40,10 @@ class SelecoesController < ApplicationController
   end
 
   def update
+    @selecao = Selecoes::Update.new(selecao: @selecao, params: selecao_params).call
+
     respond_to do |format|
-      if @selecao.update(selecao_params)
+      if @selecao.errors.empty?
         format.html { redirect_to @selecao, notice: "Seleção editada com sucesso!", status: :see_other }
         format.json { render :show, status: :ok, location: @selecao }
       else
@@ -52,7 +54,7 @@ class SelecoesController < ApplicationController
   end
 
   def destroy
-    @selecao.destroy!
+    Selecoes::Destroy.new(selecao: @selecao).call
 
     respond_to do |format|
       format.html { redirect_to selecoes_path, notice: "Seleção excluída com sucesso!", status: :see_other }
