@@ -30,6 +30,19 @@
           } %>
       </div>
 
+      <div id="campo_grupo" class="<%= jogo.tipo == 'grupo' ? '' : 'hidden' %>">
+        <%= form.label :grupo_id, "Grupo", class: "label font-medium p-2" %>
+        <%= form.collection_select :grupo_id,
+          @grupos,
+          :id,
+          :nome,
+          { prompt: "Selecione o grupo" },
+          {
+            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:grupo_id].any? ? 'select-error' : ''}",
+            id: "jogo_grupo_id"
+          } %>
+      </div>
+
       <div id="campo_definir" class="<%= 'hidden' if jogo.tipo == 'grupo' %>">
         <label class="label cursor-pointer justify-start gap-3">
           <%= form.check_box :definir, class: "checkbox checkbox-primary", id: "jogo_definir" %>
@@ -41,26 +54,22 @@
 
       <div id="campo_mandante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :mandante_id, "Mandante", class: "label font-medium p-2" %>
-        <%= form.collection_select :mandante_id,
-          @selecoes,
-          :id,
-          :nome,
+        <%= form.select :mandante_id,
+          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }),
           { prompt: "Selecione o mandante" },
           {
-            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:mandante].any? || jogo.errors[:mandante_id].any? ? 'select-error' : ''}",
+            class: "select select-ghost select-bordered bg-base-300 w-full",
             id: "jogo_mandante_id"
           } %>
       </div>
 
       <div id="campo_visitante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :visitante_id, "Visitante", class: "label font-medium p-2" %>
-        <%= form.collection_select :visitante_id,
-          @selecoes,
-          :id,
-          :nome,
+        <%= form.select :visitante_id,
+          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }),
           { prompt: "Selecione o visitante" },
           {
-            class: "select select-ghost select-bordered bg-base-300 w-full #{jogo.errors[:visitante].any? || jogo.errors[:visitante_id].any? ? 'select-error' : ''}",
+            class: "select select-ghost select-bordered bg-base-300 w-full",
             id: "jogo_visitante_id"
           } %>
       </div>
@@ -146,6 +155,8 @@
 
 <script>
   function toggleCamposJogo() {
+    const campoGrupo = document.getElementById('campo_grupo')
+    const grupoSelect = document.getElementById('jogo_grupo_id')
     const tipo = document.getElementById('jogo_tipo')
     const definir = document.getElementById('jogo_definir')
     const campoDefinir = document.getElementById('campo_definir')
@@ -153,23 +164,25 @@
     const campoVisitante = document.getElementById('campo_visitante')
     const campoNomeProvisorioMandante = document.getElementById('campo_nome_provisorio_mandante')
     const campoNomeProvisorioVisitante = document.getElementById('campo_nome_provisorio_visitante')
-    const mandanteSelect = document.getElementById('jogo_mandante_id')
-    const visitanteSelect = document.getElementById('jogo_visitante_id')
-    const nomeProvisorioMandante = document.getElementById('jogo_nome_provisorio_mandante')
-    const nomeProvisorioVisitante = document.getElementById('jogo_nome_provisorio_visitante')
 
-    if (!tipo || !campoDefinir || !campoMandante || !campoVisitante || !campoNomeProvisorioMandante || !campoNomeProvisorioVisitante) return
+    if (!tipo) return
 
     const ehGrupo = tipo.value === 'grupo'
     const podeDefinir = !ehGrupo
 
-    if (podeDefinir) {
-      campoDefinir.classList.remove('hidden')
-    } else {
-      campoDefinir.classList.add('hidden')
+    if (campoGrupo) {
+      if (ehGrupo) campoGrupo.classList.remove('hidden')
+      else {
+        campoGrupo.classList.add('hidden')
+        if (grupoSelect) grupoSelect.value = ''
+      }
+    }
 
-      if (definir) {
-        definir.checked = false
+    if (campoDefinir) {
+      if (podeDefinir) campoDefinir.classList.remove('hidden')
+      else {
+        campoDefinir.classList.add('hidden')
+        if (definir) definir.checked = false
       }
     }
 
@@ -180,35 +193,49 @@
       campoVisitante.classList.add('hidden')
       campoNomeProvisorioMandante.classList.remove('hidden')
       campoNomeProvisorioVisitante.classList.remove('hidden')
-
-      if (mandanteSelect) mandanteSelect.value = ''
-      if (visitanteSelect) visitanteSelect.value = ''
     } else {
       campoMandante.classList.remove('hidden')
       campoVisitante.classList.remove('hidden')
       campoNomeProvisorioMandante.classList.add('hidden')
       campoNomeProvisorioVisitante.classList.add('hidden')
-
-      if (nomeProvisorioMandante) nomeProvisorioMandante.value = ''
-      if (nomeProvisorioVisitante) nomeProvisorioVisitante.value = ''
     }
+  }
+
+  function filtrarSelecoesPorGrupo() {
+    const grupoSelect = document.getElementById('jogo_grupo_id')
+    const mandanteSelect = document.getElementById('jogo_mandante_id')
+    const visitanteSelect = document.getElementById('jogo_visitante_id')
+
+    if (!grupoSelect) return
+
+    const grupoId = grupoSelect.value
+
+    function filtrar(select) {
+      Array.from(select.options).forEach(option => {
+        if (!option.value) return
+        const grupoOption = option.getAttribute('data-grupo-id')
+
+        option.hidden = grupoId && grupoOption !== grupoId
+      })
+
+      select.value = ''
+    }
+
+    if (mandanteSelect) filtrar(mandanteSelect)
+    if (visitanteSelect) filtrar(visitanteSelect)
   }
 
   function bindCamposJogo() {
     const tipo = document.getElementById('jogo_tipo')
     const definir = document.getElementById('jogo_definir')
+    const grupo = document.getElementById('jogo_grupo_id')
 
-    if (tipo) {
-      tipo.removeEventListener('change', toggleCamposJogo)
-      tipo.addEventListener('change', toggleCamposJogo)
-    }
-
-    if (definir) {
-      definir.removeEventListener('change', toggleCamposJogo)
-      definir.addEventListener('change', toggleCamposJogo)
-    }
+    if (tipo) tipo.addEventListener('change', toggleCamposJogo)
+    if (definir) definir.addEventListener('change', toggleCamposJogo)
+    if (grupo) grupo.addEventListener('change', filtrarSelecoesPorGrupo)
 
     toggleCamposJogo()
+    filtrarSelecoesPorGrupo()
   }
 
   document.addEventListener('DOMContentLoaded', bindCamposJogo)

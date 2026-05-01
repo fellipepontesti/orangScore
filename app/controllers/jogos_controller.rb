@@ -26,6 +26,7 @@ class JogosController < ApplicationController
   def new
     @jogo = Jogo.new
     @selecoes = Selecao.order(:nome)
+    @grupos = Grupo.order(:nome)
   end
 
   def edit
@@ -111,7 +112,8 @@ class JogosController < ApplicationController
         :estadio,
         :nome_provisorio_mandante,
         :nome_provisorio_visitante,
-        :status
+        :status,
+        :grupo_id
       )
     end
 end
