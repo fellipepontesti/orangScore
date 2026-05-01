@@ -30,7 +30,9 @@ class JogosController < ApplicationController
   end
 
   def edit
+    @jogo = Jogo.find(params[:id])
     @selecoes = Selecao.order(:nome)
+    @grupos = Grupo.order(:nome)
   end
 
   def create
