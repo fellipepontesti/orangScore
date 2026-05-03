@@ -82,10 +82,15 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   config.action_mailer.default_url_options = { host: "orangscore.com.br", protocol: "https" }
-  Rails.application.routes.default_url_options[:host] = "orangscore.com.br"
+  Rails.application.routes.default_url_options = {
+  host: "orangscore.com.br",
+  protocol: "https"
+}
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
+
+  config.action_mailer.asset_host = "https://orangscore.com.br"
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
