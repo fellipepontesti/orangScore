@@ -82,6 +82,7 @@ Rails.application.configure do
   config.i18n.fallbacks = true
 
   config.action_mailer.default_url_options = { host: "orangscore.com.br", protocol: "https" }
+  Rails.application.routes.default_url_options[:host] = "orangscore.com.br"
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
