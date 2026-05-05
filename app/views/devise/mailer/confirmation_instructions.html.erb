@@ -26,7 +26,7 @@
                   <tr>
                     <td align="center" style="background-color: #f97316; border-radius: 999px;">
                       <%= link_to 'Confirmar minha conta',
-                        "#{root_url}confirmation?confirmation_token=#{@token}",
+                        "#{ENV['APP_HOST'] || 'https://orangscore.com.br'}/confirmation?confirmation_token=#{@token}",
                         style: "display: inline-block; padding: 14px 28px; font-weight: bold; text-decoration: none; color: #111827;" %>
                     </td>
                   </tr>
