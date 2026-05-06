@@ -6,7 +6,14 @@ class JogosController < ApplicationController
 
   def index
     @tipo_ativo = params[:tipo].presence || 'grupo'
-    @grupo_ativo = params[:grupo]
+    @grupos = Grupo.order(:nome)
+
+    @grupo_ativo = if params[:grupo].present?
+      params[:grupo]
+    else
+      @grupos.first&.id
+    end
+    
     @status_filtro = params[:status]
     @data_inicio = params[:start_date]
     @data_fim = params[:end_date]
