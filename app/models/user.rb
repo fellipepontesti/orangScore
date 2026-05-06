@@ -21,6 +21,13 @@ class User < ApplicationRecord
             :selecao_id,
             :logo_selecao,
             presence: true
+        
+  validates :password,
+  format: {
+    with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}\z/,
+    message: 'deve ter no mínimo 8 caracteres, incluindo maiúscula, minúscula, número e símbolo'
+  },
+  if: :password_required?
 
   enum :tipo, { normal_user: 0, root: 1 }
 
