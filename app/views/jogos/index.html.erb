@@ -138,6 +138,11 @@
                 </div>
 
                 <div class="flex flex-col items-center justify-center px-2 sm:px-4">
+                  <% if palpite.present? %>
+                    <div class="text-[10px] sm:text-xs uppercase font-bold text-primary mb-1">
+                      Palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                    </div>
+                  <% end %>
                   <div class="text-2xl sm:text-3xl font-black font-mono tracking-widest whitespace-nowrap">
                     <%= jogo.gols_mandante %> - <%= jogo.gols_visitante %>
                   </div>

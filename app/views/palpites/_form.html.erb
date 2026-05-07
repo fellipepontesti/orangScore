@@ -48,7 +48,7 @@
               <%= form.number_field :gols_casa,
                 min: 0,
                 max: 99,
-                placeholder: "0",
+                value: form.object.gols_casa || 0,
                 class: "input input-bordered input-lg text-center text-4xl font-black h-20 shadow-inner bg-base-200 #{palpite.errors[:gols_casa].any? ? 'input-error' : 'focus:border-primary focus:ring-2 focus:ring-primary/20'}" %>
             </div>
           </div>
@@ -84,7 +84,7 @@
               <%= form.number_field :gols_fora,
                 min: 0,
                 max: 99,
-                placeholder: "0",
+                value: form.object.gols_fora || 0,
                 class: "input input-bordered input-lg text-center text-4xl font-black h-20 shadow-inner bg-base-200 #{palpite.errors[:gols_fora].any? ? 'input-error' : 'focus:border-secondary focus:ring-2 focus:ring-secondary/20'}" %>
             </div>
           </div>
