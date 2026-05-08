@@ -92,6 +92,16 @@
             class: "input input-ghost bg-base-300 w-full",
             required: true,
             autocomplete: "new-password" %>
+          <div class="text-xs opacity-70 mt-2">
+          A senha deve conter:
+          <ul class="list-disc ml-5 mt-1">
+            <li>Pelo menos 8 caracteres</li>
+            <li>Uma letra maiúscula</li>
+            <li>Uma letra minúscula</li>
+            <li>Um número</li>
+            <li>Um símbolo</li>
+          </ul>
+        </div>
         </div>
 
         <div class="form-control w-full">
@@ -202,13 +212,51 @@
   }
 
   function validatePasswordsAndContinue () {
-    const password = document.getElementById('password')
-    const confirmation = document.getElementById('password_confirmation')
+  const password = document.getElementById('password')
+  const confirmation = document.getElementById('password_confirmation')
 
-    password.setCustomValidity('')
-    confirmation.setCustomValidity('')
+  password.setCustomValidity('')
+  confirmation.setCustomValidity('')
 
-    if (password.value !== confirmation.value) {
+  const passwordValue = password.value
+
+  const hasMinLength = passwordValue.length >= 8
+  const hasUppercase = /[A-Z]/.test(passwordValue)
+  const hasLowercase = /[a-z]/.test(passwordValue)
+  const hasNumber = /[0-9]/.test(passwordValue)
+    const hasSymbol = /[^A-Za-z0-9]/.test(passwordValue)
+
+    if (!hasMinLength) {
+      password.setCustomValidity('A senha deve ter pelo menos 8 caracteres')
+      password.reportValidity()
+      return
+    }
+
+    if (!hasUppercase) {
+      password.setCustomValidity('A senha deve ter pelo menos uma letra maiúscula')
+      password.reportValidity()
+      return
+    }
+
+    if (!hasLowercase) {
+      password.setCustomValidity('A senha deve ter pelo menos uma letra minúscula')
+      password.reportValidity()
+      return
+    }
+
+    if (!hasNumber) {
+      password.setCustomValidity('A senha deve ter pelo menos um número')
+      password.reportValidity()
+      return
+    }
+
+    if (!hasSymbol) {
+      password.setCustomValidity('A senha deve ter pelo menos um símbolo')
+      password.reportValidity()
+      return
+    }
+
+    if (passwordValue !== confirmation.value) {
       confirmation.setCustomValidity('As senhas não coincidem')
       confirmation.reportValidity()
       return
