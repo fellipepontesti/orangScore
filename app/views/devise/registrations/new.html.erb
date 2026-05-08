@@ -156,6 +156,7 @@
             },
             {
               id: "user_selecao_id",
+              required: true,
               class: "select bg-base-300 select-bordered w-full"
             } %>
         </div>
@@ -169,7 +170,9 @@
           </button>
 
           <%= f.submit "Criar conta",
-            class: "btn btn-primary w-full" %>
+            id: "submit-button",
+            disabled: true,
+            class: "btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed" %>
         </div>
       </div>
 
@@ -289,6 +292,48 @@
 
     currentStep = hasErrors ? errorStep : 1
     updateSteps()
+    setupStepEnterBehavior()
+    setupSelecaoValidation()
+  }
+
+  function setupStepEnterBehavior () {
+    const password = document.getElementById('password')
+    const confirmation = document.getElementById('password_confirmation')
+
+    if (password) {
+      password.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          validatePasswordsAndContinue()
+        }
+      })
+    }
+
+    if (confirmation) {
+      confirmation.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          validatePasswordsAndContinue()
+        }
+      })
+    }
+  }
+
+  function setupSelecaoValidation () {
+    const selecao = document.getElementById('user_selecao_id')
+    const submitButton = document.getElementById('submit-button')
+
+    if (!selecao || !submitButton) return
+
+    function toggleButton () {
+      const hasValue = selecao.value && selecao.value.trim() !== ''
+
+      submitButton.disabled = !hasValue
+    }
+
+    selecao.addEventListener('change', toggleButton)
+
+    toggleButton()
   }
 
   document.addEventListener('DOMContentLoaded', initializeSignupForm)
