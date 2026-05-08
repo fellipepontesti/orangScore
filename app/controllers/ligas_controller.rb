@@ -1,6 +1,6 @@
 class LigasController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_liga, only: %i[ show edit update destroy ]
+  before_action :set_liga, only: %i[ show edit update destroy quit]
 
   def index
     if current_user.root?
@@ -63,6 +63,17 @@ class LigasController < ApplicationController
       redirect_to @liga, notice: "Solicitação de remoção enviada ao dono da liga."
     end
   rescue Exceptions::ServiceError => e
+    redirect_to @liga, alert: e.message
+  end
+
+  def quit
+    Ligas::Quit.new(
+      liga: @liga,
+      current_user: current_user
+    ).call
+
+    redirect_to ligas_path, notice: 'Você saiu da liga com sucesso.'
+  rescue StandardError => e
     redirect_to @liga, alert: e.message
   end
 
