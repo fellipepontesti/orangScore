@@ -1,0 +1,52 @@
+<div class="min-h-screen flex items-center justify-center bg-base-300 px-4">
+  <div class="card bg-base-100 shadow-2xl w-full max-w-md">
+    <div class="card-body text-center">
+      <h1 class="text-2xl font-bold text-primary">
+        Convite para liga
+      </h1>
+
+      <div class="py-6">
+        <h2 class="text-xl font-bold">
+          <%= @liga.nome %>
+        </h2>
+
+        <p class="opacity-70 mt-2">
+          <%= @liga.membros %> membros
+        </p>
+      </div>
+
+      <% if user_signed_in? %>
+        <% if @liga.users.exists?(current_user.id) %>
+          <div class="alert alert-info">
+            Você já participa desta liga.
+          </div>
+
+          <%= link_to "Ir para liga",
+            @liga,
+            class: "btn btn-primary mt-4" %>
+
+        <% else %>
+          <%= button_to "Entrar na liga",
+            aceitar_liga_convite_path(@liga.invite_token),
+            method: :post,
+            class: "btn btn-primary w-full" %>
+        <% end %>
+
+      <% else %>
+        <div class="space-y-3">
+          <p>
+            Faça login ou crie uma conta para entrar nesta liga.
+          </p>
+
+          <%= link_to "Entrar",
+            new_user_session_path,
+            class: "btn btn-primary w-full" %>
+
+          <%= link_to "Criar conta",
+            new_user_registration_path,
+            class: "btn btn-outline w-full" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

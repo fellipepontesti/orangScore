@@ -245,15 +245,18 @@
       <button
         type="button"
         class="rounded-md px-5 py-3 bg-success hover:bg-success/90! font-medium"
+        onclick="copyInviteLink('<%= liga_convite_url(@liga.invite_token) %>')">
+        Copiar convite da liga
+      </button>
+      <button
+        type="button"
+        class="rounded-md px-5 py-3 bg-success hover:bg-success/90! font-medium"
         onclick="add_member_modal.showModal()">
         Adicionar membro
       </button>
     <% end %>
 
     <% if @meu_vinculo&.role == "owner" %>
-      <%= link_to "Editar liga", edit_liga_path(@liga),
-        class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" %>
-
       <button class="rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" onclick="modal_users_pending.showModal()">
         Gerenciar pendências
       </button>
@@ -297,4 +300,22 @@
       <% end %>
     </div>
   </dialog>
+  <div
+    id="copy-alert"
+    class="alert alert-success fixed bottom-4 right-4 shadow-lg hidden w-fit z-50">
+    <span>Link copiado com sucesso!</span>
+  </div>
+  <script>
+    function copyInviteLink(link) {
+      navigator.clipboard.writeText(link)
+
+      const alert = document.getElementById('copy-alert')
+
+      alert.classList.remove('hidden')
+
+      setTimeout(() => {
+        alert.classList.add('hidden')
+      }, 2500)
+    }
+  </script>
 </div>

@@ -44,6 +44,9 @@ Rails.application.routes.draw do
       delete :quit
     end
   end
+
+  get '/convite/:token', to: 'liga_convites#show', as: :liga_convite
+  post '/convite/:token/aceitar', to: 'liga_convites#accept', as: :aceitar_liga_convite
   
   resources :jogos do
     member do
