@@ -13,6 +13,14 @@ class User < ApplicationRecord
   belongs_to :selecao
   has_many :user_points, dependent: :destroy
 
+  has_one :assinatura,
+        class_name: 'Assinatura',
+        foreign_key: 'usuario_id',
+        dependent: :destroy
+
+
+  after_create :criar_assinatura_padrao
+
   def total_pontos
     user_points.sum(:pontos)
   end
@@ -53,6 +61,30 @@ class User < ApplicationRecord
     )
   end
 
+  def premium?
+    assinatura.present? && assinatura.premium?
+  end
+
+  def plus?
+    assinatura.present? && assinatura.plus?
+  end
+
+  def basic?
+    assinatura.present? && assinatura.basic?
+  end
+
+  def limite_ligas
+    assinatura.limite_ligas
+  end
+
+  def atingiu_limite_de_ligas?
+    ligas.count >= limite_ligas
+  end
+
+  def limite_usuarios_por_liga
+    assinatura.limite_usuarios_por_liga
+  end
+
   before_validation :set_logo_selecao, on: :create
 
   private
@@ -61,5 +93,11 @@ class User < ApplicationRecord
     return if selecao.nil?
 
     self.logo_selecao = selecao.logo
+  end
+
+  def criar_assinatura_padrao
+    create_assinatura!(
+      plano: :basic
+    )
   end
 end

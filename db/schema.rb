@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_08_041228) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "assinaturas", force: :cascade do |t|
+    t.bigint "usuario_id", null: false
+    t.integer "plano", default: 0, null: false
+    t.boolean "ativa", default: true, null: false
+    t.datetime "data_expiracao"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["usuario_id"], name: "index_assinaturas_on_usuario_id"
+  end
 
   create_table "grupos", force: :cascade do |t|
     t.string "nome"
@@ -143,6 +153,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_08_041228) do
     t.index ["selecao_id"], name: "index_users_on_selecao_id"
   end
 
+  add_foreign_key "assinaturas", "users", column: "usuario_id"
   add_foreign_key "jogos", "grupos"
   add_foreign_key "jogos", "selecoes", column: "mandante_id"
   add_foreign_key "jogos", "selecoes", column: "visitante_id"

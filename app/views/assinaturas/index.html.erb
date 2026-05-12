@@ -1,0 +1,162 @@
+<div class="flex-1 flex flex-col w-full">
+  <% content_for :title, "Planos" %>
+    <div class="flex-1 flex flex-col w-full">
+      <div class="text-center mt-4 mb-8 px-4">
+        <h1 class="text-4xl font-black text-white mb-2 tracking-tight uppercase">Escolha seu Plano</h1>
+        <p class="text-slate-400">Eleve o nível da sua competição</p>
+      </div>
+
+      <div class="w-full max-w-4xl mx-auto mb-10 px-4">
+      <div class="flex items-start gap-4 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 shadow-sm">
+        <div class="shrink-0 text-blue-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+
+        <div class="flex flex-col">
+          <span class="text-sm font-bold text-slate-200">
+            Nota sobre a vigência dos planos
+          </span>
+          <p class="text-xs text-slate-400 leading-relaxed mt-1">
+            Estes pacotes são válidos exclusivamente para a <strong>Copa do Mundo 2026</strong>. Torneios futuros não estão inclusos nestas assinaturas e estarão sujeitos a novas cobranças para participação.
+          </p>
+        </div>
+      </div>
+    </div>
+
+      <div class="w-full max-w-6xl mx-auto px-4 py-8">
+        <%# Simulando o plano atual do usuário vindo do backend (Ex: 'basic') %>
+        <% plano_do_usuario = current_user.assinatura.plano %> 
+
+        <%= form_tag "#", method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch" do %>
+          
+          <%# --- BÁSICO --- %>
+          <label class="cursor-pointer group flex">
+            <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
+            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                        peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                        group-hover:border-white/20">
+              
+              <h2 class="text-xl font-bold text-slate-300">Basic</h2>
+              <div class="my-6">
+                <span class="text-4xl font-black text-orange-500">Grátis</span>
+              </div>
+              
+              <ul class="space-y-4 mb-8 flex-1">
+                <%= render "plano", text: "1 Liga" %>
+                <%= render "plano", text: "Até 5 membros na liga" %>
+                <%= render "plano", text: "Participe de quantas ligas quiser" %>
+              </ul>
+
+              <button type="submit" data-plan="basic" data-current="<%= plano_do_usuario == 'basic' %>" 
+                      class="btn-plano btn btn-block border-none text-white rounded-xl">
+                <%= plano_do_usuario == 'basic' ? 'Plano Atual' : 'Mudar para Básico' %>
+              </button>
+            </div>
+          </label>
+
+          <%# --- PLUS --- %>
+          <label class="cursor-pointer group flex">
+            <input type="radio" name="plano" value="plus" class="peer hidden" <%= "checked" if plano_do_usuario == "plus" %> />
+            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                        peer-checked:border-orange-500 peer-checked:scale-105 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.5)]
+                        group-hover:border-white/20">
+              
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                Recomendado
+              </div>
+
+              <h2 class="text-xl font-bold text-white">Plus</h2>
+              <div class="my-6">
+                <span class="text-4xl font-black text-white">R$ 4<span class="text-lg">,90</span></span>
+              </div>
+              
+              <ul class="space-y-4 mb-8 flex-1">
+                <%= render "plano", text: "5 ligas" %>
+                <%= render "plano", text: "Até 20 membros por liga" %>
+                <%= render "plano", text: "Participe de quantas ligas quiser" %>
+                <%= render "plano", text: "Convite por link" %>
+                <%= render "plano", text: "Acesso a ranking geral" %>
+              </ul>
+
+              <button type="submit" data-plan="plus" data-current="<%= plano_do_usuario == 'plus' %>" 
+                      class="btn-plano btn btn-block border-none text-white rounded-xl">
+                <%= plano_do_usuario == 'plus' ? 'Plano Atual' : 'Assinar Plus' %>
+              </button>
+            </div>
+          </label>
+
+          <%# --- PREMIUM --- %>
+          <label class="cursor-pointer group flex">
+            <input type="radio" name="plano" value="premium" class="peer hidden" <%= "checked" if plano_do_usuario == "premium" %> />
+            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                        peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                        group-hover:border-white/20">
+              
+              <h2 class="text-xl font-bold text-slate-300">Premium</h2>
+              <div class="my-6">
+                <span class="text-4xl font-black text-white">R$ 14<span class="text-lg">,90</span></span>
+              </div>
+              
+              <ul class="space-y-4 mb-8 flex-1">
+                <%= render "plano", text: "Ligas ilimitadas" %>
+                <%= render "plano", text: "Membros ilimitados" %>
+                <%= render "plano", text: "Participe de quantas ligas quiser" %>
+                <%= render "plano", text: "Convite por link" %>
+                <%= render "plano", text: "Acesso ao ranking geral" %>
+                <%= render "plano", text: "Prioridade em novas funções" %>
+              </ul>
+
+              <button type="submit" data-plan="premium" data-current="<%= plano_do_usuario == 'premium' %>" 
+                      class="btn-plano btn btn-block border-none text-white rounded-xl">
+                <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
+              </button>
+            </div>
+          </label>
+
+        <% end %>
+      </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', () => {
+    const form = document.getElementById('form-planos');
+    const radios = form.querySelectorAll('input[type="radio"]');
+    const buttons = form.querySelectorAll('.btn-plano');
+
+    function updateButtons() {
+      radios.forEach(radio => {
+        const card = radio.closest('label');
+        const btn = card.querySelector('.btn-plano');
+        const planValue = radio.value;
+        const isCurrent = btn.getAttribute('data-current') === 'true';
+
+        if (radio.checked) {
+          // Estilo do botão selecionado
+          btn.classList.remove('bg-slate-700');
+          btn.classList.add('bg-orange-500', 'text-black');
+          
+          if (isCurrent) {
+            btn.innerText = "Plano Atual";
+            btn.disabled = true; // Opcional: desabilita se já for o plano dele
+          } else {
+            btn.innerText = planValue === 'basic' ? "Mudar para Básico" : `Assinar ${planValue.charAt(0).toUpperCase() + planValue.slice(1)}`;
+            btn.disabled = false;
+          }
+        } else {
+          // Estilo do botão não selecionado
+          btn.classList.remove('bg-orange-500', 'text-black');
+          btn.classList.add('bg-slate-700', 'text-white');
+          btn.innerText = "Selecionar";
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Inicializa e escuta mudanças
+    updateButtons();
+    radios.forEach(r => r.addEventListener('change', updateButtons));
+  });
+</script>

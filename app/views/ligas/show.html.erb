@@ -1,10 +1,66 @@
 <% content_for :title, "Detalhes liga" %>
 
 <div class="w-full max-w-6xl mx-auto px-4">
-  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
-    Liga: <%= @liga.nome %>
+  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-4 pt-8">
+    <%= @liga.nome %>
   </h1>
 
+  <% is_owner = @meu_vinculo&.role == "owner" %>
+
+  <%# MENU DE STATUS DA LIGA %>
+  <div class="flex justify-center mb-8 w-full">
+    <div class="flex flex-wrap items-center justify-center gap-2 w-full relative">
+
+      <%# TODO MUDAR A COR DE ACORDO COM A QTD DE PARTICIPANTES %>
+      <span class="badge bg-primary/70! badge-lg p-4">
+        <%= @liga.total_participantes %>/<%= @liga.limite_participantes %>
+        participantes
+      </span>
+
+      <span class="badge bg-secondary/70! badge-lg p-4">
+        Plano <%= @liga.owner.assinatura.plano.capitalize %>
+      </span>
+
+      <% if @liga.atingiu_limite_de_participantes? %>
+        <span class="badge bg-error/70! badge-lg p-4">
+          Limite atingido
+        </span>
+      <% end %>
+
+      <% if @pode_convidar %>
+        <% if !@liga.atingiu_limite_de_participantes? %>
+            <button
+              type="button"
+              class="rounded-md px-4 py-4 bg-success hover:bg-success/80! font-bold text-white flex items-center right-8 absolute"
+              onclick="add_member_modal.showModal()">
+              Adicionar membro
+            </button>
+          <% end %>
+        <% end %>
+    </div>
+  </div>
+
+  <%# BANNER FAZER UPGRADE %>
+  <% if @liga.atingiu_limite_de_participantes? %>
+    <div class="mb-12 relative group">
+      <div class="absolute -inset-1 bg-gradient-to-r from-orange-600 to-yellow-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+      
+      <div class="relative flex flex-col md:flex-row items-center justify-between gap-6 p-4 bg-[#1a2236] border border-white/5 rounded-2xl shadow-xl">
+        <div class="flex items-center gap-4 pl-8">
+          <div>
+            <h3 class="text-white font-bold text-lg">Sua liga está cheia!</h3>
+            <p class="text-slate-400 text-sm">Faça o upgrade para adicionar mais amigos e competir em maior escala.</p>
+          </div>
+        </div>
+        
+        <button class="btn border-none bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 rounded-xl font-bold shadow-lg shadow-orange-500/20">
+          Fazer Upgrade Agora
+        </button>
+      </div>
+    </div>
+  <% end %>
+
+  <%# MODAL DE GESTÃO DE PENDENCIAS %>
   <dialog id="modal_users_pending" class="modal">
     <div class="modal-box max-w-3xl">
       <h3 class="text-lg font-bold mb-4">
@@ -130,6 +186,7 @@
     </div>
   </dialog>
 
+  <%# TABELA COM OS PARTICIPANTES DA LIGA %>
   <% if @membros_ativos.any? %>
     <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8">
       <% @membros_ativos.each_with_index do |liga_membro, i| %>
@@ -138,9 +195,6 @@
           <div class="flex items-center gap-4 w-full sm:w-auto">
             <div class="font-bold text-lg w-8 flex items-center justify-center shrink-0">
               <%= i + 1 %>°
-              <% if i == 0 %>
-                <span class="ml-1 text-yellow-500">👑</span>
-              <% end %>
             </div>
 
             <div class="avatar">
@@ -169,7 +223,6 @@
             </div>
 
             <% if liga_membro.role != "owner" %>
-              <% is_owner = @meu_vinculo&.role == "owner" %>
               <% is_admin_allowed =
                   @meu_vinculo&.role == "admin" &&
                   liga_membro.status.in?(%w[invited accepted]) %>
@@ -237,36 +290,34 @@
     </p>
   <% end %>
 
-  <div class="mt-10 flex flex-wrap justify-center gap-4">
+  <%# MENU DE AÇÕES %>
+  <div class="mt-12 flex flex-wrap justify-center gap-4">
     <%= link_to "Voltar", ligas_path,
-      class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
-    
-    <% if @pode_convidar %>
-      <button
-        type="button"
-        class="rounded-md px-5 py-3 bg-success hover:bg-success/90! font-medium"
-        onclick="copyInviteLink('<%= liga_convite_url(@liga.invite_token) %>')">
-        Copiar convite da liga
-      </button>
-      <button
-        type="button"
-        class="rounded-md px-5 py-3 bg-success hover:bg-success/90! font-medium"
-        onclick="add_member_modal.showModal()">
-        Adicionar membro
+      class: "btn btn-ghost text-slate-400 hover:text-white" %>
+
+    <% if @meu_vinculo&.role == "owner" %>
+      <% total_pendencias = @membros_pendentes.count + @membros_excluir.count %>
+      
+      <button class="btn btn-ghost border-slate-700 text-slate-300 hover:bg-slate-800 gap-2 relative" onclick="modal_users_pending.showModal()">
+        Gerenciar pendências
+        
+        <% if total_pendencias > 0 %>
+          <span class="badge badge-warning font-bold text-white border-none h-6 min-w-6">
+            <%= total_pendencias %>
+          </span>
+          
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-warning opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-warning"></span>
+          </span>
+        <% end %>
       </button>
     <% end %>
 
-    <% if @meu_vinculo&.role == "owner" %>
-      <button class="rounded-md px-5 py-3 bg-warning hover:bg-warning/80 font-medium" onclick="modal_users_pending.showModal()">
-        Gerenciar pendências
-      </button>
-    <%end%>
-
-    <%= button_to "Sair da liga",
-      quit_liga_path(@liga),
-      method: :delete,
-      class: "rounded-md px-5 py-3 text-white bg-red-600 hover:bg-red-600/80 font-medium",
-      data: { turbo_confirm: "Tem certeza que deseja sair dessa liga?" } %>
+    <%# TODO: SAIR DA LIGA / EXCLUIR LIGA %>
+    <%= button_to "Sair da liga", quit_liga_path(@liga), method: :delete,
+        class: "btn btn-ghost text-error hover:bg-error/10",
+        data: { turbo_confirm: "..." } %>
   </div>
 
   <dialog id="add_member_modal" class="modal">

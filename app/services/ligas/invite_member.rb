@@ -7,14 +7,16 @@ module Ligas
     end
 
     def call
+      if limite_de_usuarios_atingido?
+        raise Exceptions::ServiceError,
+              'Essa liga atingiu o limite de participantes do plano atual.'
+      end
+
       user_invited = User.find_by(email: email)
 
-      # if LigaMembro.exists?(liga: @liga, user: user_invited, status: :invited)
-      #   raise Exceptions::ServiceError, 'Esse usuário já possui um convite pendente para esta liga'
-      # end
-
       raise Exceptions::ServiceError, 'Usuário com esse e-mail não encontrado' unless user_invited
-
+      
+      
       if liga.liga_membros.accepted.exists?(user: user_invited)
         raise Exceptions::ServiceError, 'Esse usuário já faz parte da liga'
       end
@@ -53,6 +55,11 @@ module Ligas
     end
 
     private
+
+    def limite_de_usuarios_atingido?
+      liga.liga_membros.count >=
+        liga.owner.limite_usuarios_por_liga
+    end
 
     attr_reader :liga, :current_user, :email
   end
