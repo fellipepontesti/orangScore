@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_13_032043) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_13_044309) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,6 +118,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_13_032043) do
     t.jsonb "metadata"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "cobranca_id", null: false
+    t.index ["cobranca_id"], name: "index_pagamentos_on_cobranca_id"
     t.index ["status"], name: "index_pagamentos_on_status"
     t.index ["stripe_invoice_id"], name: "index_pagamentos_on_stripe_invoice_id"
     t.index ["stripe_payment_intent_id"], name: "index_pagamentos_on_stripe_payment_intent_id", unique: true
@@ -198,6 +200,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_13_032043) do
   add_foreign_key "liga_membros", "users"
   add_foreign_key "ligas", "users", column: "owner_id"
   add_foreign_key "notificacoes", "users"
+  add_foreign_key "pagamentos", "cobrancas"
   add_foreign_key "pagamentos", "users"
   add_foreign_key "palpites", "jogos"
   add_foreign_key "palpites", "users"

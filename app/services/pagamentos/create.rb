@@ -8,6 +8,7 @@ module Pagamentos
     def call
       Pagamento.create!(
         user: @cobranca.user,
+        cobranca: @cobranca,
         valor: @session.amount_total,
         status: :pago,
         stripe_payment_intent_id: @session.payment_intent,

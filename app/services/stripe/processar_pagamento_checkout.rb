@@ -11,9 +11,8 @@ module Stripe
 
       ActiveRecord::Base.transaction do
         Cobrancas::Confirmar.new(cobranca: cobranca, session: @session).call
-        Pagamentos::CriarDeCobranca.new(cobranca: cobranca, session: @session).call
+        Pagamentos::Create.new(cobranca: cobranca, session: @session).call
         Assinaturas::Ativar.new(usuario: cobranca.user, plano: cobranca.plano).call
-        Usuarios::AtivarPlano.new(usuario: cobranca.user).call
       end
     end
   end

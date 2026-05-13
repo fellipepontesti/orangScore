@@ -1,5 +1,6 @@
 class Pagamento < ApplicationRecord
   belongs_to :user
+  belongs_to :cobranca
 
   enum status: {
     pendente: 0,
@@ -9,7 +10,7 @@ class Pagamento < ApplicationRecord
     estornado: 4
   }
 
-  validates :valor_cents, presence: true
+  validates :valor, presence: true
   validates :status, presence: true
   validates :stripe_payment_intent_id, uniqueness: true, allow_nil: true
 
@@ -26,7 +27,7 @@ class Pagamento < ApplicationRecord
   end
 
   def valor_em_reais
-    valor_cents.to_f / 100
+    valor.to_f / 100
   end
 
   def liberar_plano!(plano:)

@@ -12,6 +12,8 @@ class User < ApplicationRecord
   belongs_to :selecao_favorita, class_name: 'Selecao', optional: true
   belongs_to :selecao
   has_many :user_points, dependent: :destroy
+  has_many :pagamentos
+  has_many :cobrancas
 
   has_one :assinatura,
         class_name: 'Assinatura',

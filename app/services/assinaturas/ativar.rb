@@ -6,9 +6,10 @@ module Assinaturas
     end
 
     def call
-      Assinatura.find_or_create_by!(
-        usuario: @usuario,
-        plano: @plano
+      assinatura = @usuario.assinatura || @usuario.build_assinatura
+      assinatura.update!(
+        plano: @plano,
+        ativa: true
       )
     end
   end

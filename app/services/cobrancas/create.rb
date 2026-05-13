@@ -1,8 +1,8 @@
 module Cobrancas
   class Create
     PLANOS = {
-      "plus" => 490,
-      "premium" => 1490
+      "plus" => 499,
+      "premium" => 1499
     }.freeze
 
     def self.call(user:, plano:, payment_method:, gateway:)
