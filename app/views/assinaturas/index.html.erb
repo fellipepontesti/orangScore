@@ -29,8 +29,10 @@
         <%# Simulando o plano atual do usuário vindo do backend (Ex: 'basic') %>
         <% plano_do_usuario = current_user.assinatura.plano %> 
 
-        <%= form_tag "#", method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch" do %>
-          
+        <%= form_tag checkout_stripe_path, method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch" do %>
+          <%# SELECIONAR FORMA DE PAGAMENTO %>
+          <%= hidden_field_tag :payment_method, "", id: "payment_method" %>
+
           <%# --- BÁSICO --- %>
           <label class="cursor-pointer group flex">
             <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
@@ -49,7 +51,7 @@
                 <%= render "plano", text: "Participe de quantas ligas quiser" %>
               </ul>
 
-              <button type="submit" data-plan="basic" data-current="<%= plano_do_usuario == 'basic' %>" 
+              <button type="button" data-plan="basic" data-current="<%= plano_do_usuario == 'basic' %>" 
                       class="btn-plano btn btn-block border-none text-white rounded-xl">
                 <%= plano_do_usuario == 'basic' ? 'Plano Atual' : 'Mudar para Básico' %>
               </button>
@@ -80,7 +82,7 @@
                 <%= render "plano", text: "Acesso a ranking geral" %>
               </ul>
 
-              <button type="submit" data-plan="plus" data-current="<%= plano_do_usuario == 'plus' %>" 
+              <button type="button" data-plan="plus" data-current="<%= plano_do_usuario == 'plus' %>" 
                       class="btn-plano btn btn-block border-none text-white rounded-xl">
                 <%= plano_do_usuario == 'plus' ? 'Plano Atual' : 'Assinar Plus' %>
               </button>
@@ -108,7 +110,7 @@
                 <%= render "plano", text: "Prioridade em novas funções" %>
               </ul>
 
-              <button type="submit" data-plan="premium" data-current="<%= plano_do_usuario == 'premium' %>" 
+              <button type="button" data-plan="premium" data-current="<%= plano_do_usuario == 'premium' %>" 
                       class="btn-plano btn btn-block border-none text-white rounded-xl">
                 <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
               </button>
@@ -118,6 +120,38 @@
         <% end %>
       </div>
     </div>
+
+    <%# MODAL FORMA DE PAGAMENTO %>
+    <div id="payment-modal"
+      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+
+    <div class="relative bg-[#1a2236] p-8 rounded-3xl w-full max-w-md">
+      <h2 class="text-2xl font-bold text-white mb-6">
+        Escolha a forma de pagamento
+      </h2>
+
+      <button
+        id="close-payment-modal"
+        type="button"
+        class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+        ✕
+      </button>
+
+      <div class="flex flex-col gap-4">
+        <button
+          id="btn-cartao"
+          class="btn bg-orange-500 border-none text-white">
+          Cartão de Crédito
+        </button>
+
+        <button
+          id="btn-pix"
+          class="btn bg-emerald-500 border-none text-white">
+          Pix
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -125,6 +159,9 @@
     const form = document.getElementById('form-planos');
     const radios = form.querySelectorAll('input[type="radio"]');
     const buttons = form.querySelectorAll('.btn-plano');
+
+    const modal = document.getElementById('payment-modal');
+    const paymentInput = document.getElementById('payment_method');
 
     function updateButtons() {
       radios.forEach(radio => {
@@ -134,29 +171,74 @@
         const isCurrent = btn.getAttribute('data-current') === 'true';
 
         if (radio.checked) {
-          // Estilo do botão selecionado
           btn.classList.remove('bg-slate-700');
           btn.classList.add('bg-orange-500', 'text-black');
-          
+
           if (isCurrent) {
             btn.innerText = "Plano Atual";
-            btn.disabled = true; // Opcional: desabilita se já for o plano dele
+            btn.disabled = true;
           } else {
-            btn.innerText = planValue === 'basic' ? "Mudar para Básico" : `Assinar ${planValue.charAt(0).toUpperCase() + planValue.slice(1)}`;
+            btn.innerText =
+              planValue === 'basic'
+                ? "Mudar para Básico"
+                : `Assinar ${planValue.charAt(0).toUpperCase() + planValue.slice(1)}`;
+
             btn.disabled = false;
           }
         } else {
-          // Estilo do botão não selecionado
           btn.classList.remove('bg-orange-500', 'text-black');
           btn.classList.add('bg-slate-700', 'text-white');
+
           btn.innerText = "Selecionar";
           btn.disabled = false;
         }
       });
     }
 
-    // Inicializa e escuta mudanças
     updateButtons();
-    radios.forEach(r => r.addEventListener('change', updateButtons));
+
+    radios.forEach(r => {
+      r.addEventListener('change', updateButtons);
+    });
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const plan = btn.dataset.plan;
+
+        if (btn.dataset.current === 'true') return;
+
+        const radio = document.querySelector(`input[value="${plan}"]`);
+        radio.checked = true;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+    });
+
+    document.getElementById('btn-cartao').addEventListener('click', () => {
+      paymentInput.value = 'card';
+
+      form.submit();
+    });
+
+    document.getElementById('btn-pix').addEventListener('click', () => {
+      paymentInput.value = 'pix';
+
+      form.action = '/checkout/woovi';
+      form.submit();
+    });
+
+    document.getElementById('close-payment-modal').addEventListener('click', () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
   });
+
 </script>

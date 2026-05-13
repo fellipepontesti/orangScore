@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_13_032043) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,24 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["usuario_id"], name: "index_assinaturas_on_usuario_id"
+  end
+
+  create_table "cobrancas", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "plano", null: false
+    t.integer "valor", null: false
+    t.integer "status", default: 0, null: false
+    t.string "gateway", null: false
+    t.string "gateway_cobranca_id"
+    t.string "gateway_checkout_url"
+    t.string "payment_method", null: false
+    t.datetime "expires_at"
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["gateway_cobranca_id"], name: "index_cobrancas_on_gateway_cobranca_id"
+    t.index ["status"], name: "index_cobrancas_on_status"
+    t.index ["user_id"], name: "index_cobrancas_on_user_id"
   end
 
   create_table "grupos", force: :cascade do |t|
@@ -86,6 +104,24 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
     t.integer "liga_id"
     t.boolean "answered", default: true
     t.index ["user_id"], name: "index_notificacoes_on_user_id"
+  end
+
+  create_table "pagamentos", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "stripe_payment_intent_id"
+    t.string "stripe_customer_id"
+    t.string "stripe_invoice_id"
+    t.integer "valor", null: false
+    t.integer "status", default: 0, null: false
+    t.string "plano"
+    t.datetime "pago_em"
+    t.jsonb "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_pagamentos_on_status"
+    t.index ["stripe_invoice_id"], name: "index_pagamentos_on_stripe_invoice_id"
+    t.index ["stripe_payment_intent_id"], name: "index_pagamentos_on_stripe_payment_intent_id", unique: true
+    t.index ["user_id"], name: "index_pagamentos_on_user_id"
   end
 
   create_table "palpites", force: :cascade do |t|
@@ -154,6 +190,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
   end
 
   add_foreign_key "assinaturas", "users", column: "usuario_id"
+  add_foreign_key "cobrancas", "users"
   add_foreign_key "jogos", "grupos"
   add_foreign_key "jogos", "selecoes", column: "mandante_id"
   add_foreign_key "jogos", "selecoes", column: "visitante_id"
@@ -161,6 +198,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_11_191405) do
   add_foreign_key "liga_membros", "users"
   add_foreign_key "ligas", "users", column: "owner_id"
   add_foreign_key "notificacoes", "users"
+  add_foreign_key "pagamentos", "users"
   add_foreign_key "palpites", "jogos"
   add_foreign_key "palpites", "users"
   add_foreign_key "selecoes", "grupos"

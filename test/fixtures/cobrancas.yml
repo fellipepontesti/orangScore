@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  plano: MyString
+  valor: 1
+  status: MyString
+  gateway: MyString
+  gateway_cobranca_id: MyString
+  gateway_checkout_url: MyString
+  payment_method: MyString
+  expires_at: 2026-05-12 23:49:46
+  paid_at: 2026-05-12 23:49:46
+
+two:
+  user: two
+  plano: MyString
+  valor: 1
+  status: MyString
+  gateway: MyString
+  gateway_cobranca_id: MyString
+  gateway_checkout_url: MyString
+  payment_method: MyString
+  expires_at: 2026-05-12 23:49:46
+  paid_at: 2026-05-12 23:49:46

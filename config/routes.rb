@@ -25,6 +25,10 @@ Rails.application.routes.draw do
 
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy]
 
+  post "/checkout/stripe", to: "checkout#stripe"
+  get "/checkout/sucesso", to: "checkout#sucesso"
+  post "/stripe/webhook", to: "stripe_webhooks#create"
+
   get  '/password/forgot', to: 'passwords#new', as: :new_password
   post '/password/forgot', to: 'passwords#request_recovery', as: :password_recovery
 
