@@ -13,6 +13,7 @@ class Pagamento < ApplicationRecord
   validates :valor, presence: true
   validates :status, presence: true
   validates :stripe_payment_intent_id, uniqueness: true, allow_nil: true
+  validates :mercado_pago_payment_id, uniqueness: true, allow_nil: true
 
   def pago?
     status == "pago"

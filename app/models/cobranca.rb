@@ -11,7 +11,8 @@ class Cobranca < ApplicationRecord
 
   enum gateway: {
     stripe: "stripe",
-    woovi: "woovi"
+    woovi: "woovi",
+    mercado_pago: "mercado_pago"
   }
 
   enum payment_method: {

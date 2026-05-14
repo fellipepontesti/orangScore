@@ -1,0 +1,80 @@
+<div class="flex items-center justify-center min-h-[80vh] px-4">
+  <div class="bg-[#1a2236] p-8 rounded-3xl max-w-lg w-full border border-emerald-500/20 shadow-2xl shadow-emerald-500/10 text-center">
+
+    <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+      <svg class="w-10 h-10 text-emerald-400" viewBox="0 0 512 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C351.1 381.1 351.1 399.8 339.5 411.5L280.3 470.8C268.7 482.4 250 482.4 238.4 470.8L179.1 411.5C167.5 399.8 167.5 381.1 179.1 369.5L242.4 292.5zM416.6 272.1L339.4 349.3L262.5 272.1C247.8 257.4 225.2 253.5 206.7 261.1L136.8 191.2C128.3 182.7 128.3 168.9 136.8 160.4L196.1 101.1C204.6 92.6 218.4 92.6 226.9 101.1L306 180.2C297.2 198.8 300.5 221.8 316.5 237.9L393.4 315C401.9 323.5 401.9 337.3 393.4 345.8L416.6 272.1zM95.4 240L16.36 161C4.739 149.4 4.739 130.6 16.36 119L75.67 59.72C87.29 48.11 106.1 48.11 117.7 59.72L196.7 138.8C185.4 157.2 188.2 181.9 203.6 197.3L280.5 274.2L203.3 351.4L126.4 274.5C118.2 266.3 112.8 255.6 111 244.1L95.4 240z"/>
+      </svg>
+    </div>
+
+    <h1 class="text-2xl font-bold text-white mb-2">Pix via Mercado Pago</h1>
+    <p class="text-slate-400 text-sm mb-1">
+      Plano <strong class="text-white"><%= @cobranca.plano.capitalize %></strong>
+      &mdash;
+      <strong class="text-emerald-400"><%= number_to_currency(@cobranca.valor.to_f / 100, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+    </p>
+
+    <div class="divider my-5 opacity-20"></div>
+
+    <% if @cobranca.pago? %>
+      <div class="alert alert-success mb-6">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span class="font-semibold">Pagamento confirmado! Seu plano foi ativado.</span>
+      </div>
+      <%= link_to authenticated_root_path, class: "w-full flex items-center justify-center py-3 px-5 rounded-2xl bg-orange-500 text-white font-semibold hover:bg-orange-400 transition" do %>
+        Acessar Dashboard
+      <% end %>
+    <% else %>
+      <p class="text-slate-300 mb-6 text-sm leading-relaxed">
+        Clique no botão abaixo para abrir o checkout seguro do Mercado Pago e concluir o pagamento via Pix.
+        Após confirmar, <strong class="text-white">seu plano será liberado automaticamente</strong>.
+      </p>
+
+      <% if @cobranca.gateway_checkout_url.present? %>
+        <%= link_to @cobranca.gateway_checkout_url, target: "_blank", rel: "noopener", class: "w-full flex items-center justify-center gap-3 py-4 px-5 rounded-2xl bg-[#00b1ea] text-white font-bold text-lg hover:bg-[#009fd1] transition shadow-lg mb-4" do %>
+          <svg class="w-5 h-5" viewBox="0 0 512 512" fill="currentColor"><path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.5 369.5C351.1 381.1 351.1 399.8 339.5 411.5L280.3 470.8C268.7 482.4 250 482.4 238.4 470.8L179.1 411.5C167.5 399.8 167.5 381.1 179.1 369.5L242.4 292.5zM416.6 272.1L339.4 349.3L262.5 272.1C247.8 257.4 225.2 253.5 206.7 261.1L136.8 191.2C128.3 182.7 128.3 168.9 136.8 160.4L196.1 101.1C204.6 92.6 218.4 92.6 226.9 101.1L306 180.2C297.2 198.8 300.5 221.8 316.5 237.9L393.4 315C401.9 323.5 401.9 337.3 393.4 345.8L416.6 272.1zM95.4 240L16.36 161C4.739 149.4 4.739 130.6 16.36 119L75.67 59.72C87.29 48.11 106.1 48.11 117.7 59.72L196.7 138.8C185.4 157.2 188.2 181.9 203.6 197.3L280.5 274.2L203.3 351.4L126.4 274.5C118.2 266.3 112.8 255.6 111 244.1L95.4 240z"/></svg>
+          Pagar no Mercado Pago
+        <% end %>
+      <% end %>
+
+      <div class="flex items-center gap-2 text-xs text-slate-500 justify-center mb-6">
+        <svg class="w-4 h-4 animate-spin text-slate-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+        Aguardando confirmação do pagamento...
+      </div>
+
+      <p class="text-xs text-slate-500 text-center">
+        Após pagar, esta página detectará automaticamente e liberará seu acesso.
+      </p>
+    <% end %>
+
+    <div class="mt-6">
+      <%= link_to planos_path, class: "text-sm text-slate-500 hover:text-slate-300 transition" do %>
+        Voltar para planos
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% unless @cobranca.pago? %>
+<script>
+  // Faz polling a cada 5s para verificar se o pagamento foi confirmado
+  function checkPaymentStatus() {
+    fetch(window.location.href, { headers: { "Accept": "text/html" } })
+      .then(r => r.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        // Se a página nova não tiver o spinner, o pagamento foi confirmado
+        if (!doc.querySelector(".animate-spin")) {
+          window.location.reload();
+        }
+      })
+      .catch(() => {});
+  }
+
+  const interval = setInterval(checkPaymentStatus, 5000);
+  // Para o polling após 30 minutos
+  setTimeout(() => clearInterval(interval), 30 * 60 * 1000);
+</script>
+<% end %>
+

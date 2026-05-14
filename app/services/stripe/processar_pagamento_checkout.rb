@@ -7,7 +7,7 @@ module Stripe
     def call
       cobranca = Cobranca.find(@session.metadata.cobranca_id)
 
-      return if cobranca.paga?
+      return if cobranca.pago?
 
       ActiveRecord::Base.transaction do
         Cobrancas::Confirmar.new(cobranca: cobranca, session: @session).call

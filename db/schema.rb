@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_13_044309) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_14_114711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,6 +37,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_13_044309) do
     t.datetime "paid_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "pix_qr_code"
+    t.text "pix_qr_code_base64"
+    t.string "gateway_status"
     t.index ["gateway_cobranca_id"], name: "index_cobrancas_on_gateway_cobranca_id"
     t.index ["status"], name: "index_cobrancas_on_status"
     t.index ["user_id"], name: "index_cobrancas_on_user_id"
@@ -119,7 +122,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_13_044309) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "cobranca_id", null: false
+    t.string "mercado_pago_payment_id"
     t.index ["cobranca_id"], name: "index_pagamentos_on_cobranca_id"
+    t.index ["mercado_pago_payment_id"], name: "index_pagamentos_on_mercado_pago_payment_id", unique: true
     t.index ["status"], name: "index_pagamentos_on_status"
     t.index ["stripe_invoice_id"], name: "index_pagamentos_on_stripe_invoice_id"
     t.index ["stripe_payment_intent_id"], name: "index_pagamentos_on_stripe_payment_intent_id", unique: true
