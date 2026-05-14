@@ -25,6 +25,13 @@ Rails.application.routes.draw do
 
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy]
 
+  post "/checkout/stripe", to: "checkout#stripe"
+  post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"
+  get "/checkout/pix/:id", to: "checkout#pix", as: :checkout_pix
+  get "/checkout/sucesso", to: "checkout#sucesso", as: :checkout_sucesso
+  post "/stripe/webhook", to: "stripe_webhooks#create"
+  post "/mercado_pago/webhook", to: "mercado_pago_webhooks#create", as: :mercado_pago_webhook
+
   get  '/password/forgot', to: 'passwords#new', as: :new_password
   post '/password/forgot', to: 'passwords#request_recovery', as: :password_recovery
 
@@ -45,6 +52,7 @@ Rails.application.routes.draw do
     end
   end
 
+  get '/planos', to: 'assinaturas#index', as: :planos
   get '/convite/:token', to: 'liga_convites#show', as: :liga_convite
   post '/convite/:token/aceitar', to: 'liga_convites#accept', as: :aceitar_liga_convite
   

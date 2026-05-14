@@ -6,6 +6,22 @@ class Liga < ApplicationRecord
   has_many :users, through: :liga_membros
 
   validates :nome, presence: true
+
+  def limite_participantes
+    owner.limite_usuarios_por_liga
+  end
+
+  def total_participantes
+    liga_membros.count
+  end
+
+  def atingiu_limite_de_participantes?
+    total_participantes >= limite_participantes
+  end
+
+  def vagas_restantes
+    limite_participantes - total_participantes
+  end
   
   private
 

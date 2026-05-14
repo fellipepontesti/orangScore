@@ -63,7 +63,7 @@
 
                 <ul
                   tabindex="-1"
-                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52 z-[999]"
+                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52 z-999"
                 >
                   <li class="menu-title">
                     <span class="text-xs opacity-70">
@@ -170,7 +170,7 @@
           <label for="my-drawer-4" class="drawer-overlay"></label>
 
           <div class="flex min-h-full flex-col w-64 lg:w-20 lg:hover:w-64 transition-[width] duration-300 ease-in-out bg-base-100 group shadow-2xl">
-            <ul class="menu w-full grow p-4 gap-3 overflow-hidden flex-nowrap mt-4">
+            <ul class="menu w-full grow p-4 gap-3 overflow-hidden flex-nowrap mt-4 flex flex-col">
               <li>
                 <a href="/" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(root_path) %>">
                   <%= image_tag "icons/home.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
@@ -209,6 +209,12 @@
                   </a>
                 </li>
               <% end %>
+              <li class="mt-auto">
+                <a href="/planos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(grupos_path) %>">
+                  <%= image_tag "icons/premium.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Planos</span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>

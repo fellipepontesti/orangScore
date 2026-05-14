@@ -1,0 +1,47 @@
+module MercadoPago
+  class ConfigurationError < StandardError
+    def user_message
+      message
+    end
+  end
+
+  class Config
+    def self.access_token
+      env_value(access_token_key)
+    end
+
+    def self.webhook_secret
+      env_value(webhook_secret_key)
+    end
+
+    def self.test_payer_email
+      return if production?
+
+      env_value("MERCADO_PAGO_TEST_PAYER_EMAIL") || "test_user_123456@testuser.com"
+    end
+
+    def self.public_key
+      env_value(public_key_key)
+    end
+
+    def self.access_token_key
+      production? ? "MERCADO_PAGO_ACCESS_TOKEN" : "MERCADO_PAGO_TEST_ACCESS_TOKEN"
+    end
+
+    def self.public_key_key
+      production? ? "MERCADO_PAGO_PUBLIC_KEY" : "MERCADO_PAGO_TEST_PUBLIC_KEY"
+    end
+
+    def self.webhook_secret_key
+      production? ? "MERCADO_PAGO_WEBHOOK_SECRET" : "MERCADO_PAGO_TEST_WEBHOOK_SECRET"
+    end
+
+    def self.production?
+      Rails.env.production?
+    end
+
+    def self.env_value(key)
+      ENV[key].to_s.strip.presence
+    end
+  end
+end

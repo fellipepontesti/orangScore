@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @source not "./daisyui{,*}.mjs";
 @plugin "./daisyui.mjs";
+
 /* Optional for custom themes – Docs: https://daisyui.com/docs/themes/#how-to-add-a-new-custom-theme */
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark, bumblebee;
@@ -17,6 +18,8 @@
   --color-base-content: oklch(96% 0.003 264.542);
   --color-primary: oklch(70% 0.213 47.604);
   --color-primary-content: oklch(98% 0.016 73.684);
+  --color-premium: oklch(85% 0.18 95);
+  --color-premium-content: oklch(15% 0.02 95);
   --color-secondary: oklch(60% 0.25 292.717);
   --color-secondary-content: oklch(96% 0.016 293.756);
   --color-accent: oklch(55% 0.013 58.071);
@@ -39,4 +42,21 @@
   --border: 1px;
   --depth: 0;
   --noise: 1;
+}
+
+.badge-premium {
+  background-color: var(--color-premium);
+  color: var(--color-premium-content);
+  border-color: var(--color-premium);
+}
+
+.btn-outline.btn-premium {
+  background: transparent;
+  color: var(--color-premium);
+  border-color: var(--color-premium);
+}
+
+.btn-outline.btn-premium:hover {
+  background-color: var(--color-premium);
+  color: var(--color-premium-content);
 }

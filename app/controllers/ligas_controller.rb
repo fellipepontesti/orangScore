@@ -15,6 +15,7 @@ class LigasController < ApplicationController
   end
 
   def show
+    # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
     @membros_ativos = @liga.liga_membros
                           .includes(:user)
                           .where(status: :accepted)

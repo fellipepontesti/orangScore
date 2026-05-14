@@ -7,6 +7,16 @@ module Ligas
 
     def call
       liga = Liga.new(@params)
+
+      if limite_de_ligas_atingido?
+        liga.errors.add(
+          :base,
+          'Seu plano atual permite apenas 1 liga. Faça upgrade para criar mais ligas.'
+        )
+
+        return liga
+      end
+
       liga.owner_id = @current_user.id
       liga.membros = 1
 
@@ -20,6 +30,12 @@ module Ligas
       end
       
       liga
+    end
+
+    private
+
+    def limite_de_ligas_atingido?
+      @current_user.ligas.count >= @current_user.limite_ligas
     end
   end
 end
