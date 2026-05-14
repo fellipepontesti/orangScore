@@ -51,13 +51,20 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = false
 
-  # Log to STDOUT by default
-  config.logger = ActiveSupport::Logger.new(STDOUT)
-  .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
-  .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  # Log to STDOUT and log/production.log
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    config.logger = ActiveSupport::Logger.new(STDOUT)
+      .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
+      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+  else
+    # Grava no arquivo log/production.log com rotação de 10 arquivos de 50MB cada
+    config.logger = ActiveSupport::TaggedLogging.new(
+      ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
+    )
+  end
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [ :request_id, :remote_ip ]
 
   # "info" includes generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
