@@ -230,6 +230,10 @@
       paymentInput.value = paymentMethod;
       form.action = path;
 
+      // Fecha o modal imediatamente para não travar a UI
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+
       button.disabled = true;
       button.innerText = 'Gerando pagamento...';
 

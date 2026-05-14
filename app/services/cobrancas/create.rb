@@ -1,7 +1,7 @@
 module Cobrancas
   class Create
     PLANOS = {
-      "plus" => 499,
+      "plus" => 50, # 50 centavos para teste em produção
       "premium" => 1499
     }.freeze
 

@@ -11,17 +11,6 @@ module MercadoPago
       @response_body = response_body
     end
 
-    def create_payment(payload)
-      response = connection.post("/v1/payments") do |req|
-        req.headers["Authorization"] = "Bearer #{access_token}"
-        req.headers["X-Idempotency-Key"] = SecureRandom.uuid
-
-        req.body = payload.to_json
-      end
-
-      parse_response(response)
-    end
-
     def user_message
       return credentials_environment_message if message.include?("Unauthorized use of live credentials")
       return missing_access_token_message if message.include?("Must provide your access_token")

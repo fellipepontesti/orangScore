@@ -47,11 +47,9 @@ module MercadoPago
             unit_price: cobranca.valor.to_f / 100
           }
         ],
-        payer: {
-          email: payer_email
-        },
         external_reference: cobranca.id.to_s,
         payment_methods: {
+          default_payment_method_id: "pix",
           excluded_payment_types: [
             { id: "credit_card" },
             { id: "debit_card" },
@@ -68,18 +66,12 @@ module MercadoPago
           failure: failure_url,
           pending: pending_url
         },
-        expires: true,
-        expiration_date_to: cobranca.expires_at.iso8601(3)
+        notification_url: notification_url
       }
-
-      preference_payload[:notification_url] = notification_url if valid_notification_url?
-      preference_payload
     end
 
     def payer_email
-      return cobranca.user.email if Config.production?
-
-      Config.test_payer_email
+      cobranca.user.email
     end
 
     def valid_notification_url?

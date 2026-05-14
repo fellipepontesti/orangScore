@@ -1,9 +1,10 @@
-require "securerandom"
-
 module MercadoPago
   class CreatePixPayment
     def self.call(cobranca:, notification_url:)
-      new(cobranca: cobranca, notification_url: notification_url).call
+      new(
+        cobranca: cobranca,
+        notification_url: notification_url
+      ).call
     end
 
     def initialize(cobranca:, notification_url:, client: Client.new)
@@ -13,16 +14,12 @@ module MercadoPago
     end
 
     def call
-      payment = client.create_payment(payload, idempotency_key: idempotency_key)
-      transaction_data = payment.dig("point_of_interaction", "transaction_data") || {}
-
-      cobranca.update!(
-        gateway_cobranca_id: payment["id"],
-        gateway_checkout_url: transaction_data["ticket_url"],
-        gateway_status: payment["status"],
-        pix_qr_code: transaction_data["qr_code"],
-        pix_qr_code_base64: transaction_data["qr_code_base64"]
+      payment = client.create_payment(
+        payload,
+        idempotency_key: idempotency_key
       )
+
+      save_payment!(payment)
 
       payment
     end
@@ -32,41 +29,49 @@ module MercadoPago
     attr_reader :cobranca, :notification_url, :client
 
     def payload
-      payment_payload = {
-        transaction_amount: cobranca.valor.to_f / 100,
-        description: "Plano #{cobranca.plano.capitalize} - OrangScore",
+      {
+        transaction_amount: (cobranca.valor.to_f / 100).round(2),
+        description: "Pagamento de teste OrangScore",
         payment_method_id: "pix",
-        payer: {
-          email: payer_email
-        },
         external_reference: cobranca.id.to_s,
-        date_of_expiration: cobranca.expires_at.iso8601(3)
+        payer: {
+          email: payer_email,
+          identification: {
+            type: "CPF",
+            number: "19100000000"
+          }
+        },
+        notification_url: "https://#{ENV['WEBHOOK_HOST']}/mercado_pago/webhook"
       }
-
-      payment_payload[:notification_url] = notification_url if valid_notification_url?
-      payment_payload
-    end
-
-    def idempotency_key
-      "cobranca-#{cobranca.id}-#{SecureRandom.uuid}"
     end
 
     def payer_email
-      return cobranca.user.email if Config.production?
-      return Config.test_payer_email if Config.test_payer_email.present?
-
-      "test@testuser.com"
+      # Tente usar o e-mail que aparece no painel do Mercado Pago para o usuário TESTUSER4478077780224338783
+      # Se não souber, esse padrão abaixo costuma funcionar se o usuário foi criado agora.
+      "test_user_447807778@testuser.com"
     end
 
-    def valid_notification_url?
-      uri = URI.parse(notification_url.to_s)
+    def idempotency_key
+      "cobranca-#{cobranca.id}-pix-#{SecureRandom.uuid}"
+    end
 
-      uri.is_a?(URI::HTTP) &&
-        uri.host.present? &&
-        uri.host.exclude?("localhost") &&
-        uri.host != "127.0.0.1"
-    rescue URI::InvalidURIError
-      false
+    def save_payment!(payment)
+      cobranca.update!(
+        gateway_cobranca_id: payment["id"].to_s,
+        gateway_status: payment["status"],
+
+        pix_qr_code: payment.dig(
+          "point_of_interaction",
+          "transaction_data",
+          "qr_code"
+        ),
+
+        pix_qr_code_base64: payment.dig(
+          "point_of_interaction",
+          "transaction_data",
+          "qr_code_base64"
+        )
+      )
     end
   end
 end
