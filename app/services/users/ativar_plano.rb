@@ -1,4 +1,4 @@
-module Usuarios
+module Users
   class AtivarPlano
     def initialize(usuario:)
       @usuario = usuario
