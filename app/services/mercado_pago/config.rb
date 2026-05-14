@@ -25,15 +25,15 @@ module MercadoPago
     end
 
     def self.access_token_key
-      production? ? "MERCADO_PAGO_ACCESS_TOKEN" : "MERCADO_PAGO_TEST_ACCESS_TOKEN"
+      production? ? "MERCADO_PAGO_PRODUCTION_ACCESS_TOKEN" : "MERCADO_PAGO_TEST_ACCESS_TOKEN"
     end
 
     def self.public_key_key
-      production? ? "MERCADO_PAGO_PUBLIC_KEY" : "MERCADO_PAGO_TEST_PUBLIC_KEY"
+      production? ? "MERCADO_PAGO_PRODUCTION_PUBLIC_KEY" : "MERCADO_PAGO_TEST_PUBLIC_KEY"
     end
 
     def self.webhook_secret_key
-      production? ? "MERCADO_PAGO_WEBHOOK_SECRET" : "MERCADO_PAGO_TEST_WEBHOOK_SECRET"
+      production? ? "MERCADO_PAGO_PRODUCTION_WEBHOOK_SECRET" : "MERCADO_PAGO_TEST_WEBHOOK_SECRET"
     end
 
     def self.production?
