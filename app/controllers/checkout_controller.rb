@@ -105,7 +105,7 @@ class CheckoutController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json { render json: { status: @cobranca.status } }
+      format.json { render json: { status: @cobranca.gateway_status } }
     end
   end
 
