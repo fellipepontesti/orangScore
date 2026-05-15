@@ -1,4 +1,6 @@
 class PasswordsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:new, :request_recovery]
+
   def new
   end
 

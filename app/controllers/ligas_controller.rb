@@ -1,6 +1,7 @@
 class LigasController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_liga, only: %i[ show edit update destroy quit]
+  before_action :set_liga, only: %i[ show edit update destroy quit invite_member remove_member set_admin ]
+  before_action :validar_dono_da_liga!, only: %i[ edit update destroy ]
 
   def index
     if current_user.root?
@@ -58,6 +59,10 @@ class LigasController < ApplicationController
 
   def remove_member
     @liga = Liga.find(params[:id])
+
+    unless @meu_vinculo&.role.in?(%w[owner admin]) || current_user.root?
+      return redirect_to @liga, alert: "Você não tem permissão para remover membros."
+    end
 
     result = Ligas::RemoveMember.new(
       liga: @liga, 
@@ -152,6 +157,12 @@ class LigasController < ApplicationController
     redirect_to @liga, alert: e.message
   end
 
+  def validar_dono_da_liga!
+    unless @liga.owner_id == current_user.id || current_user.root?
+      redirect_to ligas_path, alert: "Acesso negado! Você não é o dono desta liga."
+    end
+  end
+
   def update
     @liga = Ligas::Update.new(liga: @liga, params: liga_params).call
 
@@ -177,7 +188,19 @@ class LigasController < ApplicationController
 
   private
     def set_liga
-      @liga = Liga.find(params[:id])
+      if current_user.root?
+        @liga = Liga.find(params[:id])
+      else
+        @liga = Liga.joins(:liga_membros)
+                    .where(id: params[:id])
+                    .where(liga_membros: { user_id: current_user.id })
+                    .where.not(liga_membros: { status: 0 })
+                    .first
+
+        if @liga.nil?
+          redirect_to ligas_path, alert: "Você não tem permissão para acessar esta liga ou precisa aceitar o convite primeiro."
+        end
+      end
     end
 
     def liga_params

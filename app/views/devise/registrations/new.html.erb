@@ -86,22 +86,31 @@
             <span class="label-text font-medium pb-4">Senha</span>
           <% end %>
 
-          <%= f.password_field :password,
-            id: "password",
-            placeholder: "Digite sua senha",
-            class: "input input-ghost bg-base-300 w-full",
-            required: true,
-            autocomplete: "new-password" %>
-          <div class="text-xs opacity-70 mt-2">
-          A senha deve conter:
-          <ul class="list-disc ml-5 mt-1">
-            <li>Pelo menos 8 caracteres</li>
-            <li>Uma letra maiúscula</li>
-            <li>Uma letra minúscula</li>
-            <li>Um número</li>
-            <li>Um símbolo</li>
-          </ul>
-        </div>
+          <div class="relative">
+            <%= f.password_field :password,
+              id: "password",
+              placeholder: "Digite sua senha",
+              class: "input input-ghost bg-base-300 w-full pr-10",
+              required: true,
+              autocomplete: "new-password" %>
+            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePasswordVisibility('password')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 opacity-50 hover:opacity-100" id="eye-icon-password">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.31 5 12 5s8.601 3.049 9.964 6.678c.07.232.07.467 0 .701C20.601 15.951 16.69 19 12 19s-8.601-3.049-9.964-6.678z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="text-xs mt-2">
+            <p class="opacity-70 mb-1">A senha deve conter:</p>
+            <ul class="space-y-1">
+              <li id="req-min" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Pelo menos 8 caracteres</li>
+              <li id="req-upper" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Uma letra maiúscula</li>
+              <li id="req-lower" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Uma letra minúscula</li>
+              <li id="req-num" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Um número</li>
+              <li id="req-sym" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Um símbolo</li>
+            </ul>
+          </div>
         </div>
 
         <div class="form-control w-full">
@@ -109,32 +118,25 @@
             <span class="label-text font-medium pb-4">Confirmar senha</span>
           <% end %>
 
-          <%= f.password_field :password_confirmation,
-            id: "password_confirmation",
-            placeholder: "Confirme sua senha",
-            class: "input bg-base-300 input-ghost w-full",
-            required: true,
-            autocomplete: "new-password" %>
-
-          <div class="validator-hint">
-            As senhas precisam ser iguais
+          <div class="relative">
+            <%= f.password_field :password_confirmation,
+              id: "password_confirmation",
+              placeholder: "Confirme sua senha",
+              class: "input bg-base-300 input-ghost w-full pr-10",
+              required: true,
+              autocomplete: "new-password" %>
+            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePasswordVisibility('password_confirmation')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 opacity-50 hover:opacity-100" id="eye-icon-password_confirmation">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.31 5 12 5s8.601 3.049 9.964 6.678c.07.232.07.467 0 .701C20.601 15.951 16.69 19 12 19s-8.601-3.049-9.964-6.678z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            class="btn w-full"
-            onclick="prevStep()">
-            Voltar
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-primary w-full"
-            onclick="validatePasswordsAndContinue()">
-            Continuar
-          </button>
+        <div class="grid grid-cols-2 gap-3 pt-4">
+          <button type="button" class="btn w-full" onclick="prevStep()">Voltar</button>
+          <button type="button" class="btn btn-primary w-full" onclick="validatePasswordsAndContinue()">Continuar</button>
         </div>
       </div>
 
@@ -161,13 +163,28 @@
             } %>
         </div>
 
-        <div class="form-control">
-          <label class="label cursor-pointer justify-start gap-3">
-            <%= f.check_box :terms_of_service, id: "user_terms_of_service", required: true, class: "checkbox checkbox-primary checkbox-sm" %>
-            <span class="label-text text-xs opacity-80 leading-relaxed">
-              Eu li e aceito os <%= link_to "Termos de Uso", termos_path, target: "_blank", class: "text-primary font-bold hover:underline" %> e a 
-              <%= link_to "Política de Privacidade", privacidade_path, target: "_blank", class: "text-primary font-bold hover:underline" %> do OrangScore.
-            </span>
+        <div class="form-control w-full">
+          <label class="group flex items-start gap-3 cursor-pointer py-2">
+            
+            <%# Container do Checkbox: Fixamos a largura para ele nunca mexer %>
+            <div class="flex-none pt-0.5">
+              <%= f.check_box :terms_of_service, 
+                  id: "user_terms_of_service", 
+                  required: true, 
+                  class: "checkbox checkbox-primary checkbox-sm" %>
+            </div>
+            
+            <%# Container do Texto: Ocupa o restante do espaço %>
+            <div class="flex-1">
+              <span class="label-text text-[11px] sm:text-xs leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                Eu li e aceito os 
+                <%= link_to "Termos de Uso", termos_path, target: "_blank", class: "link link-primary font-bold no-underline hover:underline" %> 
+                e a 
+                <%= link_to "Política de Privacidade", privacidade_path, target: "_blank", class: "link link-primary font-bold no-underline hover:underline" %> 
+                do OrangScore.
+              </span>
+            </div>
+
           </label>
         </div>
 
@@ -296,4 +313,61 @@
   // Garante que rode em qualquer situação de carregamento do Rails (Turbo ou não)
   document.addEventListener('turbo:load', initializeSignupForm)
   document.addEventListener('DOMContentLoaded', initializeSignupForm)
+
+  function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    const icon = document.getElementById(`eye-icon-${id}`);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.add('text-primary');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('text-primary');
+    }
+  }
+
+  // Validação em tempo real dos requisitos
+  function validatePasswordRequirements() {
+    const val = document.getElementById('password').value;
+    
+    const rules = {
+      'req-min': val.length >= 8,
+      'req-upper': /[A-Z]/.test(val),
+      'req-lower': /[a-z]/.test(val),
+      'req-num': /[0-9]/.test(val),
+      'req-sym': /[^A-Za-z0-9]/.test(val)
+    };
+
+    Object.keys(rules).forEach(id => {
+      const el = document.getElementById(id);
+      const badge = el.querySelector('.badge');
+      if (rules[id]) {
+        el.classList.replace('text-error', 'text-success');
+        badge.classList.replace('badge-error', 'badge-success'); // Se quiser mudar cor do badge
+        el.classList.add('font-bold');
+      } else {
+        el.classList.replace('text-success', 'text-error');
+        el.classList.remove('font-bold');
+      }
+    });
+  }
+
+  // Modifique sua função initializeSignupForm para incluir o listener:
+  function initializeSignupForm () {
+    const form = document.getElementById('signup-form')
+    if (!form) return
+
+    // Adiciona o listener de digitação na senha
+    const passwordInput = document.getElementById('password');
+    if (passwordInput) {
+      passwordInput.addEventListener('input', validatePasswordRequirements);
+    }
+
+    // ... (restante do seu código original de initialize)
+    const hasErrors = form.dataset.hasErrors === 'true'
+    const errorStep = Number(form.dataset.errorStep || 1)
+    currentStep = hasErrors ? errorStep : 1
+    updateSteps()
+    setupFinalStepValidation()
+  }
 </script>
