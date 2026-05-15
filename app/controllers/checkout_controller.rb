@@ -1,5 +1,6 @@
 class CheckoutController < ApplicationController
   before_action :authenticate_user!
+  before_action :validar_upgrade!, only: [:stripe, :mercado_pago_pix]
 
   protect_from_forgery except: :stripe
 
@@ -70,5 +71,19 @@ class CheckoutController < ApplicationController
   end
 
   def sucesso
+  end
+
+  private
+
+  def validar_upgrade!
+    return if params[:plano] == "doacao"
+    
+    plano_solicitado = params[:plano].to_s
+    nivel_solicitado = Assinatura.planos[plano_solicitado] || 0
+    nivel_atual = current_user.assinatura.plano_before_type_cast
+
+    if nivel_solicitado <= nivel_atual
+      redirect_to planos_path, alert: "Você já possui este plano ou um superior. O downgrade não é permitido."
+    end
   end
 end

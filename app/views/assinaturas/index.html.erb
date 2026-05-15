@@ -23,101 +23,146 @@
           </p>
         </div>
       </div>
-    </div>
-
       <div class="w-full max-w-6xl mx-auto px-4 py-8">
-        <%# Simulando o plano atual do usuário vindo do backend (Ex: 'basic') %>
         <% plano_do_usuario = current_user.assinatura.plano %> 
 
-        <%= form_tag checkout_stripe_path, method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch", data: { turbo: false } do %>
-          <%# SELECIONAR FORMA DE PAGAMENTO %>
-          <%= hidden_field_tag :payment_method, "", id: "payment_method" %>
+        <% if current_user.assinatura.premium? %>
+          <div class="max-w-3xl mx-auto text-center space-y-8 py-12">
+            <div class="relative inline-block">
+              <div class="absolute inset-0 bg-yellow-500 blur-3xl opacity-20 animate-pulse"></div>
+              <div class="relative bg-[#1a2236] border-2 border-yellow-500/50 p-12 rounded-[3rem] shadow-2xl">
+                <div class="w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                
+                <h2 class="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Você é Premium!</h2>
+                <p class="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+                  Você já possui o melhor plano disponível e acesso ilimitado a todas as funcionalidades do <span class="text-yellow-500 font-bold">OrangScore</span>.
+                </p>
 
-          <%# --- BÁSICO --- %>
-          <label class="cursor-pointer group flex">
-            <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
-            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                        peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
-                        group-hover:border-white/20">
-              
-              <h2 class="text-xl font-bold text-slate-300">Basic</h2>
-              <div class="my-6">
-                <span class="text-4xl font-black text-orange-500">Grátis</span>
+                <div class="grid grid-cols-2 gap-4 mt-10">
+                  <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <span class="block text-2xl font-black text-yellow-500">∞</span>
+                    <span class="text-xs uppercase font-bold text-slate-500">Ligas</span>
+                  </div>
+                  <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <span class="block text-2xl font-black text-yellow-500">∞</span>
+                    <span class="text-xs uppercase font-bold text-slate-500">Membros</span>
+                  </div>
+                </div>
+
+                <div class="mt-10">
+                  <%= link_to "Voltar ao Dashboard", root_path, class: "btn btn-outline border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black rounded-2xl px-12" %>
+                </div>
               </div>
-              
-              <ul class="space-y-4 mb-8 flex-1">
-                <%= render "plano", text: "1 Liga" %>
-                <%= render "plano", text: "Até 5 membros na liga" %>
-                <%= render "plano", text: "Participe de quantas ligas quiser" %>
-              </ul>
-
-              <button type="button" data-plan="basic" data-current="<%= plano_do_usuario == 'basic' %>" 
-                      class="btn-plano btn btn-block border-none text-white rounded-xl">
-                <%= plano_do_usuario == 'basic' ? 'Plano Atual' : 'Mudar para Básico' %>
-              </button>
             </div>
-          </label>
+          </div>
+        <% else %>
+          <%= form_tag checkout_stripe_path, method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch", data: { turbo: false } do %>
+            <%# SELECIONAR FORMA DE PAGAMENTO %>
+            <%= hidden_field_tag :payment_method, "", id: "payment_method" %>
 
-          <%# --- PLUS --- %>
-          <label class="cursor-pointer group flex">
-            <input type="radio" name="plano" value="plus" class="peer hidden" <%= "checked" if plano_do_usuario == "plus" %> />
-            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                        peer-checked:border-orange-500 peer-checked:scale-105 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.5)]
-                        group-hover:border-white/20">
-              
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                Recomendado
+            <%# --- BÁSICO --- %>
+            <label class="cursor-pointer group flex">
+              <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
+              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                          peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                          group-hover:border-white/20">
+                
+                <h2 class="text-xl font-bold text-slate-300">Basic</h2>
+                <div class="my-6">
+                  <span class="text-4xl font-black text-orange-500">Grátis</span>
+                </div>
+                
+                <ul class="space-y-4 mb-8 flex-1">
+                  <%= render "plano", text: "1 Liga" %>
+                  <%= render "plano", text: "Até 5 membros na liga" %>
+                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
+                </ul>
+
+                <button type="button" 
+                        data-plan="basic" 
+                        data-level="0"
+                        data-current="<%= plano_do_usuario == 'basic' %>" 
+                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
+                        class="btn-plano btn btn-block border-none text-white rounded-xl">
+                  <%= plano_do_usuario == 'basic' ? 'Plano Atual' : (Assinatura.planos[plano_do_usuario] > 0 ? 'Indisponível' : 'Mudar para Básico') %>
+                </button>
               </div>
+            </label>
 
-              <h2 class="text-xl font-bold text-white">Plus</h2>
-              <div class="my-6">
-                <span class="text-4xl font-black text-white">R$ 4<span class="text-lg">,99</span></span>
+            <%# --- PLUS --- %>
+            <label class="cursor-pointer group flex">
+              <input type="radio" name="plano" value="plus" class="peer hidden" <%= "checked" if plano_do_usuario == "plus" %> />
+              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                          peer-checked:border-orange-500 peer-checked:scale-105 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.5)]
+                          group-hover:border-white/20">
+                
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                  Recomendado
+                </div>
+
+                <h2 class="text-xl font-bold text-white">Plus</h2>
+                <div class="my-6">
+                  <span class="text-4xl font-black text-white">R$ 1<span class="text-lg">,00</span></span>
+                </div>
+                
+                <ul class="space-y-4 mb-8 flex-1">
+                  <%= render "plano", text: "5 ligas" %>
+                  <%= render "plano", text: "Até 20 membros por liga" %>
+                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
+                  <%= render "plano", text: "Convite por link" %>
+                  <%= render "plano", text: "Acesso a ranking geral" %>
+                </ul>
+
+                <button type="button" 
+                        data-plan="plus" 
+                        data-level="1"
+                        data-current="<%= plano_do_usuario == 'plus' %>" 
+                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
+                        class="btn-plano btn btn-block border-none text-white rounded-xl">
+                  <%= plano_do_usuario == 'plus' ? 'Plano Atual' : (Assinatura.planos[plano_do_usuario] > 1 ? 'Indisponível' : 'Assinar Plus') %>
+                </button>
               </div>
-              
-              <ul class="space-y-4 mb-8 flex-1">
-                <%= render "plano", text: "5 ligas" %>
-                <%= render "plano", text: "Até 20 membros por liga" %>
-                <%= render "plano", text: "Participe de quantas ligas quiser" %>
-                <%= render "plano", text: "Convite por link" %>
-                <%= render "plano", text: "Acesso a ranking geral" %>
-              </ul>
+            </label>
 
-              <button type="button" data-plan="plus" data-current="<%= plano_do_usuario == 'plus' %>" 
-                      class="btn-plano btn btn-block border-none text-white rounded-xl">
-                <%= plano_do_usuario == 'plus' ? 'Plano Atual' : 'Assinar Plus' %>
-              </button>
-            </div>
-          </label>
+            <%# --- PREMIUM --- %>
+            <label class="cursor-pointer group flex">
+              <input type="radio" name="plano" value="premium" class="peer hidden" <%= "checked" if plano_do_usuario == "premium" %> />
+              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                          peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                          group-hover:border-white/20">
+                
+                <h2 class="text-xl font-bold text-slate-300">Premium</h2>
+                <div class="my-6">
+                  <span class="text-4xl font-black text-white">R$ 14<span class="text-lg">,99</span></span>
+                </div>
+                
+                <ul class="space-y-4 mb-8 flex-1">
+                  <%= render "plano", text: "Ligas ilimitadas" %>
+                  <%= render "plano", text: "Membros ilimitados" %>
+                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
+                  <%= render "plano", text: "Convite por link" %>
+                  <%= render "plano", text: "Acesso ao ranking geral" %>
+                  <%= render "plano", text: "Prioridade em novas funções" %>
+                </ul>
 
-          <%# --- PREMIUM --- %>
-          <label class="cursor-pointer group flex">
-            <input type="radio" name="plano" value="premium" class="peer hidden" <%= "checked" if plano_do_usuario == "premium" %> />
-            <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                        peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
-                        group-hover:border-white/20">
-              
-              <h2 class="text-xl font-bold text-slate-300">Premium</h2>
-              <div class="my-6">
-                <span class="text-4xl font-black text-white">R$ 14<span class="text-lg">,99</span></span>
+                <button type="button" 
+                        data-plan="premium" 
+                        data-level="2"
+                        data-current="<%= plano_do_usuario == 'premium' %>" 
+                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
+                        class="btn-plano btn btn-block border-none text-white rounded-xl">
+                  <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
+                </button>
               </div>
-              
-              <ul class="space-y-4 mb-8 flex-1">
-                <%= render "plano", text: "Ligas ilimitadas" %>
-                <%= render "plano", text: "Membros ilimitados" %>
-                <%= render "plano", text: "Participe de quantas ligas quiser" %>
-                <%= render "plano", text: "Convite por link" %>
-                <%= render "plano", text: "Acesso ao ranking geral" %>
-                <%= render "plano", text: "Prioridade em novas funções" %>
-              </ul>
-
-              <button type="button" data-plan="premium" data-current="<%= plano_do_usuario == 'premium' %>" 
-                      class="btn-plano btn btn-block border-none text-white rounded-xl">
-                <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
-              </button>
-            </div>
-          </label>
-
+            </label>
+          <% end %>
         <% end %>
+      </div>
+% end %>
       </div>
     </div>
 
@@ -173,6 +218,8 @@
         const btn = card.querySelector('.btn-plano');
         const planValue = radio.value;
         const isCurrent = btn.getAttribute('data-current') === 'true';
+        const planLevel = parseInt(btn.getAttribute('data-level'));
+        const userLevel = parseInt(btn.getAttribute('data-user-level'));
 
         if (radio.checked) {
           btn.classList.remove('bg-slate-700');
@@ -181,6 +228,11 @@
           if (isCurrent) {
             btn.innerText = "Plano Atual";
             btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+          } else if (planLevel < userLevel) {
+            btn.innerText = "Indisponível";
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
           } else {
             btn.innerText =
               planValue === 'basic'
@@ -188,13 +240,24 @@
                 : `Assinar ${planValue.charAt(0).toUpperCase() + planValue.slice(1)}`;
 
             btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
           }
         } else {
-          btn.classList.remove('bg-orange-500', 'text-black');
+          btn.classList.remove('bg-orange-500', 'text-black', 'opacity-50', 'cursor-not-allowed');
           btn.classList.add('bg-slate-700', 'text-white');
 
-          btn.innerText = "Selecionar";
-          btn.disabled = false;
+          if (isCurrent) {
+            btn.innerText = "Plano Atual";
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+          } else if (planLevel < userLevel) {
+            btn.innerText = "Indisponível";
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+          } else {
+            btn.innerText = "Selecionar";
+            btn.disabled = false;
+          }
         }
       });
     }
