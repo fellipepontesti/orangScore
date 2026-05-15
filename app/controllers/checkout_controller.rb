@@ -49,7 +49,7 @@ class CheckoutController < ApplicationController
       notification_url: notification_url,
       success_url: checkout_sucesso_url,
       failure_url: planos_url,
-      pending_url: checkout_pix_url(@cobranca)
+      pending_url: checkout_sucesso_url
     )
 
     redirect_to @cobranca.gateway_checkout_url, allow_other_host: true, status: :see_other

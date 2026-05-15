@@ -4,19 +4,23 @@ class MercadoPagoWebhooksController < ApplicationController
   before_action :set_request_format
 
   def create
-    payload = parsed_payload
-    payment_id = payload.dig("data", "id") || params.dig(:data, :id) || params["data.id"]
-    return head :bad_request if payment_id.blank?
+    # O Mercado Pago manda o ID no params ou no payload.
+    payment_id = params[:id] || params.dig(:data, :id)
+    topic = params[:topic] || params[:type]
 
-    unless valid_signature?(payment_id)
-      Rails.logger.warn "Falha na verificação do Webhook Mercado Pago"
-      return head :bad_request
+    # Se não for sobre pagamento, só respondemos OK para o MP parar de encher o saco
+    unless topic == "payment"
+      return head :ok
     end
 
-    return head :ok unless payload["type"] == "payment" || payload["action"].to_s.start_with?("payment.")
+    return head :ok if payment_id.blank?
 
+    # Busca os detalhes do pagamento no MP
     payment = MercadoPago::Client.new.payment(payment_id)
-    MercadoPago::ProcessarPagamento.new(payment: payment).call
+    
+    if payment
+      MercadoPago::ProcessarPagamento.new(payment: payment).call
+    end
 
     head :ok
   rescue JSON::ParserError => e

@@ -65,6 +65,7 @@ module MercadoPago
           failure: failure_url,
           pending: pending_url
         },
+        auto_return: "all",
         notification_url: notification_url
       }
     end
