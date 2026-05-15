@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   post "/stripe/webhook", to: "stripe_webhooks#create"
   post "/mercado_pago/webhook", to: "mercado_pago_webhooks#create", as: :mercado_pago_webhook
 
+  get 'checkout/obrigado', to: 'checkout#obrigado', as: :checkout_obrigado
+
   get  '/password/forgot', to: 'passwords#new', as: :new_password
   post '/password/forgot', to: 'passwords#request_recovery', as: :password_recovery
 

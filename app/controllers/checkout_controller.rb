@@ -7,7 +7,6 @@ class CheckoutController < ApplicationController
   def stripe
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
       limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
       valor_em_centavos = (limpo.to_f * 100).to_i
     end
@@ -22,7 +21,7 @@ class CheckoutController < ApplicationController
 
     session = Stripe::CreateCheckout.call(
       cobranca: cobranca,
-      success_url: "#{request.base_url}/checkout/sucesso",
+      success_url: params[:plano] == "doacao" ? checkout_obrigado_url : "#{request.base_url}/checkout/sucesso",
       cancel_url: planos_url
     )
 
@@ -35,7 +34,6 @@ class CheckoutController < ApplicationController
   def mercado_pago_pix
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
       limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
       valor_em_centavos = (limpo.to_f * 100).to_i
     end
@@ -73,7 +71,6 @@ class CheckoutController < ApplicationController
   def mercado_pago_pix_direto
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
       limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
       valor_em_centavos = (limpo.to_f * 100).to_i
     end
@@ -117,6 +114,9 @@ class CheckoutController < ApplicationController
   end
 
   def sucesso
+  end
+
+  def obrigado
   end
 
   private
