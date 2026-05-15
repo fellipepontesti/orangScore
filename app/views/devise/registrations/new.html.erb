@@ -161,6 +161,16 @@
             } %>
         </div>
 
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-3">
+            <%= f.check_box :terms_of_service, id: "user_terms_of_service", required: true, class: "checkbox checkbox-primary checkbox-sm" %>
+            <span class="label-text text-xs opacity-80 leading-relaxed">
+              Eu li e aceito os <%= link_to "Termos de Uso", termos_path, target: "_blank", class: "text-primary font-bold hover:underline" %> e a 
+              <%= link_to "Política de Privacidade", privacidade_path, target: "_blank", class: "text-primary font-bold hover:underline" %> do OrangScore.
+            </span>
+          </label>
+        </div>
+
         <div class="grid grid-cols-2 gap-3">
           <button
             type="button"
@@ -319,23 +329,32 @@
     }
   }
 
-  function setupSelecaoValidation () {
+  function setupFinalStepValidation () {
     const selecao = document.getElementById('user_selecao_id')
+    const terms = document.getElementById('user_terms_of_service')
     const submitButton = document.getElementById('submit-button')
-
-    if (!selecao || !submitButton) return
+    
+    if (!submitButton) return
 
     function toggleButton () {
-      const hasValue = selecao.value && selecao.value.trim() !== ''
-
-      submitButton.disabled = !hasValue
+      const selecaoValid = selecao && selecao.value && selecao.value.trim() !== ''
+      const termsValid = terms && terms.checked
+      
+      submitButton.disabled = !(selecaoValid && termsValid)
     }
 
-    selecao.addEventListener('change', toggleButton)
+    if (selecao) selecao.addEventListener('change', toggleButton)
+    if (terms) terms.addEventListener('change', toggleButton)
 
     toggleButton()
   }
 
-  document.addEventListener('DOMContentLoaded', initializeSignupForm)
-  document.addEventListener('turbo:load', initializeSignupForm)
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeSignupForm();
+    setupFinalStepValidation();
+  })
+  document.addEventListener('turbo:load', () => {
+    initializeSignupForm();
+    setupFinalStepValidation();
+  })
 </script>

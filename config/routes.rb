@@ -69,5 +69,8 @@ Rails.application.routes.draw do
   resources :grupos
   resources :selecoes
 
+  get '/termos', to: 'static_pages#termos', as: :termos
+  get '/privacidade', to: 'static_pages#privacidade', as: :privacidade
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -306,21 +306,20 @@
           Sua doação ajuda a manter o servidor online e trazer novas funcionalidades para todos!
         </p>
         
-        <%= form_with url: "#", method: :post, class: "mt-2 space-y-2" do |f| %>
+        <%= form_with url: "#", method: :post, id: "donation-form", class: "mt-2 space-y-2", data: { turbo: false } do |f| %>
           <%= f.hidden_field :plano, value: "doacao" %>
-          <%= f.hidden_field :payment_method, value: "card" %>
           
           <div class="relative">
             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold opacity-50">R$</span>
-            <%= f.text_field :valor, value: "2,00", class: "input input-bordered input-sm w-full pl-8 font-bold text-primary focus:border-primary" %>
+            <%= f.text_field :valor, value: "5,00", id: "donation-amount", class: "input input-bordered input-sm w-full pl-8 font-bold text-primary focus:border-primary", placeholder: "0,00" %>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button type="submit" formaction="<%= checkout_mercado_pago_pix_path %>" class="btn btn-primary btn-sm gap-1 px-1">
+            <button type="submit" onclick="this.form.action='<%= checkout_mercado_pago_pix_path %>'; this.form.submit(); return false;" class="btn btn-primary btn-sm gap-1 px-1">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               Doar Pix
             </button>
-            <button type="submit" formaction="<%= checkout_stripe_path %>" class="btn btn-secondary btn-sm gap-1 px-1">
+            <button type="submit" onclick="this.form.action='<%= checkout_stripe_path %>'; this.form.submit(); return false;" class="btn btn-secondary btn-sm gap-1 px-1">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
               Doar Cartão
             </button>
@@ -335,3 +334,19 @@
     </button>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('turbo:load', () => {
+    const amountInput = document.getElementById('donation-amount');
+    
+    if (amountInput) {
+      amountInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        value = (value / 100).toFixed(2) + '';
+        value = value.replace(".", ",");
+        value = value.replace(/(\d)(\?=(\d{3})+(?!\d))/g, "$1.");
+        e.target.value = value;
+      });
+    }
+  });
+</script>
