@@ -1,0 +1,36 @@
+<div class="flex items-center justify-center min-h-[80vh] px-4">
+  <div class="bg-[#1a2236] p-10 rounded-3xl text-center max-w-2xl w-full border border-primary/20 shadow-2xl">
+    <div class="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+      <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+      </svg>
+    </div>
+
+    <h1 class="text-3xl font-black text-white mb-4 uppercase tracking-tighter">
+      Atualizamos nossos Termos
+    </h1>
+
+    <p class="text-slate-300 mb-8 text-lg leading-relaxed">
+      Para continuar utilizando o <span class="text-primary font-bold">OrangScore</span>, você precisa ler e aceitar nossos novos Termos de Uso e Política de Privacidade, atualizados conforme a <span class="text-primary font-bold">LGPD</span>.
+    </p>
+
+    <div class="bg-white/5 p-6 rounded-2xl border border-white/10 mb-10 text-left space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 bg-primary rounded-full"></div>
+        <%= link_to "Ler Termos de Uso", termos_path, target: "_blank", class: "text-sm font-bold text-white hover:text-primary transition-colors underline" %>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 bg-primary rounded-full"></div>
+        <%= link_to "Ler Política de Privacidade", privacidade_path, target: "_blank", class: "text-sm font-bold text-white hover:text-primary transition-colors underline" %>
+      </div>
+    </div>
+
+    <%= button_to aceitar_termos_post_path, method: :post, class: "w-full py-4 px-8 rounded-2xl bg-primary text-white font-black text-xl hover:bg-primary/80 transition-all shadow-lg shadow-primary/20 transform hover:-translate-y-1" do %>
+      ACEITAR E CONTINUAR
+    <% end %>
+
+    <p class="mt-6 text-xs text-slate-500 uppercase tracking-widest font-bold">
+      Sua segurança e privacidade são nossa prioridade.
+    </p>
+  </div>
+</div>

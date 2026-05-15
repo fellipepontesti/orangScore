@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
+  before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :check_terms_acceptance, if: -> { user_signed_in? && !devise_controller? }
   
   protected
 
@@ -24,6 +26,18 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def check_terms_acceptance
+    # Se for root (tipo 1), não precisa travar (opcional, mas você pediu tipo diferente de 1)
+    return if current_user.root?
+    
+    # Se já aceitou, segue o jogo
+    return if current_user.terms_accepted_at.present?
+
+    # Se estiver tentando acessar a própria página de aceite ou termos/privacidade, não redireciona (evita loop)
+    # Essas rotas já estão com skip_before_action no StaticPagesController
+    redirect_to aceitar_termos_post_path unless request.path == "/aceitar-termos"
+  end
 
   def authorize_root!
     return if current_user&.root?

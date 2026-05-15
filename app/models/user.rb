@@ -21,6 +21,9 @@ class User < ApplicationRecord
         dependent: :destroy
 
 
+  attr_accessor :terms_of_service
+
+  before_create :set_terms_accepted_at
   after_create :criar_assinatura_padrao
 
   def total_pontos
@@ -97,6 +100,10 @@ class User < ApplicationRecord
     return if selecao.nil?
 
     self.logo_selecao = selecao.logo
+  end
+
+  def set_terms_accepted_at
+    self.terms_accepted_at = Time.current
   end
 
   def criar_assinatura_padrao

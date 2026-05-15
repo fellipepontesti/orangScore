@@ -60,12 +60,6 @@ module MercadoPago
           ],
           installments: 1
         },
-        payer: {
-          email: cobranca.user.email,
-          first_name: cobranca.user.name.split(" ").first,
-          last_name: cobranca.user.name.split(" ").last
-        },
-        statement_descriptor: "ORANGSCORE",
         back_urls: {
           success: success_url,
           failure: failure_url,
