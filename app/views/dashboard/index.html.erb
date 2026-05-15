@@ -381,29 +381,42 @@
   </div>
 </dialog>
 <script>
-  function submeterDoacaoPix() {
-  const cpfInput = document.getElementById('input_modal_cpf');
-  const amountInput = document.getElementById('donation-amount');
-  const btnModal = event.target; // O botão que foi clicado
+  // Adicionamos o parâmetro 'event' para capturar o botão clicado corretamente
+  function submeterDoacaoPix(event) {
+    const cpfInput = document.getElementById('input_modal_cpf');
+    const amountInput = document.getElementById('donation-amount');
+    
+    // Captura o botão através do evento ou fallback
+    const btnModal = event ? event.target : document.querySelector('#modal_doacao_cpf .btn-primary');
 
-  const cpfValue = cpfInput.value.replace(/\D/g, '');
-  // Converte "5,00" para "5.00" para o servidor entender
-  const amountValue = amountInput.value.replace(/\./g, '').replace(',', '.');
+    const cpfValue = cpfInput.value.replace(/\D/g, '');
+    
+    // TRATAMENTO DO VALOR:
+    // Remove pontos de milhar e troca a vírgula decimal por ponto.
+    // parseFloat + toFixed(2) garante que o envio seja "0.50" e não "50"
+    let amountRaw = amountInput.value.replace(/\./g, '').replace(',', '.');
+    let amountValue = parseFloat(amountRaw).toFixed(2);
 
-  if (cpfValue.length !== 11) {
-    alert("Por favor, digite um CPF válido com 11 números.");
-    return;
-  }
+    if (cpfValue.length !== 11) {
+      alert("Por favor, digite um CPF válido com 11 números.");
+      return;
+    }
 
-  // Desabilita o botão para evitar cliques duplos
+    if (isNaN(amountValue) || amountValue <= 0) {
+      alert("Por favor, insira um valor válido para doação.");
+      return;
+    }
+
+    // Feedback visual e bloqueio de cliques duplos
     btnModal.disabled = true;
+    const originalText = btnModal.innerText;
     btnModal.innerText = "Processando...";
 
     const formData = new FormData();
     formData.append('plano', 'doacao');
     formData.append('payment_method', 'pix');
     formData.append('cpf', cpfValue);
-    formData.append('valor', amountValue); // Certifique-se que seu controller lê params[:valor]
+    formData.append('valor', amountValue); 
     formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
 
     fetch('<%= checkout_mercado_pago_pix_direto_path %>', {
@@ -424,7 +437,7 @@
         } else if (data.error) {
           alert("Erro: " + data.error);
           btnModal.disabled = false;
-          btnModal.innerText = "Gerar Pix Agora";
+          btnModal.innerText = originalText;
         }
       }
     })
@@ -432,25 +445,28 @@
       console.error('Error:', error);
       alert("Houve um erro ao processar o Pix.");
       btnModal.disabled = false;
-      btnModal.innerText = "Gerar Pix Agora";
+      btnModal.innerText = originalText;
     });
   }
 
+  // Inicialização de máscaras e eventos após o carregamento do Turbo
   document.addEventListener('turbo:load', () => {
     const amountInput = document.getElementById('donation-amount');
+    const cpfInput = document.getElementById('input_modal_cpf');
     
+    // Máscara Monetária (Transforma 50 em 0,50 enquanto digita)
     if (amountInput) {
       amountInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
-        value = (value / 100).toFixed(2) + '';
+        if (value === '') value = '0';
+        value = (parseInt(value) / 100).toFixed(2) + '';
         value = value.replace(".", ",");
         value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
         e.target.value = value;
       });
     }
 
-    // Máscara de CPF básica para o modal
-    const cpfInput = document.getElementById('input_modal_cpf');
+    // Máscara de CPF (000.000.000-00)
     if (cpfInput) {
       cpfInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
