@@ -17,7 +17,6 @@ class DashboardController < ApplicationController
 
     # Ranking Global para todos
     # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
-    # Primeiro, carregamos todos os usuários com suas métricas em uma única consulta otimizada
     todos_usuarios = User
                       .joins("LEFT JOIN user_points ON user_points.user_id = users.id")
                       .joins("LEFT JOIN palpites ON palpites.user_id = users.id")
