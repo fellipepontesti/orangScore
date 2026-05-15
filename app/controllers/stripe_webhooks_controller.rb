@@ -1,5 +1,7 @@
 class StripeWebhooksController < ApplicationController
-  # Webhooks não possuem token de autenticidade (CSRF)
+  # Webhooks não possuem sessão de usuário ou token CSRF
+  skip_before_action :authenticate_user!
+  skip_before_action :check_terms_acceptance, raise: false
   skip_before_action :verify_authenticity_token
   
   # Força o Rails a tratar a requisição como JSON, evitando o erro de "Processing as XML"
