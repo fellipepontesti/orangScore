@@ -5,9 +5,10 @@ class MercadoPagoWebhooksController < ApplicationController
   skip_before_action :check_terms_acceptance
 
   def create
-    # O Mercado Pago manda o ID no params ou no payload.
-    payment_id = params[:id] || params.dig(:data, :id)
-    topic = params[:topic] || params[:type]
+    # O Mercado Pago manda o ID real dentro de 'data' se for do tipo novo (V1/V2).
+    # Se não tiver 'data', ele manda no 'id' (tipo antigo).
+    payment_id = params.dig(:data, :id) || params[:id]
+    topic = params[:type] || params[:topic]
 
     Rails.logger.info "[Webhook MP] Recebido: Topic: #{topic}, ID: #{payment_id}"
 
