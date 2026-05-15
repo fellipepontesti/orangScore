@@ -192,91 +192,103 @@
       <% @membros_ativos.each_with_index do |liga_membro, i| %>
         <li class="list-row flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-base-300/50! p-4 gap-4 border-b last:border-b-0 border-base-200">
           
-          <div class="flex items-center gap-4 w-full sm:w-auto">
+          <div class="flex items-center gap-4 w-full sm:w-1/3">
             <div class="w-10 flex items-center justify-center shrink-0">
               <%= rank_badge(i) %>
             </div>
 
-            <div class="avatar">
+            <div class="avatar shrink-0">
               <div class="mask mask-squircle h-12 w-12">
                 <%= image_tag "selecoes/#{liga_membro.user.logo_selecao}" %>
               </div>
             </div>
 
-            <div class="flex flex-col flex-1">
+            <div class="flex flex-col min-w-0">
               <div class="font-medium text-lg flex items-center gap-2">
-                <%= liga_membro.user.name %>
-                <span class="uppercase text-xs font-bold opacity-80 px-2 py-1 rounded-lg">
-                  <%= role_icon(liga_membro.role) %>
+                <span class="truncate max-w-[120px] sm:max-w-[180px]" title="<%= liga_membro.user.name %>">
+                  <%= liga_membro.user.name %>
                 </span>
+                <% icon = role_icon(liga_membro.role) %>
+                <% if icon.present? %>
+                  <span class="shrink-0">
+                    <%= icon %>
+                  </span>
+                <% end %>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center justify-between w-full sm:w-auto gap-6 mt-2 sm:mt-0">
-            <div class="flex flex-col items-start sm:items-end w-full sm:w-auto">
-              <span class="text-[10px] uppercase font-black opacity-40 tracking-widest">Pontuação</span>
+          <!-- ESPAÇO RESERVADO PARA GIFs/FUTURO -->
+          <div class="hidden sm:flex flex-1 justify-center items-center">
+            <%# Espaço futuro %>
+          </div>
+
+          <div class="flex items-center justify-end w-full sm:w-auto gap-4 sm:gap-8 mt-2 sm:mt-0">
+            <div class="flex flex-col items-center sm:items-end w-20 shrink-0">
+              <span class="text-[9px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
+              <span class="font-bold text-lg text-slate-300"><%= liga_membro.total_palpites || 0 %></span>
+            </div>
+
+            <div class="flex flex-col items-center sm:items-end w-24 shrink-0">
+              <span class="text-[9px] uppercase font-black opacity-30 tracking-tighter text-primary">Pontuação</span>
               <span class="font-black text-2xl text-primary"><%= liga_membro.total_pontos_ranking || 0 %></span>
             </div>
 
-            <% if liga_membro.role != "owner" %>
-              <% is_admin_allowed =
-                  @meu_vinculo&.role == "admin" &&
-                  liga_membro.status.in?(%w[invited accepted]) %>
+            <div class="flex justify-end gap-2 w-20 shrink-0">
+              <% if liga_membro.role != "owner" %>
+                <% is_admin_allowed =
+                    @meu_vinculo&.role == "admin" &&
+                    liga_membro.status.in?(%w[invited accepted]) %>
 
-              <% if current_user.root? || is_owner || is_admin_allowed %>
-                <div class="flex justify-end gap-2 shrink-0">
+                <% if current_user.root? || is_owner || is_admin_allowed %>
+                    <% if is_owner || current_user.root? %>
+                      <% if liga_membro.role == "admin"%>
+                        <% img_name="adm_red"%>
+                        <% message="Tem certeza que deseja remover o usuário #{liga_membro.user.name} da função de administrador da sua liga?"%>
+                      <%else%>
+                        <% message="Tem certeza que deseja adicionar o usuário #{liga_membro.user.name} como administrador da sua liga?"%>
+                        <% img_name="adm"%>
+                      <%end%>
+                      <%= button_to set_admin_liga_path(
+                            @liga,
+                            liga_membro_id: liga_membro.id
+                          ),
+                          method: :post,
+                          form: { data: { turbo_confirm: message } },
+                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-0" do %>
 
-                  <% if is_owner || current_user.root? %>
-                    <% if liga_membro.role == "admin"%>
-                      <% img_name="adm_red"%>
-                      <% message="Tem certeza que deseja remover o usuário #{liga_membro.user.name} da função de administrador da sua liga?"%>
-                    <%else%>
-                      <% message="Tem certeza que deseja adicionar o usuário #{liga_membro.user.name} como administrador da sua liga?"%>
-                      <% img_name="adm"%>
-                    <%end%>
-                    <%= button_to set_admin_liga_path(
-                          @liga,
-                          liga_membro_id: liga_membro.id
-                        ),
-                        method: :post,
-                        form: { data: { turbo_confirm: message } },
-                        class: "btn btn-sm btn-ghost hover:scale-110 transition" do %>
-
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-5 w-5">
-                          <%= image_tag "icons/#{img_name}.png" %>
+                        <div class="avatar">
+                          <div class="mask mask-squircle h-5 w-5">
+                            <%= image_tag "icons/#{img_name}.png" %>
+                          </div>
                         </div>
-                      </div>
-
+                      <% end %>
                     <% end %>
-                  <% end %>
 
-                  <% method = is_owner ? :delete : :patch %>
-                  <% confirm_message =
-                      is_owner ?
-                        "Remover este membro da liga?" :
-                        "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
-                  <% if current_user.root? || is_owner || current_user.id != liga_membro.user_id %>
-                    <%= button_to remove_member_liga_path(
-                          @liga,
-                          liga_membro_id: liga_membro.id
-                        ),
-                        method: method,
-                        form: { data: { turbo_confirm: confirm_message } },
-                        class: "btn btn-sm btn-ghost hover:scale-110 transition" do %>
+                    <% method = is_owner ? :delete : :patch %>
+                    <% confirm_message =
+                        is_owner ?
+                          "Remover este membro da liga?" :
+                          "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
+                    <% if current_user.root? || is_owner || current_user.id != liga_membro.user_id %>
+                      <%= button_to remove_member_liga_path(
+                            @liga,
+                            liga_membro_id: liga_membro.id
+                          ),
+                          method: method,
+                          form: { data: { turbo_confirm: confirm_message } },
+                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-0" do %>
 
-                      <div class="avatar">
-                        <div class="mask mask-squircle h-5 w-5 invert">
-                          <%= image_tag "icons/delete.png" %>
+                        <div class="avatar">
+                          <div class="mask mask-squircle h-5 w-5 invert">
+                            <%= image_tag "icons/delete.png" %>
+                          </div>
                         </div>
-                      </div>
+                      <% end %>
                     <% end %>
-                  <% end %>
-
-                </div>
+                <% end %>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </li>
       <% end %>
@@ -311,10 +323,47 @@
       </button>
     <% end %>
 
-    <%# TODO: SAIR DA LIGA / EXCLUIR LIGA %>
-    <%= button_to "Sair da liga", quit_liga_path(@liga), method: :delete,
-        class: "btn btn-ghost text-error hover:bg-error/10",
-        data: { turbo_confirm: "..." } %>
+    <% if @meu_vinculo&.role == "owner" %>
+      <button class="btn btn-ghost text-error hover:bg-error/10 border-error/20" onclick="modal_delete_liga.showModal()">
+        Excluir liga permanentemente
+      </button>
+
+      <%# MODAL DE EXCLUSÃO PERMANENTE %>
+      <dialog id="modal_delete_liga" class="modal">
+        <div class="modal-box border-2 border-error/50 bg-base-100">
+          <div class="text-center">
+            <div class="w-20 h-20 bg-error/20 rounded-full flex items-center justify-center mx-auto mb-4 text-error">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <h3 class="font-black text-2xl text-white mb-2 uppercase">Atenção, Capitão!</h3>
+            <p class="text-slate-400 mb-6">
+              Você está prestes a <strong>excluir permanentemente</strong> a liga <strong>"<%= @liga.nome %>"</strong>.
+              <br><br>
+              Esta ação irá remover todos os <%= @membros_ativos.size %> membros e apagar todo o histórico de competição. 
+              <span class="text-error font-bold uppercase block mt-2">Esta ação não pode ser desfeita!</span>
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <%= button_to liga_path(@liga), method: :delete,
+                class: "btn btn-error btn-block font-bold" do %>
+              Sim, excluir tudo agora
+            <% end %>
+            
+            <form method="dialog">
+              <button class="btn btn-ghost btn-block text-slate-400">Cancelar e manter liga</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+
+    <% else %>
+      <%= button_to "Sair da liga", quit_liga_path(@liga), method: :delete,
+          class: "btn btn-ghost text-error hover:bg-error/10",
+          data: { turbo_confirm: "Tem certeza que deseja sair desta liga?" } %>
+    <% end %>
   </div>
 
   <dialog id="add_member_modal" class="modal">

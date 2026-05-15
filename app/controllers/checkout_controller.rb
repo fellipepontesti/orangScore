@@ -24,7 +24,10 @@ class CheckoutController < ApplicationController
       cancel_url: planos_url
     )
 
-    redirect_to session.url, allow_other_host: true
+    respond_to do |format|
+      format.html { redirect_to session.url, allow_other_host: true }
+      format.json { render json: { redirect_url: session.url } }
+    end
   end
 
   def mercado_pago_pix

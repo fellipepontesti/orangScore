@@ -2,8 +2,8 @@ module LigasHelper
   def role_icon(role)
     {
       'owner'  => '<span class="text-primary font-black" title="Capitão">Ⓒ</span>',
-      'admin'  => '🛡️',
-      'member' => '👤'
+      'admin'  => '<span class="badge badge-sm bg-blue-500/20 text-blue-400 border-none font-bold px-2 py-0.5 rounded text-[10px]">ADM</span>',
+      'member' => ''
     }[role].html_safe
   end
 

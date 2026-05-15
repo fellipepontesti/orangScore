@@ -17,11 +17,16 @@ class LigasController < ApplicationController
   def show
     # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
     @membros_ativos = @liga.liga_membros
+                          .joins(:user)
                           .joins("LEFT JOIN user_points ON user_points.user_id = liga_membros.user_id")
+                          .joins("LEFT JOIN palpites ON palpites.user_id = liga_membros.user_id")
                           .where(status: :accepted)
-                          .group("liga_membros.id")
-                          .select("liga_membros.*, SUM(user_points.pontos) as total_pontos_ranking")
-                          .order('total_pontos_ranking DESC NULLS LAST, users.name ASC')
+                          .group("liga_membros.id, users.name")
+                          .select("liga_membros.*, 
+                                   SUM(DISTINCT user_points.id) filter (where user_points.id is not null) as dummy,
+                                   SUM(user_points.pontos) as total_pontos_ranking,
+                                   COUNT(DISTINCT palpites.id) as total_palpites")
+                          .order('total_pontos_ranking DESC NULLS LAST, total_palpites DESC, liga_membros.created_at ASC').to_a
 
     @membros_pendentes = @liga.liga_membros
                               .includes(:user)
