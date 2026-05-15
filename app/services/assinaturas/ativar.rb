@@ -6,6 +6,8 @@ module Assinaturas
     end
 
     def call
+      return if @plano == "doacao"
+
       assinatura = @usuario.assinatura || @usuario.build_assinatura
       assinatura.update!(
         plano: @plano,

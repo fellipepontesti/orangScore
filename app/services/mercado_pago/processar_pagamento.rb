@@ -24,7 +24,10 @@ module MercadoPago
         )
 
         Pagamentos::CreateMercadoPago.new(cobranca: cobranca, payment: payment).call
-        Assinaturas::Ativar.new(usuario: cobranca.user, plano: cobranca.plano).call
+
+        unless cobranca.plano == "doacao"
+          Assinaturas::Ativar.new(usuario: cobranca.user, plano: cobranca.plano).call
+        end
       end
     end
 
