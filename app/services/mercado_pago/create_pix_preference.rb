@@ -49,7 +49,6 @@ module MercadoPago
         ],
         external_reference: cobranca.id.to_s,
         payment_methods: {
-          default_payment_method_id: "pix",
           excluded_payment_types: [
             { id: "credit_card" },
             { id: "debit_card" },
