@@ -27,7 +27,7 @@ module Users
 
     def filtrar_nome(scope)
       return scope unless @nome.present?
-      scope.where("users.name ILIKE ?", "%#{@nome}%") # Adicionado 'users.' para evitar ambiguidade
+      scope.where("users.name ILIKE ?", "%#{@nome}%")
     end
 
     def filtrar_email(scope)
