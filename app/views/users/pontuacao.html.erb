@@ -1,0 +1,71 @@
+<div class="max-w-4xl mx-auto space-y-8">
+  <div class="flex flex-col gap-2">
+    <h1 class="text-4xl font-bold">Extrato de Pontos</h1>
+    <p class="opacity-70 text-lg">Veja o detalhamento de como você conquistou seus <%= current_user.total_pontos %> pontos.</p>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl border border-base-200">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr class="bg-base-200">
+            <th class="rounded-tl-xl">Data</th>
+            <th>Jogo</th>
+            <th>Motivo</th>
+            <th class="text-right rounded-tr-xl">Pontos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @user_points.any? %>
+            <% @user_points.each do |point| %>
+              <tr class="hover:bg-base-200/50 transition">
+                <td class="text-xs opacity-70">
+                  <%= point.created_at.strftime("%d/%m/%Y %H:%M") %>
+                </td>
+                <td class="font-bold">
+                  <% if point.jogo %>
+                    <div class="flex items-center gap-2">
+                      <div class="avatar shrink-0">
+                        <div class="mask mask-squircle w-6 h-6">
+                          <%= image_tag "selecoes/#{point.jogo.mandante.logo}" if point.jogo.mandante&.logo.present? %>
+                        </div>
+                      </div>
+                      <span class="text-xs"><%= point.jogo.mandante&.nome || point.jogo.nome_provisorio_mandante %></span>
+                      <span class="opacity-30">x</span>
+                      <span class="text-xs"><%= point.jogo.visitante&.nome || point.jogo.nome_provisorio_visitante %></span>
+                      <div class="avatar shrink-0">
+                        <div class="mask mask-squircle w-6 h-6">
+                          <%= image_tag "selecoes/#{point.jogo.visitante.logo}" if point.jogo.visitante&.logo.present? %>
+                        </div>
+                      </div>
+                    </div>
+                  <% else %>
+                    -
+                  <% end %>
+                </td>
+                <td>
+                  <span class="badge badge-ghost badge-sm"><%= point.motivo %></span>
+                </td>
+                <td class="text-right">
+                  <span class="text-xl font-black <%= point.pontos > 0 ? 'text-success' : 'text-error' %>">
+                    <%= point.pontos > 0 ? "+#{point.pontos}" : point.pontos %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center py-12 opacity-50 italic">
+                Você ainda não acumulou pontos no sistema.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex justify-center">
+    <%= link_to "Voltar para o Dashboard", authenticated_root_path, class: "btn btn-ghost" %>
+  </div>
+</div>

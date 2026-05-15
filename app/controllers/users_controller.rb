@@ -1,9 +1,13 @@
-class UsersController < ApplicationController
-  before_action :authorize_root!
+  before_action :authenticate_user!
+  before_action :authorize_root!, except: [:pontuacao]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
     @usuarios = Users::List.new(params).call
+  end
+
+  def pontuacao
+    @user_points = current_user.user_points.includes(:jogo).order(created_at: :desc)
   end
 
   def show

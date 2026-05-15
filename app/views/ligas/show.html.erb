@@ -13,7 +13,7 @@
 
       <%# TODO MUDAR A COR DE ACORDO COM A QTD DE PARTICIPANTES %>
       <span class="badge bg-primary/70! badge-lg p-4">
-        <%= @liga.total_participantes %>/<%= @liga.limite_participantes %>
+        <%= @liga.total_participantes %> / <%= @liga.owner.premium? ? "Ilimitados" : @liga.limite_participantes %>
         participantes
       </span>
 

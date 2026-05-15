@@ -4,11 +4,17 @@ class CheckoutController < ApplicationController
   protect_from_forgery except: :stripe
 
   def stripe
+    valor_em_centavos = nil
+    if params[:plano] == "doacao" && params[:valor].present?
+      valor_em_centavos = (params[:valor].gsub(",", ".").to_f * 100).to_i
+    end
+
     cobranca = Cobrancas::Create.call(
       user: current_user,
       plano: params[:plano],
       payment_method: params[:payment_method],
-      gateway: :stripe
+      gateway: :stripe,
+      valor_customizado: valor_em_centavos
     )
 
     session = Stripe::CreateCheckout.call(
@@ -21,22 +27,26 @@ class CheckoutController < ApplicationController
   end
 
   def mercado_pago_pix
+    valor_em_centavos = nil
+    if params[:plano] == "doacao" && params[:valor].present?
+      # Converte "10,50" ou "10.50" para 1050 centavos
+      valor_em_centavos = (params[:valor].gsub(",", ".").to_f * 100).to_i
+    end
+
     @cobranca = Cobrancas::Create.call(
       user: current_user,
       plano: params[:plano],
       gateway: :mercado_pago,
-      payment_method: :pix
+      payment_method: :pix,
+      valor_customizado: valor_em_centavos
     )
 
-    MercadoPago::CreatePixPreference.call(
+    MercadoPago::CreatePixPayment.call(
       cobranca: @cobranca,
-      notification_url: mercado_pago_webhook_url(host: ENV["WEBHOOK_HOST"]),
-      success_url: checkout_sucesso_url,
-      failure_url: planos_url,
-      pending_url: checkout_pix_url(@cobranca)
+      notification_url: mercado_pago_webhook_url(host: ENV["WEBHOOK_HOST"])
     )
 
-    redirect_to @cobranca.gateway_checkout_url, allow_other_host: true, status: :see_other
+    redirect_to checkout_pix_url(@cobranca), status: :see_other
   rescue MercadoPago::ApiError => e
     Rails.logger.error "Erro ao criar Pix Mercado Pago: #{e.message}"
     @cobranca&.destroy if @cobranca&.gateway_cobranca_id.blank?
