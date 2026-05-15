@@ -71,7 +71,7 @@ Rails.application.routes.draw do
 
   get '/termos', to: 'static_pages#termos', as: :termos
   get '/privacidade', to: 'static_pages#privacidade', as: :privacidade
-  post '/aceitar-termos', to: 'static_pages#aceitar_termos', as: :aceitar_termos_post
+  match '/aceitar-termos', to: 'static_pages#aceitar_termos', as: :aceitar_termos, via: [:get, :post]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

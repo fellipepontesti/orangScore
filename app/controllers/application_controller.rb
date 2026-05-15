@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
 
     # Se estiver tentando acessar a própria página de aceite ou termos/privacidade, não redireciona (evita loop)
     # Essas rotas já estão com skip_before_action no StaticPagesController
-    redirect_to aceitar_termos_post_path unless request.path == "/aceitar-termos"
+    redirect_to aceitar_termos_path unless request.path == "/aceitar-termos"
   end
 
   def authorize_root!
