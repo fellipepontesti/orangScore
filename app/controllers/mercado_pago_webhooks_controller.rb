@@ -1,6 +1,8 @@
 class MercadoPagoWebhooksController < ApplicationController
   skip_forgery_protection
   wrap_parameters false
+  skip_before_action :authenticate_user!
+  skip_before_action :check_terms_acceptance
 
   def create
     # O Mercado Pago manda o ID no params ou no payload.
