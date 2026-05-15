@@ -13,7 +13,7 @@ class CheckoutController < ApplicationController
     cobranca = Cobrancas::Create.call(
       user: current_user,
       plano: params[:plano],
-      payment_method: params[:payment_method],
+      payment_method: params[:payment_method].presence || "card",
       gateway: :stripe,
       valor_customizado: valor_em_centavos
     )
@@ -30,8 +30,9 @@ class CheckoutController < ApplicationController
   def mercado_pago_pix
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      # Converte "10,50" ou "10.50" para 1050 centavos
-      valor_em_centavos = (params[:valor].gsub(",", ".").to_f * 100).to_i
+      # Limpa tudo que não é número e converte
+      limpo = params[:valor].to_s.gsub(/[^\d]/, "").to_i
+      valor_em_centavos = limpo if limpo > 0
     end
 
     @cobranca = Cobrancas::Create.call(
@@ -48,19 +49,20 @@ class CheckoutController < ApplicationController
       cobranca: @cobranca,
       notification_url: notification_url,
       success_url: checkout_sucesso_url,
-      failure_url: planos_url,
+      failure_url: params[:plano] == "doacao" ? root_url : planos_url,
       pending_url: checkout_sucesso_url
     )
 
     redirect_to @cobranca.gateway_checkout_url, allow_other_host: true, status: :see_other
-  rescue MercadoPago::ApiError => e
-    Rails.logger.error "Erro ao criar Pix Mercado Pago: #{e.message}"
-    @cobranca&.destroy if @cobranca&.gateway_cobranca_id.blank?
-    redirect_to planos_path, alert: e.user_message, status: :see_other
   rescue => e
+    # Se for um erro conhecido da nossa API do MP, podemos tentar pegar a mensagem
+    user_message = e.respond_to?(:user_message) ? e.user_message : "Não foi possível gerar o Pix. Tente novamente em instantes."
+    
     Rails.logger.error "Erro ao criar Pix Mercado Pago: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
     @cobranca&.destroy if @cobranca&.gateway_cobranca_id.blank?
-    redirect_to planos_path, alert: "Não foi possível gerar o Pix. Tente novamente em instantes.", status: :see_other
+    
+    path = params[:plano] == "doacao" ? root_path : planos_path
+    redirect_to path, alert: user_message, status: :see_other
   end
 
   def pix
