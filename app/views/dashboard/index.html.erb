@@ -296,7 +296,8 @@
 <!-- Botão Flutuante de Doação (Apenas para Basic) -->
 <% if current_user.basic? %>
   <div class="fixed bottom-6 right-6 z-50 group">
-    <div class="absolute bottom-full right-0 mb-4 w-64 bg-base-100 p-4 rounded-2xl shadow-2xl border border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto scale-90 group-hover:scale-100 transform origin-bottom-right duration-300">
+    <!-- Popup: bottom-full garante que abre pra CIMA. pb-10 + -mb-10 cria a ponte invisível -->
+    <div class="absolute bottom-full right-0 w-64 bg-base-100 p-4 rounded-2xl shadow-2xl border border-primary/20 opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto scale-90 group-hover:scale-100 transform origin-bottom-right duration-300 pb-10 -mb-6">
       <div class="flex flex-col gap-2">
         <h3 class="font-bold text-primary flex items-center gap-2">
           Apoie o OrangScore ❤️

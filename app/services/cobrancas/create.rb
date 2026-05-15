@@ -1,8 +1,8 @@
 module Cobrancas
   class Create
     PLANOS = {
-      "doacao" => 500, # Doação de 5 reais
-      "plus" => 50, # 50 centavos para teste em produção
+      "doacao" => 500,
+      "plus" => 100,
       "premium" => 1499
     }.freeze
 
