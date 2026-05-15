@@ -2,7 +2,7 @@ module Cobrancas
   class Create
     PLANOS = {
       "doacao" => 500,
-      "plus" => 100,
+      "plus" => 200,
       "premium" => 1499
     }.freeze
 

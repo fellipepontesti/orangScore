@@ -49,6 +49,15 @@ module MercadoPago
         ],
         external_reference: cobranca.id.to_s,
         payment_methods: {
+          excluded_payment_types: [
+            { id: "credit_card" },
+            { id: "debit_card" },
+            { id: "ticket" },
+            { id: "atm" },
+            { id: "prepaid_card" },
+            { id: "digital_currency" },
+            { id: "digital_wallet" }
+          ],
           installments: 1
         },
         back_urls: {
