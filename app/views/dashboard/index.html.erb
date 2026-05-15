@@ -91,7 +91,7 @@
   <!-- Cards de Resumo -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <!-- Card 1: Sua Seleção -->
-    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= grupo_path(current_user.selecao.grupo) %>'">
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= jogos_path(grupo: current_user.selecao.grupo_id) %>'">
       <div class="card-body items-center text-center">
         <h2 class="card-title text-sm opacity-70 uppercase tracking-wider mb-2">Sua Seleção</h2>
         <div class="flex flex-col items-center gap-3">

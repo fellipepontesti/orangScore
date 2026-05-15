@@ -16,6 +16,10 @@
 
 body {
   font-family: 'Outfit', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.5;
 }
 
 .btn {

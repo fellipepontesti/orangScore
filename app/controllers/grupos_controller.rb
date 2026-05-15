@@ -1,5 +1,6 @@
 class GruposController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_root!, except: %i[index show]
   before_action :set_grupo, only: %i[ show edit update destroy ]
 
   def index

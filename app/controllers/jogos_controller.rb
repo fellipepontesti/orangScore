@@ -2,7 +2,7 @@ class JogosController < ApplicationController
   before_action :authenticate_user!
   before_action :set_jogo, only: %i[ show edit update destroy start finalize finish ]
   before_action :load_selecoes, only: %i[new create edit update finalize]
-  before_action :authorize_root!, only: %i[new create edit update destroy start finalize finish]
+  before_action :authorize_root!, except: %i[index show]
 
   def index
     @tipo_ativo = params[:tipo].presence || 'grupo'

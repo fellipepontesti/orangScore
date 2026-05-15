@@ -45,15 +45,17 @@
           :back,
           class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
 
-        <%= link_to "Editar seleção",
-          edit_selecao_path(@selecao),
-          class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80! font-medium" %>
+        <% if current_user.root? %>
+          <%= link_to "Editar seleção",
+            edit_selecao_path(@selecao),
+            class: "rounded-md px-5 py-3 bg-warning hover:bg-warning/80! font-medium" %>
 
-        <%= button_to "Excluir",
-          @selecao,
-          method: :delete,
-          class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80! font-medium",
-          data: { turbo_confirm: "Tem certeza?" } %>
+          <%= button_to "Excluir",
+            @selecao,
+            method: :delete,
+            class: "rounded-md px-5 py-3 text-white bg-error hover:bg-error/80! font-medium",
+            data: { turbo_confirm: "Tem certeza?" } %>
+        <% end %>
       </div>
     </div>
   </div>

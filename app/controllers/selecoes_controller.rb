@@ -1,5 +1,6 @@
 class SelecoesController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_root!, except: %i[index show]
   before_action :load_grupos, only: %i[new create edit update]
   before_action :logos_disponiveis, only: %i[new create edit update]
   before_action :set_selecao, only: %i[ show edit update destroy ]

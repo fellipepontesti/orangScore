@@ -51,16 +51,16 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = false
 
-  # Log to STDOUT and log/production.log
+  # Configuração de Log Robusta: Grava em arquivo com rotação
+  logger = ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
+  logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(logger)
+
+  # Se quiser ver também no console (STDOUT)
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    config.logger = ActiveSupport::Logger.new(STDOUT)
-      .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
-      .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
-  else
-    # Grava no arquivo log/production.log com rotação de 10 arquivos de 50MB cada
-    config.logger = ActiveSupport::TaggedLogging.new(
-      ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
-    )
+    console_logger = ActiveSupport::Logger.new(STDOUT)
+    console_logger.formatter = config.log_formatter
+    config.logger.extend(ActiveSupport::Logger.broadcast(console_logger))
   end
 
   # Prepend all log lines with the following tags.
