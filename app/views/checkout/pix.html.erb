@@ -66,18 +66,12 @@
   // Polling simples para verificar o status (opcional, já que temos Webhook)
   // Mas ajuda na experiência do usuário
   // Polling para verificar o status
-  <script>
-  // ... sua função copyPixCode anterior ...
-
   const pollingInterval = setInterval(() => {
     fetch('<%= checkout_pix_path(@cobranca, format: :json) %>?t=' + Date.now())
       .then(response => response.json())
       .then(data => {
-        // Verifica se o status mudou para aprovado ou pago
         if (data.status === 'approved' || data.status === 'pago') {
           clearInterval(pollingInterval);
-          
-          // Lógica de redirecionamento condicional
           <% if @cobranca.plano == "doacao" %>
             window.location.href = '<%= checkout_obrigado_path %>';
           <% else %>
