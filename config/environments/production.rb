@@ -51,19 +51,10 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = false
 
-  # Configuração de Log Robusta (Rails 7.1+): Grava em arquivo e STDOUT simultaneamente
-  file_logger = ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
-  file_logger.formatter = config.log_formatter
-  
-  loggers = [ActiveSupport::TaggedLogging.new(file_logger)]
-
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    console_logger = ActiveSupport::Logger.new(STDOUT)
-    console_logger.formatter = config.log_formatter
-    loggers << ActiveSupport::TaggedLogging.new(console_logger)
-  end
-
-  config.logger = ActiveSupport::BroadcastLogger.new(*loggers)
+  # Configuração de Log Simples e Segura: Grava em arquivo com rotação
+  config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
+  config.logger.formatter = config.log_formatter
+  config.logger = ActiveSupport::TaggedLogging.new(config.logger)
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id, :remote_ip ]
