@@ -1,5 +1,10 @@
 class UsersController < ApplicationController
+<<<<<<< Updated upstream
   before_action :authorize_root!
+=======
+  before_action :authenticate_user!
+  before_action :authorize_root!, except: [:pontuacao]
+>>>>>>> Stashed changes
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
