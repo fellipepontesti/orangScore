@@ -26,6 +26,10 @@
       jogos_path(tipo: :semi),
       class: "btn #{ @tipo_ativo == 'semi' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
 
+    <%= link_to "Terceiro lugar",
+      jogos_path(tipo: :terceiro_lugar),
+      class: "btn #{ @tipo_ativo == 'terceiro_lugar' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+
     <%= link_to "Final",
       jogos_path(tipo: :final),
       class: "btn #{ @tipo_ativo == 'final' ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
