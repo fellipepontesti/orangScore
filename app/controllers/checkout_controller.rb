@@ -7,7 +7,9 @@ class CheckoutController < ApplicationController
   def stripe
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      valor_em_centavos = (params[:valor].gsub(",", ".").to_f * 100).to_i
+      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
+      limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
+      valor_em_centavos = (limpo.to_f * 100).to_i
     end
 
     cobranca = Cobrancas::Create.call(
@@ -33,9 +35,9 @@ class CheckoutController < ApplicationController
   def mercado_pago_pix
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      # Limpa tudo que não é número e converte
-      limpo = params[:valor].to_s.gsub(/[^\d]/, "").to_i
-      valor_em_centavos = limpo if limpo > 0
+      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
+      limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
+      valor_em_centavos = (limpo.to_f * 100).to_i
     end
 
     @cobranca = Cobrancas::Create.call(
@@ -71,8 +73,9 @@ class CheckoutController < ApplicationController
   def mercado_pago_pix_direto
     valor_em_centavos = nil
     if params[:plano] == "doacao" && params[:valor].present?
-      limpo = params[:valor].to_s.gsub(/[^\d]/, "").to_i
-      valor_em_centavos = limpo if limpo > 0
+      # Remove pontos (milhar) e troca vírgula por ponto para conversão correta
+      limpo = params[:valor].to_s.gsub(".", "").gsub(",", ".")
+      valor_em_centavos = (limpo.to_f * 100).to_i
     end
 
     @cobranca = Cobrancas::Create.call(

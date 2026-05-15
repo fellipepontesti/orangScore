@@ -16,9 +16,18 @@ class DashboardController < ApplicationController
     end
 
     # Ranking Global para todos
-    # Ranking Global para todos
-    todos_usuarios = User.all.sort_by { |u| -(u.total_pontos || 0) }
+    # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
+    # Primeiro, carregamos todos os usuários com suas métricas em uma única consulta otimizada
+    todos_usuarios = User
+                      .joins("LEFT JOIN user_points ON user_points.user_id = users.id")
+                      .joins("LEFT JOIN palpites ON palpites.user_id = users.id")
+                      .group("users.id")
+                      .select("users.*, 
+                               COALESCE(SUM(user_points.pontos), 0) as total_pontos_ranking, 
+                               COUNT(DISTINCT palpites.id) as total_palpites")
+                      .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC").to_a
+
     @ranking_global = todos_usuarios.first(5)
-    @user_global_rank = todos_usuarios.index(current_user) + 1
+    @user_global_rank = todos_usuarios.index(current_user) ? todos_usuarios.index(current_user) + 1 : "-"
   end
 end
