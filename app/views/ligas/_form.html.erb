@@ -29,11 +29,6 @@
         </div>
 
         <div class="stat sm:col-span-2 rounded-box flex flex-col sm:flex-row gap-4 items-center justify-center">
-
-          <%= link_to "Voltar",
-            ligas_path,
-            class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
-
           <%= form.submit(
             liga.persisted? ? "Salvar alterações" : "Criar liga",
             class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80! font-medium text-white"

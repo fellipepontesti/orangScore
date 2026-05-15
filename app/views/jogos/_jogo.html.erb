@@ -126,10 +126,6 @@
       </div>
 
       <div class="stat sm:col-span-2 rounded-box flex flex-wrap gap-4 justify-center">
-        <%= link_to "Voltar",
-          jogos_path,
-          class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-medium" %>
-
         <% if current_user.root? %>
           <%= link_to "Editar jogo",
             edit_jogo_path(jogo),

@@ -301,9 +301,6 @@
 
   <%# MENU DE AÇÕES %>
   <div class="mt-12 flex flex-wrap justify-center gap-4">
-    <%= link_to "Voltar", ligas_path,
-      class: "btn btn-ghost text-slate-400 hover:text-white" %>
-
     <% if @meu_vinculo&.role == "owner" %>
       <% total_pendencias = @membros_pendentes.count + @membros_excluir.count %>
       

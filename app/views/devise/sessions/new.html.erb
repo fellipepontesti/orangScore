@@ -21,9 +21,23 @@
         <%= f.label :password, class: "label" do %>
           <span class="label-text font-medium pb-4">Senha</span>
         <% end %>
-        <%= f.password_field :password,
-          autocomplete: "current-password",
-          class: "input input-bordered w-full" %>
+
+        <%# O container 'relative' deve envolver apenas o input e o botão %>
+        <div class="relative w-full">
+          <%= f.password_field :password,
+            id: "password",
+            autocomplete: "current-password",
+            class: "input input-bordered w-full pr-10" %> <%# pr-10 para o texto não sobrepor o ícone %>
+          
+          <button type="button" 
+                  class="absolute inset-y-0 right-0 flex items-center pr-3" 
+                  onclick="togglePasswordVisibility('password')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 opacity-50 hover:opacity-100" id="eye-icon-password">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.31 5 12 5s8.601 3.049 9.964 6.678c.07.232.07.467 0 .701C20.601 15.951 16.69 19 12 19s-8.601-3.049-9.964-6.678z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <% if devise_mapping.rememberable? %>
@@ -61,3 +75,16 @@
     </div>
   </div>
 </div>
+<script>
+  function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    const icon = document.getElementById(`eye-icon-${id}`);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.add('text-primary');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('text-primary');
+    }
+  }
+</script>

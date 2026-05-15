@@ -58,7 +58,7 @@ class LigasController < ApplicationController
   end
 
   def remove_member
-    @liga = Liga.find(params[:id])
+    @meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
 
     unless @meu_vinculo&.role.in?(%w[owner admin]) || current_user.root?
       return redirect_to @liga, alert: "Você não tem permissão para remover membros."
