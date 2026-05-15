@@ -209,8 +209,20 @@
                   </a>
                 </li>
               <% end %>
+              <li>
+                <a href="<%= pontuacao_users_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(pontuacao_users_path) %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 invert shrink-0 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Meus Pontos</span>
+                </a>
+              </li>
               <li class="mt-auto">
-                <a href="/planos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(grupos_path) %>">
+                <button onclick="rules_modal.showModal()" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl w-full text-left">
+                  <div class="h-6 w-6 invert shrink-0 transition-transform group-hover:scale-110">?</div>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Como pontuar</span>
+                </button>
+              </li>
+              <li>
+                <a href="/planos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(planos_path) %>">
                   <%= image_tag "icons/premium.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
                   <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Planos</span>
                 </a>
@@ -220,5 +232,63 @@
         </div>
       <%end%>
     </div>
+
+    <!-- Modal de Regras de Pontuação -->
+    <dialog id="rules_modal" class="modal">
+      <div class="modal-box max-w-2xl border border-primary/20 shadow-2xl">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-12 h-12 bg-primary flex items-center justify-center rounded-2xl shadow-lg shadow-primary/20">
+            <span class="text-2xl font-black text-white">?</span>
+          </div>
+          <div>
+            <h3 class="font-black text-2xl">Sistema de Pontuação</h3>
+            <p class="text-sm opacity-70 italic">Entenda como você escala no ranking global</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Placar Exato</span>
+              <span class="badge badge-primary font-black">+10 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Quando você acerta exatamente o número de gols de ambos os times.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Vencedor + Gols</span>
+              <span class="badge badge-info font-black">+7 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Acerta o vencedor/empate e o número de gols de apenas um dos times.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Apenas Vencedor</span>
+              <span class="badge badge-secondary font-black">+5 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Acerta apenas quem ganha ou se dá empate, sem acertar nenhum placar.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Apenas Gols</span>
+              <span class="badge badge-ghost font-black">+2 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Erra o resultado final, mas acerta o número de gols de um dos times.</p>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn btn-primary rounded-xl px-8">Entendido!</button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
   </body>
 </html>

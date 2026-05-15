@@ -7,6 +7,10 @@ class UsersController < ApplicationController
     @usuarios = Users::List.new(params).call
   end
 
+  def pontuacao
+    @user_points = current_user.user_points.includes(:jogo).order(created_at: :desc)
+  end
+
   def show
   end
 

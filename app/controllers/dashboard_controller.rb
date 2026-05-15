@@ -14,5 +14,10 @@ class DashboardController < ApplicationController
                                      .sort_by { |lm| -(lm.user.total_pontos || 0) }
                                      .first(5)
     end
+
+    # Ranking Global para todos
+    @ranking_global = User.all
+                          .sort_by { |u| -(u.total_pontos || 0) }
+                          .first(10)
   end
 end

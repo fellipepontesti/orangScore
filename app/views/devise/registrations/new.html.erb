@@ -147,7 +147,7 @@
           <% end %>
 
           <%= f.collection_select :selecao_id,
-            Selecao.order(:nome),
+            Selecao.where.not(nome: 'A definir').order(:nome),
             :id,
             :nome,
             {

@@ -23,7 +23,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy]
+  resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy] do
+    get :pontuacao, on: :collection
+  end
 
   post "/checkout/stripe", to: "checkout#stripe"
   post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"
