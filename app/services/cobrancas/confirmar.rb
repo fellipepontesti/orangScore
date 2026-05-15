@@ -15,6 +15,8 @@ module Cobrancas
 
         Pagamentos::Create.new(cobranca: @cobranca, session: @session).call
 
+        return true if @cobranca.doacao?
+
         if @user.assinatura.present?
           @user.assinatura.update!(plano: @cobranca.plano)
         else
@@ -22,7 +24,7 @@ module Cobrancas
         end
       end
     rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error "💥 Erro ao confirmar cobrança: #{e.message}"
+      Rails.logger.error "Erro ao confirmar cobrança: #{e.message}"
       raise e
     end
   end

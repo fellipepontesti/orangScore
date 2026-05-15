@@ -7,7 +7,8 @@ class Assinatura < ApplicationRecord
   enum :plano, {
     basic: 0,
     plus: 1,
-    premium: 2
+    premium: 2,
+    doacao: 3
   }
 
   def limite_ligas

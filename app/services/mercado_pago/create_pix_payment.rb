@@ -37,7 +37,7 @@ module MercadoPago
 
       {
         transaction_amount: (cobranca.valor.to_f / 100).round(2),
-        description: "Plano #{cobranca.plano.capitalize} - OrangScore",
+        description: cobranca.plano == "doacao" ? "Doação para OrangScore" : "Plano #{cobranca.plano.capitalize} - OrangScore",
         payment_method_id: "pix",
         external_reference: cobranca.id.to_s,
         payer: {
