@@ -102,6 +102,7 @@ class CheckoutController < ApplicationController
 
   def pix
     @cobranca = current_user.cobrancas.find(params[:id])
+    @cobranca.reload
 
     respond_to do |format|
       format.html

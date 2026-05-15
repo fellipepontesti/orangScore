@@ -65,13 +65,16 @@
 
   // Polling simples para verificar o status (opcional, já que temos Webhook)
   // Mas ajuda na experiência do usuário
-  setInterval(() => {
-    fetch('<%= checkout_pix_path(@cobranca, format: :json) %>')
+  // Polling para verificar o status
+  const pollingInterval = setInterval(() => {
+    fetch('<%= checkout_pix_path(@cobranca, format: :json) %>?t=' + Date.now())
       .then(response => response.json())
       .then(data => {
-        if (data.status === 'approved') {
+        if (data.status === 'approved' || data.status === 'pago') {
+          clearInterval(pollingInterval);
           window.location.href = '<%= checkout_sucesso_path %>';
         }
-      });
+      })
+      .catch(err => console.error("Erro no polling:", err));
   }, 3000);
 </script>

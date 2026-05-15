@@ -18,5 +18,7 @@ class Selecao < ApplicationRecord
     message: 'já está sendo utilizada por outra seleção'
   }, unless: -> { logo == 'sem-escudo.png' }
   
-  scope :ordenadas, -> { order(pontos: :desc, nome: :asc) }
+  scope :ordenadas, -> { 
+    order(Arel.sql('pontos DESC, (gols - gols_sofridos) DESC, gols DESC, nome ASC')) 
+  }
 end

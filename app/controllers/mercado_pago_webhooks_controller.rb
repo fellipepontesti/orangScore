@@ -10,7 +10,8 @@ class MercadoPagoWebhooksController < ApplicationController
     payment_id = params.dig(:data, :id) || params[:id]
     topic = params[:type] || params[:topic]
 
-    Rails.logger.info "[Webhook MP] Recebido: Topic: #{topic}, ID: #{payment_id}"
+    Rails.logger.info "[Webhook MP] Notificação recebida. Topic: #{topic}, Resource ID: #{payment_id}"
+    Rails.logger.info "[Webhook MP] Params: #{params.to_unsafe_h.to_json}"
 
     # Se não for sobre pagamento, só respondemos OK para o MP parar de encher o saco
     unless topic == "payment"

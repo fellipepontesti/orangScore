@@ -193,8 +193,8 @@
         <li class="list-row flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-base-300/50! p-4 gap-4 border-b last:border-b-0 border-base-200">
           
           <div class="flex items-center gap-4 w-full sm:w-auto">
-            <div class="font-bold text-lg w-8 flex items-center justify-center shrink-0">
-              <%= i + 1 %>°
+            <div class="w-10 flex items-center justify-center shrink-0">
+              <%= rank_badge(i) %>
             </div>
 
             <div class="avatar">
@@ -206,20 +206,17 @@
             <div class="flex flex-col flex-1">
               <div class="font-medium text-lg flex items-center gap-2">
                 <%= liga_membro.user.name %>
-                <span class="uppercase text-[10px] font-semibold opacity-70 bg-base-200 px-2 py-1 rounded-full">
+                <span class="uppercase text-xs font-bold opacity-80 px-2 py-1 rounded-lg">
                   <%= role_icon(liga_membro.role) %>
                 </span>
-              </div>
-              <div class="text-sm font-semibold mt-1">
-                Status: <%= status_icon(liga_membro.status) %>
               </div>
             </div>
           </div>
 
           <div class="flex items-center justify-between w-full sm:w-auto gap-6 mt-2 sm:mt-0">
             <div class="flex flex-col items-start sm:items-end w-full sm:w-auto">
-              <span class="text-xs uppercase font-semibold opacity-60">Pontuação</span>
-              <span class="font-bold text-xl text-primary"><%= liga_membro.user.pontos %></span>
+              <span class="text-[10px] uppercase font-black opacity-40 tracking-widest">Pontuação</span>
+              <span class="font-black text-2xl text-primary"><%= liga_membro.total_pontos_ranking || 0 %></span>
             </div>
 
             <% if liga_membro.role != "owner" %>

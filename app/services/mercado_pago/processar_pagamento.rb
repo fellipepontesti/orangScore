@@ -10,6 +10,9 @@ module MercadoPago
     def call
       return unless cobranca
 
+      Rails.logger.info "[Pagamento MP] Processando Cobranca ##{cobranca.id}. Status recebido: #{payment["status"]}"
+      Rails.logger.info "[Pagamento MP] Payload Completo: #{payment.to_json}"
+
       cobranca.update!(gateway_status: payment["status"])
       return unless payment["status"] == APPROVED_STATUS
       return if cobranca.pago?
