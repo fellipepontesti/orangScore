@@ -374,49 +374,41 @@
       <form method="dialog">
         <button class="btn btn-ghost">Cancelar</button>
       </form>
-      <button type="button" class="btn btn-primary" onclick="submeterDoacaoPix()">
+      <button type="button" class="btn btn-primary" onclick="submeterDoacaoPix(event)">
         Gerar Pix Agora
       </button>
     </div>
   </div>
 </dialog>
+
 <script>
-  // Adicionamos o parâmetro 'event' para capturar o botão clicado corretamente
   function submeterDoacaoPix(event) {
     const cpfInput = document.getElementById('input_modal_cpf');
     const amountInput = document.getElementById('donation-amount');
     
-    // Captura o botão através do evento ou fallback
+    // Captura o botão que foi clicado
     const btnModal = event ? event.target : document.querySelector('#modal_doacao_cpf .btn-primary');
 
     const cpfValue = cpfInput.value.replace(/\D/g, '');
     
-    // TRATAMENTO DO VALOR:
-    // Remove pontos de milhar e troca a vírgula decimal por ponto.
-    // parseFloat + toFixed(2) garante que o envio seja "0.50" e não "50"
-    let amountRaw = amountInput.value.replace(/\./g, '').replace(',', '.');
-    let amountValue = parseFloat(amountRaw).toFixed(2);
+    // --- CORREÇÃO PARA O SEU CONTROLLER ---
+    // Se o controller faz .gsub(".", "").gsub(",", "."), ele quer o formato "0,50" ou "5,00"
+    // Mantemos a vírgula para que o seu controller a transforme em ponto ANTES da multiplicação.
+    const amountValue = amountInput.value; 
 
     if (cpfValue.length !== 11) {
       alert("Por favor, digite um CPF válido com 11 números.");
       return;
     }
 
-    if (isNaN(amountValue) || amountValue <= 0) {
-      alert("Por favor, insira um valor válido para doação.");
-      return;
-    }
-
-    // Feedback visual e bloqueio de cliques duplos
     btnModal.disabled = true;
-    const originalText = btnModal.innerText;
     btnModal.innerText = "Processando...";
 
     const formData = new FormData();
     formData.append('plano', 'doacao');
     formData.append('payment_method', 'pix');
     formData.append('cpf', cpfValue);
-    formData.append('valor', amountValue); 
+    formData.append('valor', amountValue); // Envia "0,50"
     formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
 
     fetch('<%= checkout_mercado_pago_pix_direto_path %>', {
@@ -437,7 +429,7 @@
         } else if (data.error) {
           alert("Erro: " + data.error);
           btnModal.disabled = false;
-          btnModal.innerText = originalText;
+          btnModal.innerText = "Gerar Pix Agora";
         }
       }
     })
@@ -445,28 +437,25 @@
       console.error('Error:', error);
       alert("Houve um erro ao processar o Pix.");
       btnModal.disabled = false;
-      btnModal.innerText = originalText;
+      btnModal.innerText = "Gerar Pix Agora";
     });
   }
 
-  // Inicialização de máscaras e eventos após o carregamento do Turbo
   document.addEventListener('turbo:load', () => {
     const amountInput = document.getElementById('donation-amount');
-    const cpfInput = document.getElementById('input_modal_cpf');
     
-    // Máscara Monetária (Transforma 50 em 0,50 enquanto digita)
     if (amountInput) {
       amountInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
-        if (value === '') value = '0';
-        value = (parseInt(value) / 100).toFixed(2) + '';
+        // Garante que o valor seja formatado como moeda BR enquanto digita
+        value = (value / 100).toFixed(2) + '';
         value = value.replace(".", ",");
         value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
         e.target.value = value;
       });
     }
 
-    // Máscara de CPF (000.000.000-00)
+    const cpfInput = document.getElementById('input_modal_cpf');
     if (cpfInput) {
       cpfInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
