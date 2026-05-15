@@ -25,11 +25,13 @@ module Jogos
 
     def calcular_pontos_palpite(palpite)
       if acertou_placar_exato?(palpite)
-        [10, "Acerto exato do placar"]
+        [10, "Placar Exato"]
+      elsif acertou_vencedor_ou_empate?(palpite) && acertou_gols_de_um_time?(palpite)
+        [7, "Vencedor/Empate + Gols de um time"]
       elsif acertou_vencedor_ou_empate?(palpite)
-        [5, "Acerto do vencedor ou empate"]
+        [5, "Apenas Vencedor/Empate"]
       else
-        [2, "Participação no palpite"]
+        [2, "Participação"]
       end
     end
 
@@ -38,10 +40,14 @@ module Jogos
     end
 
     def acertou_vencedor_ou_empate?(palpite)
-      resultado_jogo = @jogo.gols_mandante <=> @jogo.gols_visitante
-      resultado_palpite = palpite.gols_casa <=> palpite.gols_fora
+      resultado_jogo = (@jogo.gols_mandante <=> @jogo.gols_visitante)
+      resultado_palpite = (palpite.gols_casa <=> palpite.gols_fora)
       
       resultado_jogo == resultado_palpite
+    end
+
+    def acertou_gols_de_um_time?(palpite)
+      palpite.gols_casa == @jogo.gols_mandante || palpite.gols_fora == @jogo.gols_visitante
     end
 
     def atribuir_bonus_campeao
@@ -52,8 +58,8 @@ module Jogos
         UserPoint.create!(
           user: user,
           jogo: @jogo,
-          pontos: 30,
-          motivo: "Bônus por acertar a seleção campeã"
+          pontos: 25,
+          motivo: "Campeão do Torneio"
         )
       end
     end
@@ -64,8 +70,6 @@ module Jogos
       elsif @jogo.gols_visitante > @jogo.gols_mandante
         @jogo.visitante_id
       else
-        # Em caso de empate na final, o sistema atual não rastreia pênaltis
-        # Uma melhoria futura poderia buscar o vencedor dos pênaltis
         nil
       end
     end

@@ -47,9 +47,42 @@
               <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary relative flex items-center gap-2 overflow-visible">
                   <span>
-                    <%= current_user.name %>
-                  </span>
+                    <div class="flex items-center gap-2">
+                      
+                      <% if current_user.assinatura&.plus? %>
+                        <span class="px-3 py-1 text-[10px] font-black rounded-full
+                                    bg-gradient-to-b from-orange-300 via-orange-500 to-orange-700
+                                    text-white
+                                    border border-orange-300
+                                    shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35)]
+                                    tracking-wide">
+                          PLUS
+                        </span>
 
+                      <% elsif current_user.assinatura&.premium? %>
+                        <span class="px-3 py-1 text-[10px] font-black rounded-full
+                                    bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700
+                                    text-white
+                                    border border-yellow-300
+                                    shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35)]
+                                    tracking-wide">
+                          PREMIUM
+                        </span>
+
+                      <% else %>
+                        <span class="px-3 py-1 text-[10px] font-black rounded-full
+                                    bg-gradient-to-b from-slate-300 via-slate-500 to-slate-700
+                                    text-white
+                                    border border-slate-300
+                                    shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_2px_6px_rgba(0,0,0,0.35)]
+                                    tracking-wide">
+                          FREE
+                        </span>
+                      <% end %>
+
+                      <span><%= current_user.name %></span>
+                    </div>
+                  </span>
                   <div class="bg-base-300 text-neutral-content w-8 h-8 rounded-full flex items-center justify-center shrink-0">
                     <span class="font-semibold"><%= current_user.name.first.upcase %></span>
                   </div>
@@ -211,13 +244,13 @@
               <% end %>
               <li>
                 <a href="<%= pontuacao_users_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(pontuacao_users_path) %>">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 invert shrink-0 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                  <%= image_tag "icons/missao.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
                   <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Meus Pontos</span>
                 </a>
               </li>
               <li class="mt-auto">
                 <button onclick="rules_modal.showModal()" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl w-full text-left">
-                  <div class="h-6 w-6 invert shrink-0 transition-transform group-hover:scale-110">?</div>
+                  <%= image_tag "icons/duvida.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
                   <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Como pontuar</span>
                 </button>
               </li>
@@ -246,6 +279,22 @@
           </div>
         </div>
 
+        <div class="card bg-base-200 p-4 border border-warning/20 mb-5 shadow-lg">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-bold text-sm flex items-center gap-2">
+              🏆 Campeão do Torneio
+            </span>
+
+            <span class="badge badge-warning font-white text-white">
+              +25 pts
+            </span>
+          </div>
+
+          <p class="text-xs opacity-70">
+            Acerte a seleção campeã da Copa e receba uma grande bonificação no ranking.
+          </p>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="card bg-base-200 p-4 border border-base-300">
             <div class="flex justify-between items-center mb-2">
@@ -257,10 +306,12 @@
 
           <div class="card bg-base-200 p-4 border border-base-300">
             <div class="flex justify-between items-center mb-2">
-              <span class="font-bold text-sm">Vencedor + Gols</span>
+              <span class="font-bold text-sm">Vencedor/Empate</span>
               <span class="badge badge-info font-black">+7 pts</span>
             </div>
-            <p class="text-xs opacity-60">Acerta o vencedor/empate e o número de gols de apenas um dos times.</p>
+            <p class="text-xs opacity-60">
+              Você acertou o vencedor (ou empate) e também acertou os gols de um dos times.
+            </p>
           </div>
 
           <div class="card bg-base-200 p-4 border border-base-300">
@@ -268,15 +319,15 @@
               <span class="font-bold text-sm">Apenas Vencedor</span>
               <span class="badge badge-secondary font-black">+5 pts</span>
             </div>
-            <p class="text-xs opacity-60">Acerta apenas quem ganha ou se dá empate, sem acertar nenhum placar.</p>
+            <p class="text-xs opacity-60"> Você acertou apenas quem venceu ou se a partida terminou empatada.</p>
           </div>
 
           <div class="card bg-base-200 p-4 border border-base-300">
             <div class="flex justify-between items-center mb-2">
-              <span class="font-bold text-sm">Apenas Gols</span>
+              <span class="font-bold text-sm">Participação</span>
               <span class="badge badge-ghost font-black">+2 pts</span>
             </div>
-            <p class="text-xs opacity-60">Erra o resultado final, mas acerta o número de gols de um dos times.</p>
+            <p class="text-xs opacity-60">Errou tudo, toma um premio por ter participado!</p>
           </div>
         </div>
 
