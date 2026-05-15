@@ -1,12 +1,13 @@
 class MercadoPagoWebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
-
-  before_action :set_request_format
+  skip_forgery_protection
+  wrap_parameters false
 
   def create
     # O Mercado Pago manda o ID no params ou no payload.
     payment_id = params[:id] || params.dig(:data, :id)
     topic = params[:topic] || params[:type]
+
+    Rails.logger.info "[Webhook MP] Recebido: Topic: #{topic}, ID: #{payment_id}"
 
     # Se não for sobre pagamento, só respondemos OK para o MP parar de encher o saco
     unless topic == "payment"
@@ -23,31 +24,9 @@ class MercadoPagoWebhooksController < ApplicationController
     end
 
     head :ok
-  rescue JSON::ParserError => e
-    Rails.logger.error "Payload inválido no Webhook Mercado Pago: #{e.message}"
-    head :bad_request
   rescue => e
     Rails.logger.error "Erro no Webhook Mercado Pago: #{e.message}"
     Rails.logger.error e.backtrace.first(5).join("\n")
     head :internal_server_error
-  end
-
-  private
-
-  def parsed_payload
-    JSON.parse(request.body.read)
-  end
-
-  def valid_signature?(payment_id)
-    MercadoPago::WebhookSignature.valid?(
-      data_id: payment_id,
-      request_id: request.headers["x-request-id"],
-      signature: request.headers["x-signature"],
-      secret: MercadoPago::Config.webhook_secret
-    )
-  end
-
-  def set_request_format
-    request.format = :json
   end
 end
