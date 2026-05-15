@@ -42,9 +42,11 @@ class CheckoutController < ApplicationController
       valor_customizado: valor_em_centavos
     )
 
+    notification_url = "#{ENV["WEBHOOK_HOST"].gsub(/\/$/, '')}/mercado_pago/webhook"
+
     MercadoPago::CreatePixPreference.call(
       cobranca: @cobranca,
-      notification_url: mercado_pago_webhook_url(host: ENV["WEBHOOK_HOST"]),
+      notification_url: notification_url,
       success_url: checkout_sucesso_url,
       failure_url: planos_url,
       pending_url: checkout_pix_url(@cobranca)
