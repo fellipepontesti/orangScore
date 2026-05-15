@@ -225,46 +225,23 @@
   }
 
   function validatePasswordsAndContinue () {
-  const password = document.getElementById('password')
-  const confirmation = document.getElementById('password_confirmation')
+    const password = document.getElementById('password')
+    const confirmation = document.getElementById('password_confirmation')
 
-  password.setCustomValidity('')
-  confirmation.setCustomValidity('')
+    if (!password || !confirmation) return
 
-  const passwordValue = password.value
+    password.setCustomValidity('')
+    confirmation.setCustomValidity('')
 
-  const hasMinLength = passwordValue.length >= 8
-  const hasUppercase = /[A-Z]/.test(passwordValue)
-  const hasLowercase = /[a-z]/.test(passwordValue)
-  const hasNumber = /[0-9]/.test(passwordValue)
+    const passwordValue = password.value
+    const hasMinLength = passwordValue.length >= 8
+    const hasUppercase = /[A-Z]/.test(passwordValue)
+    const hasLowercase = /[a-z]/.test(passwordValue)
+    const hasNumber = /[0-9]/.test(passwordValue)
     const hasSymbol = /[^A-Za-z0-9]/.test(passwordValue)
 
-    if (!hasMinLength) {
-      password.setCustomValidity('A senha deve ter pelo menos 8 caracteres')
-      password.reportValidity()
-      return
-    }
-
-    if (!hasUppercase) {
-      password.setCustomValidity('A senha deve ter pelo menos uma letra maiúscula')
-      password.reportValidity()
-      return
-    }
-
-    if (!hasLowercase) {
-      password.setCustomValidity('A senha deve ter pelo menos uma letra minúscula')
-      password.reportValidity()
-      return
-    }
-
-    if (!hasNumber) {
-      password.setCustomValidity('A senha deve ter pelo menos um número')
-      password.reportValidity()
-      return
-    }
-
-    if (!hasSymbol) {
-      password.setCustomValidity('A senha deve ter pelo menos um símbolo')
+    if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSymbol) {
+      password.setCustomValidity('A senha não atende aos requisitos')
       password.reportValidity()
       return
     }
@@ -278,57 +255,6 @@
     nextStep()
   }
 
-  function initializeSignupForm () {
-    const form = document.getElementById('signup-form')
-    if (!form) return
-
-    const hasErrors = form.dataset.hasErrors === 'true'
-    const errorStep = Number(form.dataset.errorStep || 1)
-
-    if (hasErrors) {
-      const password = document.getElementById('password')
-      const confirmation = document.getElementById('password_confirmation')
-
-      if (password) {
-        password.value = ''
-        password.setCustomValidity('')
-      }
-
-      if (confirmation) {
-        confirmation.value = ''
-        confirmation.setCustomValidity('')
-      }
-    }
-
-    currentStep = hasErrors ? errorStep : 1
-    updateSteps()
-    setupStepEnterBehavior()
-    setupSelecaoValidation()
-  }
-
-  function setupStepEnterBehavior () {
-    const password = document.getElementById('password')
-    const confirmation = document.getElementById('password_confirmation')
-
-    if (password) {
-      password.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          event.preventDefault()
-          validatePasswordsAndContinue()
-        }
-      })
-    }
-
-    if (confirmation) {
-      confirmation.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          event.preventDefault()
-          validatePasswordsAndContinue()
-        }
-      })
-    }
-  }
-
   function setupFinalStepValidation () {
     const selecao = document.getElementById('user_selecao_id')
     const terms = document.getElementById('user_terms_of_service')
@@ -337,24 +263,37 @@
     if (!submitButton) return
 
     function toggleButton () {
-      const selecaoValid = selecao && selecao.value && selecao.value.trim() !== ''
+      const selecaoValid = selecao && selecao.value !== ""
       const termsValid = terms && terms.checked
       
-      submitButton.disabled = !(selecaoValid && termsValid)
+      // Remove o atributo disabled se ambos forem válidos
+      if (selecaoValid && termsValid) {
+        submitButton.removeAttribute('disabled')
+      } else {
+        submitButton.setAttribute('disabled', 'true')
+      }
     }
 
     if (selecao) selecao.addEventListener('change', toggleButton)
     if (terms) terms.addEventListener('change', toggleButton)
 
+    // Executa uma vez ao carregar para o caso de o navegador lembrar o check
     toggleButton()
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initializeSignupForm();
-    setupFinalStepValidation();
-  })
-  document.addEventListener('turbo:load', () => {
-    initializeSignupForm();
-    setupFinalStepValidation();
-  })
+  function initializeSignupForm () {
+    const form = document.getElementById('signup-form')
+    if (!form) return
+
+    const hasErrors = form.dataset.hasErrors === 'true'
+    const errorStep = Number(form.dataset.errorStep || 1)
+
+    currentStep = hasErrors ? errorStep : 1
+    updateSteps()
+    setupFinalStepValidation() // Chama a validação do botão aqui também
+  }
+
+  // Garante que rode em qualquer situação de carregamento do Rails (Turbo ou não)
+  document.addEventListener('turbo:load', initializeSignupForm)
+  document.addEventListener('DOMContentLoaded', initializeSignupForm)
 </script>
