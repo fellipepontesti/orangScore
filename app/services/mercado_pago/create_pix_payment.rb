@@ -1,15 +1,17 @@
 module MercadoPago
   class CreatePixPayment
-    def self.call(cobranca:, notification_url:)
+    def self.call(cobranca:, notification_url:, cpf: nil)
       new(
         cobranca: cobranca,
-        notification_url: notification_url
+        notification_url: notification_url,
+        cpf: cpf
       ).call
     end
 
-    def initialize(cobranca:, notification_url:, client: Client.new)
+    def initialize(cobranca:, notification_url:, cpf: nil, client: Client.new)
       @cobranca = cobranca
       @notification_url = notification_url
+      @cpf = cpf.to_s.gsub(/\D/, "")
       @client = client
     end
 
@@ -26,7 +28,7 @@ module MercadoPago
 
     private
 
-    attr_reader :cobranca, :notification_url, :client
+    attr_reader :cobranca, :notification_url, :cpf, :client
 
     def payload
       name_parts = (cobranca.user.name || "Usuario Orang").split(" ")
@@ -44,7 +46,7 @@ module MercadoPago
           last_name: last_name,
           identification: {
             type: "CPF",
-            number: "19100000000" # CPF genérico para teste, o MP aceita qualquer um válido em sandbox/alguns casos prod se não for KYC restrito
+            number: cpf.presence || "19100000000" # Se não vier CPF, usa o mock (apenas para teste)
           }
         },
         notification_url: notification_url

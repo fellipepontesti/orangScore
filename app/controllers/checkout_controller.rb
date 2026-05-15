@@ -65,6 +65,41 @@ class CheckoutController < ApplicationController
     redirect_to path, alert: user_message, status: :see_other
   end
 
+  def mercado_pago_pix_direto
+    valor_em_centavos = nil
+    if params[:plano] == "doacao" && params[:valor].present?
+      limpo = params[:valor].to_s.gsub(/[^\d]/, "").to_i
+      valor_em_centavos = limpo if limpo > 0
+    end
+
+    @cobranca = Cobrancas::Create.call(
+      user: current_user,
+      plano: params[:plano],
+      gateway: :mercado_pago,
+      payment_method: :pix,
+      valor_customizado: valor_em_centavos
+    )
+
+    notification_url_host = ENV["WEBHOOK_HOST"].presence || request.base_url
+    notification_url = "#{notification_url_host.gsub(/\/$/, '')}/mercado_pago/webhook"
+
+    MercadoPago::CreatePixPayment.call(
+      cobranca: @cobranca,
+      notification_url: notification_url,
+      cpf: params[:cpf]
+    )
+
+    redirect_to checkout_pix_path(@cobranca)
+  rescue => e
+    Rails.logger.error "[Pix Direto] Erro: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+    @cobranca&.destroy if @cobranca&.gateway_cobranca_id.blank?
+    
+    respond_to do |format|
+      format.html { redirect_to planos_path, alert: "Erro ao gerar Pix: #{e.message}" }
+      format.json { render json: { error: e.message }, status: :unprocessable_entity }
+    end
+  end
+
   def pix
     @cobranca = current_user.cobrancas.find(params[:id])
 

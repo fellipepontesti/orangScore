@@ -1,4 +1,5 @@
 class StaticPagesController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:termos, :privacidade]
   skip_before_action :check_terms_acceptance, only: [:termos, :privacidade, :aceitar_termos]
 
   def termos

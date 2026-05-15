@@ -190,8 +190,23 @@
           id="btn-pix"
           type="button"
           class="btn bg-emerald-500 border-none text-white">
-          Pix
+          Pix (Abrir Mercado Pago)
         </button>
+
+        <div class="divider text-[10px] opacity-20 uppercase font-black">ou</div>
+
+        <!-- NOVO FLUXO DIRETO -->
+        <div id="pix-direto-container" class="space-y-3">
+          <div class="form-control">
+            <input type="text" id="user-cpf" placeholder="Seu CPF (apenas números)" class="input input-bordered bg-base-300 w-full text-center font-bold" maxlength="14" />
+          </div>
+          <button
+            id="btn-pix-direto"
+            type="button"
+            class="btn btn-primary btn-block shadow-lg shadow-primary/20">
+            Pagar Pix sem sair do site
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -202,6 +217,7 @@
     const form = document.getElementById('form-planos');
     const radios = form.querySelectorAll('input[type="radio"]');
     const buttons = form.querySelectorAll('.btn-plano');
+    let currentPlan = null;
 
     const modal = document.getElementById('payment-modal');
     const paymentInput = document.getElementById('payment_method');
@@ -266,41 +282,76 @@
 
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        const plan = btn.dataset.plan;
+        currentPlan = btn.dataset.plan;
 
         if (btn.dataset.current === 'true') return;
 
-        const radio = document.querySelector(`input[value="${plan}"]`);
+        const radio = document.querySelector(`input[value="${currentPlan}"]`);
         radio.checked = true;
+        updateButtons();
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
       });
     });
 
-    function submitPayment(path, paymentMethod, button) {
-      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-      const csrfInput = form.querySelector('input[name="authenticity_token"]');
+    // MÁSCARA CPF
+    const cpfInput = document.getElementById('user-cpf');
+    if (cpfInput) {
+      cpfInput.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.slice(0, 11);
+        
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        
+        e.target.value = value;
+      });
+    }
 
-      if (csrfMeta && csrfInput) {
-        csrfInput.value = csrfMeta.content;
-      }
-
-      paymentInput.value = paymentMethod;
-      form.action = path;
-
-      // Fecha o modal imediatamente para não travar a UI
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-
+    function submitPayment(url, paymentMethod, button, extraParams = {}) {
+      const originalText = button.innerText;
       button.disabled = true;
-      button.innerText = 'Gerando pagamento...';
+      button.innerText = 'Processando...';
 
-      if (form.requestSubmit) {
-        form.requestSubmit();
-      } else {
-        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      const formData = new FormData();
+      formData.append('plano', currentPlan);
+      formData.append('payment_method', paymentMethod);
+      formData.append('authenticity_token', '<%= form_authenticity_token %>');
+      
+      for (const key in extraParams) {
+        formData.append(key, extraParams[key]);
       }
+
+      fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-Token': '<%= form_authenticity_token %>',
+          'Accept': 'application/json'
+        }
+      })
+      .then(async response => {
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else {
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Erro desconhecido no servidor');
+          }
+          // Se houver algum redirecionamento manual no JSON
+          if (data.redirect_url) {
+            window.location.href = data.redirect_url;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        button.disabled = false;
+        button.innerText = originalText;
+        alert('Erro: ' + error.message);
+      });
     }
 
     cardButton.addEventListener('click', () => {
@@ -310,6 +361,19 @@
     pixButton.addEventListener('click', () => {
       submitPayment('<%= checkout_mercado_pago_pix_path %>', 'pix', pixButton);
     });
+
+    // EVENTO PIX DIRETO
+    const pixDiretoBtn = document.getElementById('btn-pix-direto');
+    if (pixDiretoBtn) {
+      pixDiretoBtn.addEventListener('click', () => {
+        const cpf = document.getElementById('user-cpf').value.replace(/\D/g, '');
+        if (cpf.length < 11) {
+          alert("Por favor, informe um CPF válido.");
+          return;
+        }
+        submitPayment('<%= checkout_mercado_pago_pix_direto_path %>', 'pix', pixDiretoBtn, { cpf: cpf });
+      });
+    }
 
     document.getElementById('close-payment-modal').addEventListener('click', () => {
       modal.classList.add('hidden');
@@ -323,6 +387,5 @@
       }
     });
   });
-
 </script>
 </div>

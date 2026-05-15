@@ -29,6 +29,7 @@ Rails.application.routes.draw do
 
   post "/checkout/stripe", to: "checkout#stripe"
   post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"
+  post "/checkout/mercado_pago/pix_direto", to: "checkout#mercado_pago_pix_direto", as: :checkout_mercado_pago_pix_direto
   get "/checkout/pix/:id", to: "checkout#pix", as: :checkout_pix
   get "/checkout/sucesso", to: "checkout#sucesso", as: :checkout_sucesso
   post "/stripe/webhook", to: "stripe_webhooks#create"
