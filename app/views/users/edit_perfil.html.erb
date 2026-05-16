@@ -1,0 +1,52 @@
+<% content_for :title, "Editar perfil" %>
+
+<div class="w-full max-w-3xl mx-auto px-4">
+  <h1 class="font-bold text-4xl mb-8">Editar perfil</h1>
+
+  <div class="bg-base-100 shadow-lg rounded-box p-8">
+    <% if @usuario.errors.any? %>
+      <div class="alert alert-error mb-6">
+        <span><%= @usuario.errors.full_messages.to_sentence %></span>
+      </div>
+    <% end %>
+
+    <%= form_with model: @usuario, url: perfil_path, method: :patch do |f| %>
+      <div class="form-control mb-5">
+        <label class="label mb-4">
+          <span class="label-text">Nome</span>
+        </label>
+        <%= f.text_field :name,
+          class: "input input-bordered w-full",
+          required: true,
+          pattern: "[A-Za-zÀ-ÖØ-öø-ÿ\\s]+",
+          title: "Use apenas letras e espaços" %>
+        <p class="text-xs text-base-content/50 mt-2">Use apenas letras e espaços.</p>
+      </div>
+
+      <div class="form-control mb-4">
+        <label class="label mb-4">
+          <span class="label-text">Seleção que torce</span>
+        </label>
+
+        <% if @usuario.selecao_editavel? %>
+          <%= f.collection_select :selecao_id,
+            @selecoes,
+            :id,
+            :nome,
+            {},
+            class: "select select-bordered w-full" %>
+        <% else %>
+          <input class="input input-bordered w-full" value="<%= @usuario.selecao&.nome %>" disabled>
+          <p class="text-xs text-base-content/50 mt-2">
+            A seleção só pode ser alterada antes do primeiro jogo da Copa.
+          </p>
+        <% end %>
+      </div>
+
+      <div class="flex justify-between">
+        <%= link_to "Voltar", perfil_path, class: "btn btn-ghost" %>
+        <%= f.submit "Salvar alterações", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

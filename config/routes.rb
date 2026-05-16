@@ -27,6 +27,10 @@ Rails.application.routes.draw do
     get :pontuacao, on: :collection
   end
 
+  get "/perfil", to: "users#perfil", as: :perfil
+  get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
+  patch "/perfil", to: "users#update_perfil"
+
   post "/checkout/stripe", to: "checkout#stripe"
   post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"
   post "/checkout/mercado_pago/pix_direto", to: "checkout#mercado_pago_pix_direto", as: :checkout_mercado_pago_pix_direto

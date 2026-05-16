@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -13,6 +13,35 @@ class UsersController < ApplicationController
 
   def pontuacao
     @user_points = current_user.user_points.includes(:jogo).order(created_at: :desc)
+  end
+
+  def perfil
+    @usuario = current_user
+  end
+
+  def edit_perfil
+    @usuario = current_user
+    @selecoes = Selecao.order(:nome)
+  end
+
+  def update_perfil
+    @usuario = current_user
+    atributos = perfil_params
+
+    if atributos[:selecao_id].present? && !@usuario.selecao_editavel?
+      atributos.delete(:selecao_id)
+      flash.now[:alert] = "A seleção só pode ser alterada antes do primeiro jogo da Copa."
+      @selecoes = Selecao.where.not(nome: "A definir").order(:nome)
+      return render :edit_perfil, status: :unprocessable_entity
+    end
+
+    @usuario.update!(atributos)
+
+    redirect_to perfil_path, notice: "Perfil atualizado com sucesso"
+  rescue ActiveRecord::RecordInvalid => e
+    @selecoes = Selecao.order(:nome)
+    flash.now[:alert] = e.record.errors.full_messages.to_sentence.presence || e.message
+    render :edit_perfil, status: :unprocessable_entity
   end
 
   def show
@@ -43,5 +72,9 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :email, :pontos, :logo_selecao)
+  end
+
+  def perfil_params
+    params.require(:user).permit(:name, :selecao_id)
   end
 end

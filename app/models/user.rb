@@ -34,6 +34,13 @@ class User < ApplicationRecord
             :selecao_id,
             :logo_selecao,
             presence: true
+
+  validates :name,
+            format: {
+              with: /\A[\p{L}\s]+\z/,
+              message: "deve conter apenas letras e espaços"
+            },
+            allow_blank: true
   
   validates :terms_of_service, acceptance: true
         
@@ -92,7 +99,13 @@ class User < ApplicationRecord
     assinatura.limite_usuarios_por_liga
   end
 
-  before_validation :set_logo_selecao, on: :create
+  def selecao_editavel?
+    primeiro_jogo_em = Jogo.minimum(:data)
+
+    primeiro_jogo_em.blank? || Time.current < primeiro_jogo_em
+  end
+
+  before_validation :set_logo_selecao, if: :will_save_change_to_selecao_id?
 
   private
 
