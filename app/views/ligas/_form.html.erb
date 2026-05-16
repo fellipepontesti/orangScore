@@ -28,6 +28,22 @@
           </div>
         </div>
 
+        <div class="stat rounded-box sm:col-span-2">
+          <div class="form-control mb-4">
+            <label class="cursor-pointer label justify-start gap-4">
+              <%= form.check_box :publica, class: "toggle toggle-primary", id: "toggle_publica" %>
+              <span class="label-text font-bold">Liga Pública (Qualquer pessoa pode encontrar)</span>
+            </label>
+          </div>
+
+          <div class="form-control" id="container_entrada_livre" style="<%= liga.publica ? '' : 'display: none;' %>">
+            <label class="cursor-pointer label justify-start gap-4">
+              <%= form.check_box :entrada_livre, class: "toggle toggle-secondary" %>
+              <span class="label-text font-bold">Entrada Livre (Usuários entram diretamente sem precisar de aprovação)</span>
+            </label>
+          </div>
+        </div>
+
         <div class="stat sm:col-span-2 rounded-box flex flex-col sm:flex-row gap-4 items-center justify-center">
           <%= form.submit(
             liga.persisted? ? "Salvar alterações" : "Criar liga",
@@ -41,3 +57,20 @@
 
   </div>
 </div>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const togglePublica = document.getElementById('toggle_publica');
+    const containerEntradaLivre = document.getElementById('container_entrada_livre');
+    
+    if(togglePublica && containerEntradaLivre) {
+      togglePublica.addEventListener('change', function() {
+        if(this.checked) {
+          containerEntradaLivre.style.display = 'block';
+        } else {
+          containerEntradaLivre.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>

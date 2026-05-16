@@ -15,6 +15,8 @@ class DashboardController < ApplicationController
                                      .first(5)
     end
 
+    @ligas_publicas = Liga.where(publica: true).order(membros: :desc).limit(5)
+
     # Ranking Global para todos
     # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
     todos_usuarios = User

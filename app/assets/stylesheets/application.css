@@ -43,3 +43,57 @@ body {
 .input, .select, .textarea {
   border-radius: 1rem !important;
 }
+
+/* Paginação (will_paginate com DaisyUI) */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pagination a, .pagination span, .pagination em {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  min-height: 3rem;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 1px solid oklch(var(--b3));
+  background-color: oklch(var(--b1));
+  color: oklch(var(--bc));
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pagination a:hover {
+  background-color: oklch(var(--b2));
+}
+
+.pagination em.current {
+  background-color: oklch(var(--p));
+  border-color: oklch(var(--p));
+  color: oklch(var(--pc));
+}
+
+.pagination span.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: oklch(var(--b2));
+}
+
+.pagination.join > *:first-child {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
+
+.pagination.join > *:last-child {
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+.pagination.join > *:not(:first-child) {
+  margin-left: -1px;
+}

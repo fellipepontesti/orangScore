@@ -15,6 +15,53 @@ class LigasController < ApplicationController
     end
   end
 
+  def publicas
+    @ligas = Liga.where(publica: true).order(membros: :desc).paginate(page: params[:page], per_page: 20)
+  end
+
+  def join
+    @liga = Liga.find(params[:id])
+    
+    unless @liga.publica
+      return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
+    end
+    
+    if @liga.users.exists?(current_user.id)
+      return redirect_to @liga, notice: "Você já participa desta liga."
+    end
+    
+    if @liga.entrada_livre
+      unless @liga.atingiu_limite_de_participantes?
+        LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :accepted)
+        @liga.increment!(:membros)
+        redirect_to @liga, notice: "Você entrou na liga com sucesso!"
+      else
+        redirect_to ligas_publicas_path, alert: "Esta liga já atingiu o limite de participantes."
+      end
+    else
+      unless @liga.liga_membros.exists?(user_id: current_user.id, status: :invited)
+        LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :invited)
+      end
+      redirect_to ligas_publicas_path, notice: "Sua solicitação para entrar na liga foi enviada ao dono."
+    end
+  end
+
+  def preview
+    @liga = Liga.find(params[:id])
+    
+    unless @liga.publica
+      return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
+    end
+
+    @total_pontos = UserPoint.joins(user: :liga_membros)
+                             .where(liga_membros: { liga_id: @liga.id, status: :accepted })
+                             .sum(:pontos)
+                             
+    @total_palpites = Palpite.joins(user: :liga_membros)
+                             .where(liga_membros: { liga_id: @liga.id, status: :accepted })
+                             .count
+  end
+
   def show
     # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
     @membros_ativos = @liga.liga_membros
@@ -204,6 +251,6 @@ class LigasController < ApplicationController
     end
 
     def liga_params
-      params.require(:liga).permit(:owner_id, :nome)
+      params.require(:liga).permit(:owner_id, :nome, :publica, :entrada_livre)
     end
 end

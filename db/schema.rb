@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_15_000001) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_16_202500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,6 +92,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_15_000001) do
     t.datetime "updated_at", null: false
     t.integer "membros", default: 0, null: false
     t.string "invite_token"
+    t.boolean "publica", default: false, null: false
+    t.boolean "entrada_livre", default: false, null: false
     t.index ["invite_token"], name: "index_ligas_on_invite_token", unique: true
     t.index ["owner_id"], name: "index_ligas_on_owner_id"
   end

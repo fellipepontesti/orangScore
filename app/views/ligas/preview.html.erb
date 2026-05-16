@@ -1,0 +1,72 @@
+<% content_for :title, "Detalhes da Liga Pública" %>
+
+<div class="min-h-screen flex items-center justify-center bg-base-300 px-4 py-8">
+  <div class="card bg-base-100 shadow-2xl w-full max-w-lg border border-base-200">
+    <div class="card-body text-center items-center">
+      
+      <h1 class="text-3xl font-black text-primary mb-2">
+        <%= @liga.nome %>
+      </h1>
+      
+      <div class="text-sm opacity-70 mb-6">
+        <p>Criada por <strong><%= @liga.owner.name %></strong></p>
+      </div>
+
+      <div class="w-full grid grid-cols-2 gap-4 mb-8">
+        <div class="bg-base-200 p-4 rounded-box flex flex-col items-center">
+          <span class="text-xs uppercase font-bold opacity-50 tracking-wider mb-1">Membros</span>
+          <span class="text-2xl font-black text-primary"><%= @liga.total_participantes %></span>
+        </div>
+        
+        <div class="bg-base-200 p-4 rounded-box flex flex-col items-center">
+          <span class="text-xs uppercase font-bold opacity-50 tracking-wider mb-1">Entrada</span>
+          <span class="text-sm font-bold mt-2 <%= @liga.entrada_livre ? 'text-success' : 'text-warning' %>">
+            <%= @liga.entrada_livre ? "Livre" : "Requer Aprovação" %>
+          </span>
+        </div>
+
+        <div class="bg-base-200 p-4 rounded-box flex flex-col items-center">
+          <span class="text-xs uppercase font-bold opacity-50 tracking-wider mb-1">Pontuação Total</span>
+          <span class="text-2xl font-black text-secondary"><%= @total_pontos || 0 %></span>
+        </div>
+
+        <div class="bg-base-200 p-4 rounded-box flex flex-col items-center">
+          <span class="text-xs uppercase font-bold opacity-50 tracking-wider mb-1">Total Palpites</span>
+          <span class="text-2xl font-black text-accent"><%= @total_palpites %></span>
+        </div>
+      </div>
+
+      <div class="w-full space-y-4">
+        <% if @liga.users.exists?(current_user.id) %>
+          <div class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Você já participa desta liga.</span>
+          </div>
+          <%= link_to "Ir para a Liga", liga_path(@liga), class: "btn btn-primary w-full" %>
+        <% else %>
+          <% if @liga.atingiu_limite_de_participantes? %>
+            <div class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <span>Esta liga já atingiu o limite de participantes.</span>
+            </div>
+            <button class="btn btn-disabled w-full">Liga Cheia</button>
+          <% else %>
+            <% pendente = @liga.liga_membros.exists?(user_id: current_user.id, status: :invited) %>
+            <% if pendente %>
+              <div class="alert alert-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <span>Você já enviou uma solicitação. Aguarde a aprovação do dono.</span>
+              </div>
+              <button class="btn btn-warning w-full" disabled>Solicitação Pendente</button>
+            <% else %>
+              <%= button_to (@liga.entrada_livre ? "Entrar na Liga Agora" : "Pedir para Entrar"), join_liga_path(@liga), method: :post, class: "btn btn-primary w-full font-bold text-lg h-14" %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%= link_to "Voltar para Ligas Públicas", ligas_publicas_path, class: "btn btn-ghost w-full" %>
+      </div>
+
+    </div>
+  </div>
+</div>

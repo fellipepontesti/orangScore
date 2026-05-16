@@ -6,14 +6,16 @@ class LigaConvitesController < ApplicationController
 
     return if user_signed_in?
 
-    redirect_to new_user_session_path
+    store_location_for(:user, request.fullpath)
+    redirect_to new_user_registration_path
   end
 
   def accept
     unless user_signed_in?
       session[:liga_invite_token] = @liga.invite_token
+      store_location_for(:user, liga_convite_path(@liga.invite_token))
 
-      redirect_to new_user_session_path
+      redirect_to new_user_registration_path
       return
     end
 

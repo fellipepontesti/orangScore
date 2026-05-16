@@ -4,7 +4,11 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
-    @usuarios = Users::List.new(params).call
+    @usuarios = Users::List.new(params).call.paginate(page: params[:page], per_page: 10)
+    
+    @total_usuarios = User.count
+    @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count
+    @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
   end
 
   def pontuacao

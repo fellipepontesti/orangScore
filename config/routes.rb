@@ -47,15 +47,22 @@ Rails.application.routes.draw do
   post '/ligas/:id/recusar_admin', to: 'ligas#recuse_admin', as: :recusar_admin_liga
 
   resources :ligas do
+    collection do
+      get :publicas
+    end
     member do
+      get :preview
       post :set_admin
       post :accept_invite
       post :recuse_invite
       post :invite_member
+      post :join
       match :remove_member, via: [:delete, :patch]
       delete :quit
     end
   end
+
+  resources :pagamentos, only: [:index]
 
   get '/planos', to: 'assinaturas#index', as: :planos
   get '/convite/:token', to: 'liga_convites#show', as: :liga_convite

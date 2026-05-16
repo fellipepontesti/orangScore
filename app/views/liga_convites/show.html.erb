@@ -15,37 +15,20 @@
         </p>
       </div>
 
-      <% if user_signed_in? %>
-        <% if @liga.users.exists?(current_user.id) %>
-          <div class="alert alert-info">
-            Você já participa desta liga.
-          </div>
+      <% if @liga.users.exists?(current_user.id) %>
+        <div class="alert alert-info">
+          Você já participa desta liga.
+        </div>
 
-          <%= link_to "Ir para liga",
-            @liga,
-            class: "btn btn-primary mt-4" %>
-
-        <% else %>
-          <%= button_to "Entrar na liga",
-            aceitar_liga_convite_path(@liga.invite_token),
-            method: :post,
-            class: "btn btn-primary w-full" %>
-        <% end %>
+        <%= link_to "Ir para liga",
+          @liga,
+          class: "btn btn-primary mt-4" %>
 
       <% else %>
-        <div class="space-y-3">
-          <p>
-            Faça login ou crie uma conta para entrar nesta liga.
-          </p>
-
-          <%= link_to "Entrar",
-            new_user_session_path,
-            class: "btn btn-primary w-full" %>
-
-          <%= link_to "Criar conta",
-            new_user_registration_path,
-            class: "btn btn-outline w-full" %>
-        </div>
+        <%= button_to "Entrar na liga",
+          aceitar_liga_convite_path(@liga.invite_token),
+          method: :post,
+          class: "btn btn-primary w-full" %>
       <% end %>
     </div>
   </div>

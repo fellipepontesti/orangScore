@@ -5,8 +5,10 @@
     <h1 class="font-bold text-4xl">Ligas</h1>
 
     <div class="flex gap-2">
+      <%= link_to "Ligas Públicas", publicas_ligas_path, class: "rounded-md px-4 py-4 bg-secondary hover:bg-secondary/80! font-bold text-white flex items-center" %>
+
       <% if current_user.root? %>
-        <button class="btn btn-outline" onclick="modal_filtros_ligas.showModal()">
+        <button class="btn btn-outline h-full py-4" onclick="modal_filtros_ligas.showModal()">
           Filtros
         </button>
       <% end %>

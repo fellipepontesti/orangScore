@@ -1,0 +1,59 @@
+<% content_for :title, "Ligas Públicas" %>
+
+<div class="w-full max-w-6xl mx-auto px-4">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 p-4 pb-4 pt-8">
+    <h1 class="font-bold text-4xl text-center sm:text-left">
+      Ligas Públicas
+    </h1>
+  </div>
+
+  <% if @ligas.any? %>
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+      <% @ligas.each do |liga| %>
+        <li class="card bg-base-100 shadow-xl border border-base-200">
+          <div class="card-body">
+            <h2 class="card-title text-xl"><%= liga.nome %></h2>
+            <div class="text-sm opacity-70 mt-2">
+              <p><strong>Dono:</strong> <%= liga.owner.name %></p>
+              <p><strong>Plano:</strong> <%= liga.owner.assinatura.plano.capitalize %></p>
+            </div>
+            
+            <div class="flex items-center gap-2 mt-4">
+              <div class="badge badge-primary"><%= liga.total_participantes %> participantes</div>
+              <% if liga.entrada_livre %>
+                <div class="badge badge-secondary badge-outline">Entrada Livre</div>
+              <% else %>
+                <div class="badge badge-warning badge-outline">Requer Aprovação</div>
+              <% end %>
+            </div>
+
+            <div class="card-actions justify-end mt-6">
+              <% if liga.users.exists?(current_user.id) %>
+                <%= link_to "Acessar Liga", liga_path(liga), class: "btn btn-primary w-full" %>
+              <% else %>
+                <% if liga.atingiu_limite_de_participantes? %>
+                  <button class="btn btn-disabled w-full">Liga Cheia</button>
+                <% else %>
+                  <% pendente = liga.liga_membros.exists?(user_id: current_user.id, status: :invited) %>
+                  <% if pendente %>
+                    <button class="btn btn-warning w-full" disabled>Solicitação Pendente</button>
+                  <% else %>
+                    <%= button_to (liga.entrada_livre ? "Entrar Agora" : "Pedir para entrar"), join_liga_path(liga), method: :post, class: "btn btn-primary w-full" %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+    
+    <div class="mt-10 flex justify-center">
+      <%= will_paginate @ligas, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
+    </div>
+  <% else %>
+    <div class="bg-base-100 p-8 rounded-box shadow text-center border border-base-200">
+      <p class="opacity-70 text-lg">Nenhuma liga pública disponível no momento.</p>
+    </div>
+  <% end %>
+</div>

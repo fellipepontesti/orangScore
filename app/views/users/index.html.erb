@@ -5,6 +5,27 @@
     Usuários
   </h1>
 
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Total de Usuários</h2>
+        <p class="text-4xl font-black text-primary"><%= @total_usuarios %></p>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Usuários Plus</h2>
+        <p class="text-4xl font-black text-secondary"><%= @total_plus %></p>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Usuários Premium</h2>
+        <p class="text-4xl font-black text-warning"><%= @total_premium %></p>
+      </div>
+    </div>
+  </div>
+
   <dialog id="modal_filtros_usuarios" class="modal">
     <div class="modal-box max-w-lg">
 
@@ -158,6 +179,10 @@
       Nenhum usuário encontrado.
     </p>
   <% end %>
+
+  <div class="mt-8 mb-4 flex justify-center">
+    <%= will_paginate @usuarios, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
+  </div>
 
   <div class="mt-10 flex justify-center">
     <%= link_to "Voltar", root_path,

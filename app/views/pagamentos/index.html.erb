@@ -1,0 +1,83 @@
+<% content_for :title, "Pagamentos Recebidos" %>
+
+<div class="w-full max-w-6xl mx-auto px-4">
+  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
+    Pagamentos Recebidos
+  </h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Total Bruto</h2>
+        <p class="text-4xl font-black text-primary"><%= number_to_currency(@total_bruto, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Receita do Mês</h2>
+        <p class="text-4xl font-black text-secondary"><%= number_to_currency(@total_mes, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+      </div>
+    </div>
+    <div class="card bg-base-100 shadow border border-base-200">
+      <div class="card-body items-center text-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Qtd. Transações Pagas</h2>
+        <p class="text-4xl font-black text-warning"><%= @qtd_transacoes %></p>
+      </div>
+    </div>
+  </div>
+
+  <% if @pagamentos.any? %>
+    <div class="overflow-x-auto bg-base-100 rounded-box shadow-md w-full mb-8">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Usuário</th>
+            <th>Plano</th>
+            <th>Status</th>
+            <th class="text-right">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pagamentos.each do |pagamento| %>
+            <tr>
+              <td class="text-sm opacity-70"><%= pagamento.id %></td>
+              <td><%= pagamento.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+              <td>
+                <div class="font-bold"><%= pagamento.user.name %></div>
+                <div class="text-xs opacity-60"><%= pagamento.user.email %></div>
+              </td>
+              <td>
+                <span class="badge badge-outline"><%= pagamento.plano.to_s.capitalize %></span>
+              </td>
+              <td>
+                <% badge_class = case pagamento.status
+                                 when 'pago' then 'badge-success'
+                                 when 'pendente', 'processando' then 'badge-warning'
+                                 else 'badge-error'
+                                 end %>
+                <div class="badge <%= badge_class %> text-white font-bold"><%= pagamento.status.capitalize %></div>
+              </td>
+              <td class="text-right font-bold text-lg">
+                <%= number_to_currency(pagamento.valor_em_reais, unit: "R$ ", separator: ",", delimiter: ".") %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-8 mb-4 flex justify-center">
+      <%= will_paginate @pagamentos, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">
+      Nenhum pagamento registrado.
+    </p>
+  <% end %>
+
+  <div class="mt-10 flex justify-center">
+    <%= link_to "Voltar", root_path, class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
+  </div>
+</div>
