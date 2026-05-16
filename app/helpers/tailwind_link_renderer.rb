@@ -1,3 +1,5 @@
+require "will_paginate/view_helpers/action_view"
+
 class TailwindLinkRenderer < WillPaginate::ActionView::LinkRenderer
   def container_attributes
     { class: "join shadow-sm rounded-box bg-base-100 border border-base-200" }
