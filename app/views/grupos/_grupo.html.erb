@@ -44,11 +44,6 @@
 
     <!-- Ações -->
     <div class="flex justify-center gap-4 pt-6">
-
-      <%= link_to "Voltar",
-        grupos_path,
-        class: "rounded-md px-5 py-3 bg-base-300 hover:bg-base-300/80! font-medium" %>
-
       <% if current_user.root? %>
         <%= link_to "Editar grupo",
           edit_grupo_path(grupo),

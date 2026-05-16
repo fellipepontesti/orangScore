@@ -183,9 +183,4 @@
   <div class="mt-8 mb-4 flex justify-center">
     <%= will_paginate @usuarios, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
   </div>
-
-  <div class="mt-10 flex justify-center">
-    <%= link_to "Voltar", root_path,
-      class: "rounded-md px-5 py-3 bg-accent hover:bg-accent/80 font-medium" %>
-  </div>
 </div>
