@@ -9,34 +9,38 @@
 
   <%# MENU DE STATUS DA LIGA %>
   <div class="flex justify-center mb-8 w-full">
-    <div class="flex flex-wrap items-center justify-center gap-2 w-full relative">
+    <%# Adicionado md:flex-row e flex-col para controlar a direção do fluxo de acordo com o tamanho da tela %>
+    <div class="flex flex-col md:flex-row items-center justify-center gap-3 w-full max-w-3xl px-2">
 
-      <%# TODO MUDAR A COR DE ACORDO COM A QTD DE PARTICIPANTES %>
-      <span class="badge bg-primary/70! badge-lg p-4">
-        <%= @liga.total_participantes %> / <%= @liga.owner.premium? ? "Ilimitados" : @liga.limite_participantes %>
-        participantes
-      </span>
-
-      <span class="badge bg-secondary/70! badge-lg p-4">
-        Plano <%= @liga.owner.assinatura.plano.capitalize %>
-      </span>
-
-      <% if @liga.atingiu_limite_de_participantes? %>
-        <span class="badge bg-error/70! badge-lg p-4">
-          Limite atingido
+      <div class="flex flex-wrap justify-center gap-2">
+        <%# TODO MUDAR A COR DE ACORDO COM A QTD DE PARTICIPANTES %>
+        <span class="badge bg-primary/70! badge-lg p-4 whitespace-nowrap">
+          <%= @liga.total_participantes %> / <%= @liga.owner.premium? ? "Ilimitados" : @liga.limite_participantes %>
+          <%= @liga.owner.premium? ? "" : "participantes" %>
         </span>
-      <% end %>
+
+        <span class="badge bg-secondary/70! badge-lg p-4 whitespace-nowrap">
+          Plano <%= @liga.owner.assinatura.plano.capitalize %>
+        </span>
+
+        <% if @liga.atingiu_limite_de_participantes? %>
+          <span class="badge bg-error/70! badge-lg p-4 whitespace-nowrap">
+            Limite atingido
+          </span>
+        <% end %>
+      </div>
 
       <% if @pode_convidar %>
         <% if !@liga.atingiu_limite_de_participantes? %>
-            <button
-              type="button"
-              class="rounded-md px-4 py-4 bg-success hover:bg-success/80! font-bold text-white flex items-center right-8 absolute"
-              onclick="add_member_modal.showModal()">
-              Adicionar membro
-            </button>
-          <% end %>
+          <%# Removido 'absolute right-8' e adicionada a classe 'w-full md:w-auto' para o mobile %>
+          <button
+            type="button"
+            class="rounded-md px-4 py-3 bg-success hover:bg-success/80! font-bold text-white flex items-center justify-center w-full md:w-auto md:ml-4 shrink-0 transition-all text-sm sm:text-base shadow-md"
+            onclick="add_member_modal.showModal()">
+            Adicionar membro
+          </button>
         <% end %>
+      <% end %>
     </div>
   </div>
 
@@ -188,29 +192,31 @@
 
   <%# TABELA COM OS PARTICIPANTES DA LIGA %>
   <% if @membros_ativos.any? %>
-    <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8">
+    <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8 space-y-3">
       <% @membros_ativos.each_with_index do |liga_membro, i| %>
-        <li class="list-row flex flex-col sm:flex-row items-start sm:items-center justify-between hover:bg-base-300/50! p-4 gap-4 border-b last:border-b-0 border-base-200">
+        
+        <li class="list-row flex flex-col sm:flex-row items-stretch sm:items-center justify-between hover:bg-base-300/50! p-4 gap-4 border-b last:border-b-0 border-base-200 rounded-xl transition-colors">
           
-          <div class="flex items-center gap-4 w-full sm:w-1/3">
-            <div class="w-10 flex items-center justify-center shrink-0">
+          <%# 1. BLOCO DA ESQUERDA: Rank + Avatar + Nome (Ocupa o espaço livre no desktop) %>
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-8 flex items-center justify-center shrink-0">
               <%= rank_badge(i) %>
             </div>
 
             <div class="avatar shrink-0">
-              <div class="mask mask-squircle h-12 w-12">
+              <div class="mask mask-squircle h-11 w-11 bg-base-200">
                 <%= image_tag "selecoes/#{liga_membro.user.logo_selecao}" %>
               </div>
             </div>
 
-            <div class="flex flex-col min-w-0">
-              <div class="font-medium text-lg flex items-center gap-2">
-                <span class="truncate max-w-[120px] sm:max-w-[180px]" title="<%= liga_membro.user.name %>">
+            <div class="flex flex-col min-w-0 flex-1">
+              <div class="font-bold text-base sm:text-lg flex items-center gap-2 text-white">
+                <span class="truncate" title="<%= liga_membro.user.name %>">
                   <%= liga_membro.user.name %>
                 </span>
                 <% icon = role_icon(liga_membro.role) %>
                 <% if icon.present? %>
-                  <span class="shrink-0">
+                  <span class="shrink-0 scale-90">
                     <%= icon %>
                   </span>
                 <% end %>
@@ -218,27 +224,26 @@
             </div>
           </div>
 
-          <!-- ESPAÇO RESERVADO PARA GIFs/FUTURO -->
-          <div class="hidden sm:flex flex-1 justify-center items-center">
-            <%# Espaço futuro %>
-          </div>
-
-          <div class="flex items-center justify-end w-full sm:w-auto gap-4 sm:gap-8 mt-2 sm:mt-0">
-            <div class="flex flex-col items-center sm:items-end w-20 shrink-0">
-              <span class="text-[9px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
-              <span class="font-bold text-lg text-slate-300"><%= liga_membro.total_palpites || 0 %></span>
+          <%# 2. BLOCO DA DIREITA (GRID): Alinhamento impecável no Desktop / Ajuste fluido no Mobile %>
+          <%# Criamos um grid de 3 colunas fixas a partir de 'sm:' para garantir que Palpites, Pontos e Ações fiquem sempre alinhados verticalmente na listagem %>
+          <div class="grid grid-cols-3 sm:grid-cols-3 items-center gap-2 sm:gap-6 border-t border-base-200/40 sm:border-t-0 pt-3 sm:pt-0 mt-1 sm:mt-0 text-center sm:text-right shrink-0 w-full sm:w-[280px]">
+            
+            <%# Coluna 1: Palpites %>
+            <div class="flex flex-col items-center sm:items-end shrink-0">
+              <span class="text-[9px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider">Palpites</span>
+              <span class="font-bold text-base sm:text-lg text-slate-300"><%= liga_membro.total_palpites || 0 %></span>
             </div>
 
-            <div class="flex flex-col items-center sm:items-end w-24 shrink-0">
-              <span class="text-[9px] uppercase font-black opacity-30 tracking-tighter text-primary">Pontuação</span>
-              <span class="font-black text-2xl text-primary"><%= liga_membro.total_pontos_ranking || 0 %></span>
+            <%# Coluna 2: Pontuação %>
+            <div class="flex flex-col items-center sm:items-end shrink-0">
+              <span class="text-[9px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider text-primary">Pontuação</span>
+              <span class="font-black text-xl sm:text-2xl text-primary"><%= liga_membro.total_pontos_ranking || 0 %></span>
             </div>
 
-            <div class="flex justify-end gap-2 w-20 shrink-0">
+            <%# Coluna 3: Botões de Ação (Alinhados totalmente à direita no desktop) %>
+            <div class="flex justify-center sm:justify-end items-center gap-1 shrink-0">
               <% if liga_membro.role != "owner" %>
-                <% is_admin_allowed =
-                    @meu_vinculo&.role == "admin" &&
-                    liga_membro.status.in?(%w[invited accepted]) %>
+                <% is_admin_allowed = @meu_vinculo&.role == "admin" && liga_membro.status.in?(%w[invited accepted]) %>
 
                 <% if current_user.root? || is_owner || is_admin_allowed %>
                     <% if is_owner || current_user.root? %>
@@ -249,14 +254,10 @@
                         <% message="Tem certeza que deseja adicionar o usuário #{liga_membro.user.name} como administrador da sua liga?"%>
                         <% img_name="adm"%>
                       <%end%>
-                      <%= button_to set_admin_liga_path(
-                            @liga,
-                            liga_membro_id: liga_membro.id
-                          ),
+                      <%= button_to set_admin_liga_path(@liga, liga_membro_id: liga_membro.id),
                           method: :post,
                           form: { data: { turbo_confirm: message } },
-                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-0" do %>
-
+                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-1" do %>
                         <div class="avatar">
                           <div class="mask mask-squircle h-5 w-5">
                             <%= image_tag "icons/#{img_name}.png" %>
@@ -266,19 +267,12 @@
                     <% end %>
 
                     <% method = is_owner ? :delete : :patch %>
-                    <% confirm_message =
-                        is_owner ?
-                          "Remover este membro da liga?" :
-                          "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
+                    <% confirm_message = is_owner ? "Remover este membro da liga?" : "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
                     <% if current_user.root? || is_owner || current_user.id != liga_membro.user_id %>
-                      <%= button_to remove_member_liga_path(
-                            @liga,
-                            liga_membro_id: liga_membro.id
-                          ),
+                      <%= button_to remove_member_liga_path(@liga, liga_membro_id: liga_membro.id),
                           method: method,
                           form: { data: { turbo_confirm: confirm_message } },
-                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-0" do %>
-
+                          class: "btn btn-sm btn-ghost hover:scale-110 transition p-1" do %>
                         <div class="avatar">
                           <div class="mask mask-squircle h-5 w-5 invert">
                             <%= image_tag "icons/delete.png" %>
@@ -289,6 +283,7 @@
                 <% end %>
               <% end %>
             </div>
+
           </div>
         </li>
       <% end %>
