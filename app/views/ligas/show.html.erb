@@ -89,7 +89,7 @@
           <% if @membros_pendentes.any? %>
 
             <% @membros_pendentes.each do |liga_membro| %>
-              <div class="flex justify-between items-center border-b py-2">
+              <div class="flex justify-between items-center border-b py-3 gap-4">
 
                 <div>
                   <p class="font-medium">
@@ -101,19 +101,37 @@
                   </p>
                 </div>
 
+                <div class="flex items-center gap-2">
+
+                <%= button_to accept_member_liga_path(
+                      @liga,
+                      liga_membro_id: liga_membro.id
+                    ),
+                    method: :patch,
+                    form: {
+                      data: {
+                        turbo_confirm: "Aceitar este usuário na liga?"
+                      }
+                    },
+                    class: "btn btn-success btn-sm" do %>
+                  Aceitar
+                <% end %>
+
                 <%= button_to remove_member_liga_path(
-                        @liga,
-                        liga_membro_id: liga_membro.id
-                      ),
-                      method: :delete,
-                      form: {
-                        data: {
-                          turbo_confirm: "Cancelar este convite?"
-                        }
-                      },
-                      class: "btn btn-error btn-sm" do %>
+                      @liga,
+                      liga_membro_id: liga_membro.id
+                    ),
+                    method: :delete,
+                    form: {
+                      data: {
+                        turbo_confirm: "Cancelar este convite?"
+                      }
+                    },
+                    class: "btn btn-error btn-sm" do %>
                   Remover
                 <% end %>
+
+              </div>
 
               </div>
             <% end %>

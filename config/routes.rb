@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       get :preview
       post :set_admin
       post :accept_invite
+      patch :accept_member
       post :recuse_invite
       post :invite_member
       post :join

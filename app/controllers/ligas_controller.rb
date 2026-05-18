@@ -1,6 +1,6 @@
 class LigasController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_liga, only: %i[ show edit update destroy quit invite_member remove_member set_admin ]
+  before_action :set_liga, only: %i[ show edit update destroy quit invite_member remove_member accept_member set_admin ]
   before_action :validar_dono_da_liga!, only: %i[ edit update destroy ]
 
   def index
@@ -13,6 +13,12 @@ class LigasController < ApplicationController
     if params[:nome].present?
       @ligas = @ligas.where('ligas.nome ILIKE ?', "%#{params[:nome]}%")
     end
+  end
+
+  def accept_member
+    liga_membro = @liga.liga_membros.find(params[:liga_membro_id])
+    liga_membro.update!(status: :accepted)
+    redirect_to @liga, notice: "Membro aceito com sucesso."
   end
 
   def publicas
