@@ -1,0 +1,56 @@
+<div
+  id="referral-rules-notice"
+  class="w-full md:max-w-md bg-base-100 border border-primary/30 rounded-box shadow-lg p-4"
+  data-notice-key="orangscore-referral-rules-dismissed">
+  <div class="flex items-start gap-3">
+    <div class="shrink-0 rounded-full bg-primary/10 text-primary p-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <div class="flex items-start justify-between gap-3">
+        <p class="font-bold text-sm text-primary">
+          Indique amigos e ganhe Semi-Plus
+        </p>
+
+        <button
+          type="button"
+          class="btn btn-ghost btn-xs btn-circle"
+          aria-label="Fechar aviso"
+          onclick="dismissReferralRulesNotice()">
+          x
+        </button>
+      </div>
+
+      <p class="text-sm opacity-80 mt-2 leading-relaxed">
+        Para a indicação valer, seu amigo precisa criar uma conta nova pelo convite da sua liga e entrar nessa liga. Com 5 indicações válidas, você ganha Semi-Plus e sua liga sobe para 10 membros gratuitamente.
+      </p>
+
+      <div class="mt-3 flex items-center gap-2 text-xs font-bold uppercase opacity-70">
+        <span><%= current_user.referrals_count.to_i %>/5 indicações</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function dismissReferralRulesNotice() {
+    const notice = document.getElementById('referral-rules-notice')
+    if (!notice) return
+
+    localStorage.setItem(notice.dataset.noticeKey, 'true')
+    notice.classList.add('hidden')
+  }
+
+  document.addEventListener('turbo:load', () => {
+    const notice = document.getElementById('referral-rules-notice')
+    if (!notice) return
+
+    if (localStorage.getItem(notice.dataset.noticeKey) === 'true') {
+      notice.classList.add('hidden')
+    }
+  })
+</script>

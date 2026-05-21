@@ -1,7 +1,7 @@
 <div class="space-y-8 max-w-7xl mx-auto">
 
   <!-- Cabeçalho -->
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+  <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
   <div class="flex flex-col gap-2">
     <div class="flex items-center gap-3">
       <h1 class="text-4xl font-bold">Olá, <%= current_user.name %></h1>
@@ -95,31 +95,24 @@
     <p class="opacity-70 text-lg">Aqui está um resumo do seu OrangScore</p>
   </div>
 
-  <% if current_user.assinatura&.basic? %>
-    <%= link_to planos_path, class: "btn btn-warning btn-outline btn-sm gap-2" do %>
-      <span>Upgrade para Plus</span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-    <% end %>
-  <% end %>
-  <% if current_user.assinatura&.plus? %>
-    <%= link_to planos_path, class: "btn btn-premium btn-outline btn-sm gap-2" do %>
-      <span>Upgrade para Premium</span>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-    <% end %>
-  <% end %>
-
-  <% if current_user.assinatura&.basic? && current_user.referrals_count < 5 %>
-    <div class="mt-4 bg-base-200 rounded-box p-4 border border-base-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <p class="font-bold text-sm text-primary">Convide 5 amigos e ganhe o plano Semi-Plus!</p>
-        <p class="text-xs opacity-70 mt-1">Seu link: <span class="font-mono bg-base-100 p-1 rounded"><%= new_user_registration_url(ref: current_user.id) %></span></p>
-      </div>
-      <div class="flex items-center gap-2 bg-base-100 px-4 py-2 rounded-xl shrink-0">
-        <span class="text-xl font-black text-primary"><%= current_user.referrals_count %>/5</span>
-        <span class="text-xs font-bold uppercase opacity-50">Indicações</span>
-      </div>
+  <div class="w-full lg:max-w-md flex flex-col gap-3 lg:items-end">
+    <div class="flex flex-col sm:flex-row gap-2">
+      <% if current_user.assinatura&.basic? %>
+        <%= link_to planos_path, class: "btn btn-warning btn-outline btn-sm gap-2" do %>
+          <span>Upgrade para Plus</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        <% end %>
+      <% end %>
+      <% if current_user.assinatura&.plus? %>
+        <%= link_to planos_path, class: "btn btn-premium btn-outline btn-sm gap-2" do %>
+          <span>Upgrade para Premium</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        <% end %>
+      <% end %>
     </div>
-  <% end %>
+
+    <%= render "referral_notice" %>
+  </div>
 </div>
 
   <!-- Cards de Resumo -->

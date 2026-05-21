@@ -6,12 +6,21 @@ class Notificacao < ApplicationRecord
   enum :status, { unread: 0, read: 1 }
   enum :tipo, { system: 0, invite: 1, admin_invite: 2, info: 3 }
 
+  validates :texto, presence: true
+
   validates :user_id, uniqueness: {
     scope: [:liga_id, :tipo, :status],
     message: 'já possui um convite pendente para administrador'
   }, if: -> { tipo == 'admin_invite' && status == 'unread' }
 
   def partial_name
-    "notificacoes/#{tipo}"
+    partials = {
+      "system" => "notificacoes/system",
+      "invite" => "notificacoes/invite",
+      "admin_invite" => "notificacoes/admin_invite",
+      "info" => "notificacoes/info"
+    }
+
+    partials.fetch(tipo, "notificacoes/system")
   end
 end

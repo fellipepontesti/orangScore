@@ -20,11 +20,10 @@
     </div>
   </div>
 
-  <%# LIMITE DE LIGAS %>
   <% if current_user.atingiu_limite_de_ligas? %>
     <div class="mb-8 mt-4 relative group">
       <div class="absolute -inset-1 bg-linear-to-r from-orange-600 to-yellow-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-      
+
       <div class="relative flex flex-col md:flex-row items-center justify-between gap-6 p-4 bg-base-200 border border-white/5 rounded-2xl shadow-xl">
         <div class="flex items-center gap-4 pl-8">
           <div>
@@ -32,7 +31,7 @@
             <p class="text-slate-400 text-sm">Faça o upgrade para adicionar mais ligas e criar novas competições.</p>
           </div>
         </div>
-        
+
         <button class="btn border-none bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 rounded-xl font-bold shadow-lg shadow-orange-500/20">
           Fazer Upgrade Agora
         </button>
@@ -40,7 +39,6 @@
     </div>
   <% end %>
 
-  <%# MODAL DE FILTROS %>
   <dialog id="modal_filtros_ligas" class="modal">
     <div class="modal-box max-w-lg">
       <h3 class="font-bold text-lg mb-4 text-center">Filtrar Ligas</h3>
@@ -60,90 +58,41 @@
     </div>
   </dialog>
 
+  <div id="ligas" class="w-full space-y-8">
+    <section>
+      <div class="flex items-center gap-4 mb-3 px-2">
+        <h2 class="text-xl font-bold whitespace-nowrap">Minhas ligas</h2>
+        <div class="h-px bg-base-300 flex-1"></div>
+      </div>
 
-  <%# LISTA DE LIGAS %>
-  <div id="ligas" class="w-full">
-    <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8 space-y-2">
-      <% if @ligas.any? %>
-        <% @ligas.each do |liga| %>
-          <li
-            class="list-row flex items-center justify-between gap-4 p-3 hover:bg-base-300/50! cursor-pointer rounded-xl transition-colors"
-            data-url="<%= liga_path(liga) %>"
-          >
-            <%# Bloco da Esquerda: Avatar + Informações %>
-            <div class="flex items-center gap-4 min-w-0 flex-1">
-              <div class="avatar avatar-placeholder shrink-0">
-                <div class="bg-base-300 text-neutral-content w-12 rounded-full">
-                  <span class="font-bold"><%= liga.nome.first.upcase %></span>
-                </div>
-              </div>
-
-              <%# Container do Texto com min-w-0 para evitar quebra bizarra %>
-              <div class="min-w-0 flex-1">
-                <div class="font-bold text-base sm:text-lg text-white break-words pr-2">
-                  <%= liga.nome %>
-                </div>
-                <div class="text-xs uppercase font-semibold opacity-60 mt-0.5">
-                  <%= liga.liga_membros.count %> membros
-                </div>
-              </div>
-            </div>
-
-            <%# Bloco da Direita: Ações (Desktop vs Mobile) %>
-            <% if current_user.root? || current_user.id == liga.owner_id %>
-              
-              <%# 1. VERSÃO DESKTOP: Botões aparecem normais de 'md' para cima %>
-              <div class="hidden md:flex gap-2 shrink-0" onclick="event.stopPropagation()">
-                <%= link_to edit_liga_path(liga),
-                  class: "rounded-md p-2 bg-base-300 hover:bg-warning/80! flex items-center justify-center transition-colors" do %>
-                  <div class="h-5 w-5 invert">
-                    <%= image_tag "icons/editar.png" %>
-                  </div>
-                <% end %>
-
-                <%= button_to liga,
-                  method: :delete,
-                  class: "rounded-md p-2 bg-base-300 hover:bg-error/80! flex items-center justify-center transition-colors",
-                  data: { turbo_confirm: "Você tem certeza?" } do %>
-                  <div class="mask mask-squircle h-5 w-5 invert">
-                    <%= image_tag "icons/delete.png" %>
-                  </div>
-                <% end %>
-              </div>
-
-              <%# 2. VERSÃO MOBILE: Menu de opções (Dropdown) abaixo de 'md' %>
-              <div class="dropdown dropdown-end md:hidden shrink-0" onclick="event.stopPropagation()">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square hover:bg-base-300">
-                  <%# Ícone de 3 pontos verticais %>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                  </svg>
-                </div>
-                <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-50 w-40 p-2 shadow-2xl border border-white/5 mt-1">
-                  <li>
-                    <%= link_to edit_liga_path(liga), class: "flex items-center gap-2 text-warning font-semibold py-3" do %>
-                      <div class="h-4 w-4 invert"><%= image_tag "icons/editar.png" %></div>
-                      Editar
-                    <% end %>
-                  </li>
-                  <li>
-                    <%= button_to liga,
-                      method: :delete,
-                      class: "flex items-center gap-2 text-error font-semibold w-full text-left py-3",
-                      data: { turbo_confirm: "Você tem certeza?" } do %>
-                      <div class="h-4 w-4 invert"><%= image_tag "icons/delete.png" %></div>
-                      Excluir
-                    <% end %>
-                  </li>
-                </ul>
-              </div>
-
-            <% end %>
-          </li>
+      <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8 space-y-2">
+        <% if @ligas_do_usuario.any? %>
+          <% @ligas_do_usuario.each do |liga| %>
+            <%= render "list_item", liga: liga %>
+          <% end %>
+        <% else %>
+          <p class="text-center my-10 opacity-60">Você não possui ligas criadas.</p>
         <% end %>
-      <% else %>
-        <p class="text-center my-10 opacity-60">Você não possui ligas.</p>
-      <% end %>
-    </ul>
+      </ul>
+    </section>
+
+    <section>
+      <div class="flex items-center gap-4 mb-3 px-2">
+        <h2 class="text-xl font-bold whitespace-nowrap">
+          <%= current_user.root? ? "Outras ligas do sistema" : "Ligas de terceiros" %>
+        </h2>
+        <div class="h-px bg-base-300 flex-1"></div>
+      </div>
+
+      <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8 space-y-2">
+        <% if @outras_ligas.any? %>
+          <% @outras_ligas.each do |liga| %>
+            <%= render "list_item", liga: liga %>
+          <% end %>
+        <% else %>
+          <p class="text-center my-10 opacity-60">Você ainda não participa de outras ligas.</p>
+        <% end %>
+      </ul>
+    </section>
   </div>
 </div>

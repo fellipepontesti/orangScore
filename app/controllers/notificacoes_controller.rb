@@ -1,5 +1,6 @@
 class NotificacoesController < ApplicationController
   before_action :authenticate_user!
+  before_action :authorize_root!, only: %i[ new create edit update destroy ]
   before_action :set_notificacao, only: %i[ show edit update destroy ]
 
   def index
@@ -13,18 +14,29 @@ class NotificacoesController < ApplicationController
   end
 
   def new
+    @notificacao = Notificacao.new(tipo: :system, status: :unread)
   end
 
   def edit
   end
 
   def create
-    @notificacao = Notificacao.new(notificacao_params)
+    @notificacao = Notificacao.new(notificacao_params.merge(
+      user: current_user,
+      sender: current_user,
+      tipo: :system,
+      status: :unread
+    ))
 
     respond_to do |format|
-      if @notificacao.save
-        format.html { redirect_to @notificacao, notice: "Notificacao was successfully created." }
-        format.json { render :show, status: :created, location: @notificacao }
+      if @notificacao.valid?
+        created_count = Notificacoes::Broadcast.new(
+          texto: @notificacao.texto,
+          sender: current_user
+        ).call
+
+        format.html { redirect_to notificacoes_path, notice: "#{created_count} notificações enviadas com sucesso." }
+        format.json { render json: { created_count: created_count }, status: :created }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @notificacao.errors, status: :unprocessable_entity }
@@ -93,6 +105,6 @@ class NotificacoesController < ApplicationController
     end
 
     def notificacao_params
-      params.require(:notificacao).permit(:user_id, :sender_id, :tipo, :texto, :status, :answered)
+      params.require(:notificacao).permit(:texto)
     end
 end

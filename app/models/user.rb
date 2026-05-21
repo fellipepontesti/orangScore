@@ -47,7 +47,6 @@ class User < ApplicationRecord
 
   before_create :set_terms_accepted_at
   after_create :criar_assinatura_padrao
-  after_create :process_referral
 
   def total_pontos
     user_points.sum(:pontos)
@@ -128,6 +127,25 @@ class User < ApplicationRecord
     primeiro_jogo_em.blank? || Time.current < primeiro_jogo_em
   end
 
+  def count_referral_for_liga!(liga)
+    return unless referred_by_id.present?
+    return if referral_counted_at.present?
+    return if referred_by_id == id
+    return unless liga.liga_membros.accepted.exists?(user_id: referred_by_id)
+
+    with_lock do
+      return if referral_counted_at.present?
+
+      referrer = User.find_by(id: referred_by_id)
+      return unless referrer
+
+      referrer.increment!(:referrals_count)
+      update!(referral_counted_at: Time.current)
+
+      reward_referrer_if_needed!(referrer)
+    end
+  end
+
   before_validation :set_logo_selecao, if: :will_save_change_to_selecao_id?
 
   private
@@ -148,21 +166,14 @@ class User < ApplicationRecord
     )
   end
 
-  def process_referral
-    return unless referred_by_id.present?
-
-    referrer = User.find_by(id: referred_by_id)
-    return unless referrer
-
-    referrer.increment!(:referrals_count)
-
+  def reward_referrer_if_needed!(referrer)
     if referrer.referrals_count == 5
-      referrer.assinatura.update(plano: :semi_plus)
+      referrer.assinatura&.update!(plano: :semi_plus)
       Notificacao.create!(
         user: referrer,
-        titulo: "Parabéns! Você ganhou o plano Semi-Plus!",
-        mensagem: "Você indicou 5 amigos e agora tem o plano Semi-Plus ativo. Aproveite para criar ligas com até 10 pessoas!",
-        tipo: :info
+        texto: "Parabéns! Você indicou 5 amigos e agora tem o plano Semi-Plus ativo. Aproveite para criar ligas com até 10 pessoas!",
+        tipo: :info,
+        status: :unread
       )
     end
   end

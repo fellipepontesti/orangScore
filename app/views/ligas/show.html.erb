@@ -315,12 +315,49 @@
   <%# MENU DE AÇÕES %>
   <div class="mt-12 flex flex-wrap justify-center gap-4">
     <% if (@meu_vinculo&.role == "owner" && (@liga.owner.premium? || @liga.owner.plus?)) || @meu_vinculo&.role == "admin" %>
-      <button class="btn btn-primary gap-2" onclick="copyInviteLink('<%= liga_convite_url(@liga.invite_token) %>')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
-        </svg>
-        Copiar Link de Convite
-      </button>
+      <% invite_url = liga_convite_url(@liga.invite_token, ref: current_user.id) %>
+      <% invite_text = "Entre na minha liga #{@liga.nome} no OrangScore: #{invite_url}. A indicação só vale se você criar uma conta nova por esse convite e entrar nesta liga." %>
+      <% can_share_social = current_user.assinatura&.plus? || current_user.assinatura&.premium? %>
+
+      <% if can_share_social %>
+        <div class="dropdown dropdown-top dropdown-end">
+          <button tabindex="0" type="button" class="btn btn-primary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
+            </svg>
+            Convidar
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+            </svg>
+          </button>
+
+          <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow-xl border border-base-300">
+            <li>
+              <button type="button" onclick="copyInviteLink('<%= j invite_url %>')">
+                Copiar link
+              </button>
+            </li>
+            <li>
+              <%= link_to "WhatsApp",
+                "https://wa.me/?text=#{ERB::Util.url_encode(invite_text)}",
+                target: "_blank",
+                rel: "noopener" %>
+            </li>
+            <li>
+              <button type="button" onclick="shareInviteOnInstagram('<%= j invite_text %>')">
+                Instagram
+              </button>
+            </li>
+          </ul>
+        </div>
+      <% else %>
+        <button class="btn btn-primary gap-2" onclick="copyInviteLink('<%= j invite_url %>')">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
+          </svg>
+          Copiar Link de Convite
+        </button>
+      <% end %>
     <% end %>
 
     <% if @meu_vinculo&.role == "owner" %>
@@ -427,11 +464,28 @@
 
       const alert = document.getElementById('copy-alert')
 
+      alert.querySelector('span').textContent = 'Link copiado com sucesso!'
       alert.classList.remove('hidden')
 
       setTimeout(() => {
         alert.classList.add('hidden')
       }, 2500)
+    }
+
+    function shareInviteOnInstagram(text) {
+      navigator.clipboard.writeText(text)
+
+      const alert = document.getElementById('copy-alert')
+
+      alert.querySelector('span').textContent = 'Mensagem copiada. Cole no Direct do Instagram.'
+      alert.classList.remove('hidden')
+
+      window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener')
+
+      setTimeout(() => {
+        alert.classList.add('hidden')
+        alert.querySelector('span').textContent = 'Link copiado com sucesso!'
+      }, 3500)
     }
   </script>
 </div>

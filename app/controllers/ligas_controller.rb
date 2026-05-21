@@ -4,15 +4,22 @@ class LigasController < ApplicationController
   before_action :validar_dono_da_liga!, only: %i[ edit update destroy ]
 
   def index
-    if current_user.root?
-      @ligas = Liga.all
-    else
-      @ligas = Liga.joins(:liga_membros).where(liga_membros: { user_id: current_user.id, status: 1 })
-    end
+    @ligas = ligas_visiveis
 
     if params[:nome].present?
       @ligas = @ligas.where('ligas.nome ILIKE ?', "%#{params[:nome]}%")
     end
+
+    @ligas_do_usuario = @ligas.where(owner_id: current_user.id)
+    @outras_ligas = if current_user.root?
+                      @ligas.where.not(owner_id: current_user.id)
+                    else
+                      @ligas
+                        .joins(:liga_membros)
+                        .where(liga_membros: { user_id: current_user.id, status: :accepted })
+                        .where.not(owner_id: current_user.id)
+                        .distinct
+                    end
   end
 
   def accept_member
@@ -271,5 +278,13 @@ class LigasController < ApplicationController
 
     def liga_params
       params.require(:liga).permit(:owner_id, :nome, :publica, :entrada_livre)
+    end
+
+    def ligas_visiveis
+      return Liga.all if current_user.root?
+
+      Liga.joins(:liga_membros)
+          .where(liga_membros: { user_id: current_user.id, status: :accepted })
+          .distinct
     end
 end

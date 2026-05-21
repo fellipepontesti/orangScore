@@ -1,9 +1,17 @@
-<% content_for :title, "New notificacao" %>
+<% content_for :title, "Enviar notificação" %>
 
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">New notificacao</h1>
+<div class="flex-1 w-full p-6 md:p-8">
+  <div class="max-w-3xl">
+    <div class="mb-8">
+      <p class="text-sm uppercase font-bold opacity-60">Administrador</p>
+      <h1 class="font-bold text-3xl md:text-4xl mt-1">Enviar notificação</h1>
+      <p class="opacity-70 mt-3">
+        Crie uma mensagem única para aparecer na área de notificações de todos os usuários.
+      </p>
+    </div>
 
-  <%= render "form", notificacao: @notificacao %>
-
-  <%= link_to "Back to notificacoes", notificacoes_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <div class="bg-base-100 border border-base-300 rounded-box shadow-md p-6">
+      <%= render "form", notificacao: @notificacao %>
+    </div>
+  </div>
 </div>
