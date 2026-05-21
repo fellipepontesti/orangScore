@@ -4,6 +4,7 @@ class DashboardController < ApplicationController
   def index 
     if current_user.root?
       @total_usuarios = User.count
+      @total_palpites = Palpite.count
       @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count
       @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
       @total_jogos = Jogo.count
