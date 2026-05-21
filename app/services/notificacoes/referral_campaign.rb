@@ -1,6 +1,6 @@
 module Notificacoes
   class ReferralCampaign
-    TEXTO = 'Indique 5 amigos nos próximos dias e ganhe o plano Semi-Plus: sua liga passa a ter limite de 10 membros gratuitamente.'.freeze
+    TEXTO = 'Indique 5 amigos nos próximos dias e ganhe o plano Semi-Plus: sua liga passa a ter limite de 10 membros gratuitamente. (O seu amigo deverá criar a conta e entrar na sua liga para contar a indicação)'.freeze
 
     def self.call
       User.find_each do |user|
