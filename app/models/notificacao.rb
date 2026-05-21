@@ -4,7 +4,7 @@ class Notificacao < ApplicationRecord
   belongs_to :liga, optional: true
 
   enum :status, { unread: 0, read: 1 }
-  enum :tipo, { system: 0, invite: 1, admin_invite: 2 }
+  enum :tipo, { system: 0, invite: 1, admin_invite: 2, info: 3 }
 
   validates :user_id, uniqueness: {
     scope: [:liga_id, :tipo, :status],

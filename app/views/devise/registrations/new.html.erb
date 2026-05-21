@@ -40,6 +40,8 @@
 
       <%= render "devise/shared/error_messages", resource: resource %>
 
+      <%= f.hidden_field :referred_by_id, value: params[:ref] if params[:ref].present? %>
+
       <div data-step="1" class="space-y-5">
         <div class="form-control w-full">
           <%= f.label :name, class: "label" do %>

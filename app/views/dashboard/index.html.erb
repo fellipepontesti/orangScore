@@ -45,6 +45,27 @@
           </span>
         </div>
 
+      <% elsif current_user.assinatura&.semi_plus? %>
+
+        <div class="flex items-center gap-2 px-4 py-2 rounded-full
+                    bg-gradient-to-b from-teal-300 via-teal-500 to-teal-700
+                    text-white
+                    border border-teal-300
+                    shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35)]">
+
+          <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor">
+            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+          </svg>
+
+          <span class="text-xs font-black tracking-wide">
+            SEMI-PLUS
+          </span>
+        </div>
+
       <% else %>
 
         <div class="flex items-center gap-2 px-4 py-2 rounded-full
@@ -85,6 +106,19 @@
       <span>Upgrade para Premium</span>
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
     <% end %>
+  <% end %>
+
+  <% if current_user.assinatura&.basic? && current_user.referrals_count < 5 %>
+    <div class="mt-4 bg-base-200 rounded-box p-4 border border-base-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <p class="font-bold text-sm text-primary">Convide 5 amigos e ganhe o plano Semi-Plus!</p>
+        <p class="text-xs opacity-70 mt-1">Seu link: <span class="font-mono bg-base-100 p-1 rounded"><%= new_user_registration_url(ref: current_user.id) %></span></p>
+      </div>
+      <div class="flex items-center gap-2 bg-base-100 px-4 py-2 rounded-xl shrink-0">
+        <span class="text-xl font-black text-primary"><%= current_user.referrals_count %>/5</span>
+        <span class="text-xs font-bold uppercase opacity-50">Indicações</span>
+      </div>
+    </div>
   <% end %>
 </div>
 

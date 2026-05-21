@@ -48,8 +48,12 @@
                 <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary relative flex items-center gap-2 overflow-visible">
                   <span>
                     <div class="flex items-center gap-2">
-                      
-                      <% if current_user.assinatura&.plus? %>
+                      <% if current_user.root? %>
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-b from-purple-500 via-purple-700 to-purple-900 text-white border border-purple-300">
+                          <span class="text-xs font-black tracking-wide">ADMINISTRADOR</span>
+                        </div>
+
+                      <% elsif current_user.assinatura&.plus? %>
                         <span class="px-3 py-1 text-[10px] font-black rounded-full
                                     bg-gradient-to-b from-orange-300 via-orange-500 to-orange-700
                                     text-white
@@ -67,6 +71,16 @@
                                     shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35)]
                                     tracking-wide">
                           PREMIUM
+                        </span>
+
+                      <% elsif current_user.assinatura&.semi_plus? %>
+                        <span class="px-3 py-1 text-[10px] font-black rounded-full
+                                    bg-gradient-to-b from-teal-300 via-teal-500 to-teal-700
+                                    text-white
+                                    border border-teal-300
+                                    shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_2px_6px_rgba(0,0,0,0.35)]
+                                    tracking-wide">
+                          SEMI-PLUS
                         </span>
 
                       <% else %>

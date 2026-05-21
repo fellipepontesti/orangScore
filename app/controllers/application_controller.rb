@@ -2,13 +2,14 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :check_terms_acceptance, if: -> { user_signed_in? && !devise_controller? }
+  before_action :store_referral_id
   
   protected
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(
       :sign_up,
-      keys: [:name, :selecao_id, :terms_of_service]
+      keys: [:name, :selecao_id, :terms_of_service, :referred_by_id]
     )
 
     devise_parameter_sanitizer.permit(
@@ -43,5 +44,9 @@ class ApplicationController < ActionController::Base
     return if current_user&.root?
 
     redirect_to root_path, alert: 'Acesso não autorizado.'
+  end
+
+  def store_referral_id
+    session[:referral_id] = params[:ref] if params[:ref].present?
   end
 end

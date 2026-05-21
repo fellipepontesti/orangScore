@@ -8,7 +8,8 @@ class Assinatura < ApplicationRecord
     basic: 0,
     plus: 1,
     premium: 2,
-    doacao: 3
+    doacao: 3,
+    semi_plus: 4
   }
 
   def limite_ligas
@@ -17,6 +18,8 @@ class Assinatura < ApplicationRecord
       1
     when 'plus'
       5
+    when 'semi_plus'
+      1
     when 'premium'
       999999
     end
@@ -26,6 +29,8 @@ class Assinatura < ApplicationRecord
     case plano
     when 'basic'
       5
+    when 'semi_plus'
+      10
     when 'plus'
       25
     when 'premium'

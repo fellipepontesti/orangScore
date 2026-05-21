@@ -24,6 +24,9 @@ Rails.application.routes.draw do
   end
 
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy] do
+    member do
+      patch :change_plan
+    end
     collection do
       get :pontuacao
       get :ranking

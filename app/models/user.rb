@@ -5,7 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :confirmable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
-  def self.from_omniauth(auth)
+  def self.from_omniauth(auth, ref_id = nil)
     user = User.find_by(email: auth.info.email)
 
     if user
@@ -20,6 +20,7 @@ class User < ApplicationRecord
         new_user.name = auth.info.name
         new_user.selecao_id = Selecao.find_by(nome: 'A definir')&.id || Selecao.first&.id
         new_user.terms_of_service = '1'
+        new_user.referred_by_id = ref_id if ref_id.present?
         new_user.skip_confirmation!
       end
     end
@@ -46,6 +47,7 @@ class User < ApplicationRecord
 
   before_create :set_terms_accepted_at
   after_create :criar_assinatura_padrao
+  after_create :process_referral
 
   def total_pontos
     user_points.sum(:pontos)
@@ -144,5 +146,24 @@ class User < ApplicationRecord
     create_assinatura!(
       plano: :basic
     )
+  end
+
+  def process_referral
+    return unless referred_by_id.present?
+
+    referrer = User.find_by(id: referred_by_id)
+    return unless referrer
+
+    referrer.increment!(:referrals_count)
+
+    if referrer.referrals_count == 5
+      referrer.assinatura.update(plano: :semi_plus)
+      Notificacao.create!(
+        user: referrer,
+        titulo: "Parabéns! Você ganhou o plano Semi-Plus!",
+        mensagem: "Você indicou 5 amigos e agora tem o plano Semi-Plus ativo. Aproveite para criar ligas com até 10 pessoas!",
+        tipo: :info
+      )
+    end
   end
 end

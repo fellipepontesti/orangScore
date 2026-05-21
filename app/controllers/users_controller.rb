@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil]
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
     @usuarios = Users::List.new(params).call.order(created_at: :desc).paginate(page: params[:page], per_page: 10)
@@ -75,6 +75,14 @@ class UsersController < ApplicationController
   def destroy
     @usuario.destroy
     redirect_to users_path, notice: "Usuário removido com sucesso"
+  end
+
+  def change_plan
+    if @usuario.assinatura.update(plano: params[:plano])
+      redirect_to users_path, notice: "Plano atualizado com sucesso"
+    else
+      redirect_to users_path, alert: "Falha ao atualizar o plano"
+    end
   end
 
   private 
