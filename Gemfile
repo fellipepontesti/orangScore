@@ -1,6 +1,5 @@
 source "https://rubygems.org"
 
-ruby "3.3.10"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.6"
@@ -69,3 +68,5 @@ gem 'will_paginate', '~> 3.1'
 gem "resend"
 gem 'rack-attack'
 gem "stripe"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"

@@ -2,7 +2,28 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable, :confirmable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
+
+  def self.from_omniauth(auth)
+    user = User.find_by(email: auth.info.email)
+
+    if user
+      if user.provider.blank? || user.uid.blank?
+        user.update(provider: auth.provider, uid: auth.uid)
+      end
+      user
+    else
+      where(provider: auth.provider, uid: auth.uid).first_or_create do |new_user|
+        new_user.email = auth.info.email
+        new_user.password = Devise.friendly_token[0, 20]
+        new_user.name = auth.info.name
+        new_user.selecao_id = Selecao.find_by(nome: 'A definir')&.id || Selecao.first&.id
+        new_user.terms_of_service = '1'
+        new_user.skip_confirmation!
+      end
+    end
+  end
 
   has_many :ligas, foreign_key: :owner_id
   has_many :liga_membros
