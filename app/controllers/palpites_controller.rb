@@ -40,7 +40,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.save
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo), notice: "Palpite criado com sucesso!." }
+        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo_id), notice: "Palpite criado com sucesso!." }
         format.json { render :show, status: :created, location: @palpite }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -60,7 +60,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.update(palpite_params)
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo), notice: "Palpite atualizado com sucesso!." }
+        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo_id), notice: "Palpite atualizado com sucesso!." }
         format.json { render :show, status: :ok, location: @palpite }
       else
         format.html { render :edit, status: :unprocessable_entity }

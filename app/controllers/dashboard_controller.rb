@@ -2,6 +2,15 @@ class DashboardController < ApplicationController
   before_action :authenticate_user!
 
   def index 
+    if current_user.root?
+      @total_usuarios = User.count
+      @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count
+      @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
+      @total_jogos = Jogo.count
+      @total_ligas = Liga.count
+      @ultimos_usuarios = User.order(created_at: :desc).limit(5)
+      return render :root_index
+    end
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
     @jogos_hoje = Jogo.where(data: Date.today.beginning_of_day..Date.today.end_of_day).count
     @proximos_jogos = Jogo.where("data >= ?", Time.current).order(data: :asc).limit(5)

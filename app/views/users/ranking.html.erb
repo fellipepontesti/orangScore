@@ -1,0 +1,49 @@
+<% content_for :title, "Ranking Global" %>
+
+<div class="w-full max-w-4xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+    <h1 class="text-4xl font-bold flex items-center gap-3 text-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+      Ranking Global
+    </h1>
+    
+    <%= link_to "Voltar ao Dashboard", authenticated_root_path, class: "btn btn-outline btn-sm" %>
+  </div>
+
+  <div class="bg-base-100 shadow-xl rounded-box border border-base-200 overflow-hidden">
+    <ul class="list w-full">
+      <% @usuarios_ranking.each_with_index do |user, index| %>
+        <% rank = index + 1 + (@usuarios_ranking.current_page - 1) * @usuarios_ranking.per_page %>
+        <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between hover:bg-base-200/50 transition <%= 'bg-secondary/5' if user.id == current_user.id %>">
+          <div class="flex items-center gap-4">
+            <div class="w-12 text-center font-black text-2xl <%= rank <= 3 ? 'text-secondary' : 'opacity-40' %>">
+              <%= rank %>º
+            </div>
+            <div class="flex flex-col">
+              <span class="font-bold text-lg"><%= user.name %></span>
+              <% if user.id == current_user.id %>
+                <span class="badge badge-secondary badge-sm mt-1">Você</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 text-right">
+            <div class="flex flex-col items-end">
+              <span class="text-[10px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
+              <span class="font-bold text-lg text-slate-400"><%= user.try(:total_palpites) || 0 %></span>
+            </div>
+            <div class="flex flex-col items-end w-24">
+              <span class="text-[10px] uppercase font-black opacity-30 tracking-tighter text-secondary">Pontuação</span>
+              <span class="text-3xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || 0 %></span>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="mt-8 flex justify-center">
+    <%= will_paginate @usuarios_ranking, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
+  </div>
+</div>

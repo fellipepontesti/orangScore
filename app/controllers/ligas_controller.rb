@@ -37,18 +37,31 @@ class LigasController < ApplicationController
     end
     
     if @liga.entrada_livre
-      unless @liga.atingiu_limite_de_participantes?
+      unless @liga.liga_membros.exists?(user_id: current_user.id, status: :accepted)
+        if @liga.atingiu_limite_de_participantes?
+          redirect_to ligas_publicas_path, alert: "Esta liga já atingiu o limite de participantes."
+          return
+        end
         LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :accepted)
         @liga.increment!(:membros)
         redirect_to @liga, notice: "Você entrou na liga com sucesso!"
+        return
       else
-        redirect_to ligas_publicas_path, alert: "Esta liga já atingiu o limite de participantes."
+        redirect_to @liga, notice: "Você já participa desta liga."
+        return
       end
     else
-      unless @liga.liga_membros.exists?(user_id: current_user.id, status: :invited)
+      if @liga.liga_membros.exists?(user_id: current_user.id, status: :invited)
+        redirect_to ligas_publicas_path, notice: "Sua solicitação de convite já está pendente."
+        return
+      elsif @liga.liga_membros.exists?(user_id: current_user.id, status: :accepted)
+        redirect_to @liga, notice: "Você já participa desta liga."
+        return
+      else
         LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :invited)
+        redirect_to ligas_publicas_path, notice: "Sua solicitação para entrar na liga foi enviada ao dono."
+        return
       end
-      redirect_to ligas_publicas_path, notice: "Sua solicitação para entrar na liga foi enviada ao dono."
     end
   end
 

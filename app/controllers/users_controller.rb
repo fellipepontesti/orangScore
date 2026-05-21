@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
-    @usuarios = Users::List.new(params).call.paginate(page: params[:page], per_page: 10)
+    @usuarios = Users::List.new(params).call.order(created_at: :desc).paginate(page: params[:page], per_page: 10)
     
     @total_usuarios = User.count
     @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count
@@ -13,6 +13,19 @@ class UsersController < ApplicationController
 
   def pontuacao
     @user_points = current_user.user_points.includes(:jogo).order(created_at: :desc)
+  end
+
+  def ranking
+    # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
+    @usuarios_ranking = User
+                      .joins("LEFT JOIN user_points ON user_points.user_id = users.id")
+                      .joins("LEFT JOIN palpites ON palpites.user_id = users.id")
+                      .group("users.id")
+                      .select("users.*, 
+                               COALESCE(SUM(user_points.pontos), 0) as total_pontos_ranking, 
+                               COUNT(DISTINCT palpites.id) as total_palpites")
+                      .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                      .paginate(page: params[:page], per_page: 50)
   end
 
   def perfil

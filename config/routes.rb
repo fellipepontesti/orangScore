@@ -24,7 +24,10 @@ Rails.application.routes.draw do
   end
 
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy] do
-    get :pontuacao, on: :collection
+    collection do
+      get :pontuacao
+      get :ranking
+    end
   end
 
   get "/perfil", to: "users#perfil", as: :perfil
