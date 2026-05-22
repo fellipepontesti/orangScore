@@ -60,7 +60,7 @@ class GruposController < ApplicationController
 
   private
     def set_grupo
-      @grupo = Grupo.find(params[:id])
+      @grupo = Grupo.find_by_uuid_param!(params[:id])
     end
 
     def grupo_params

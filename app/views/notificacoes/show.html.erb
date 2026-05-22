@@ -9,12 +9,12 @@
       <div class="flex gap-4 mt-6">
         
         <%= button_to "Aceitar",
-          aceitar_admin_liga_path(@notificacao.liga_id),
+          aceitar_admin_liga_path(@notificacao.liga),
           method: :post,
           class: "btn bg-success hover:bg-success/80 text-white border-none" %>
 
         <%= button_to "Recusar",
-          recusar_admin_liga_path(@notificacao.liga_id),
+          recusar_admin_liga_path(@notificacao.liga),
           method: :post,
           class: "btn bg-error hover:bg-error/80 text-white border-none" %>
 
@@ -23,4 +23,3 @@
     <div class="p-12"></div>
   </div>
 </div>
-

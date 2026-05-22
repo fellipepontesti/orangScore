@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_21_224600) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "assinaturas", force: :cascade do |t|
@@ -50,6 +51,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_21_224600) do
     t.integer "rodadas", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["uuid"], name: "index_grupos_on_uuid", unique: true
   end
 
   create_table "jogos", force: :cascade do |t|
@@ -67,8 +70,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_21_224600) do
     t.string "nome_provisorio_mandante"
     t.string "nome_provisorio_visitante"
     t.integer "status", default: 0
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["grupo_id"], name: "index_jogos_on_grupo_id"
     t.index ["mandante_id"], name: "index_jogos_on_mandante_id"
+    t.index ["uuid"], name: "index_jogos_on_uuid", unique: true
     t.index ["visitante_id"], name: "index_jogos_on_visitante_id"
   end
 
@@ -94,8 +99,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_21_224600) do
     t.string "invite_token"
     t.boolean "publica", default: false, null: false
     t.boolean "entrada_livre", default: false, null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["invite_token"], name: "index_ligas_on_invite_token", unique: true
     t.index ["owner_id"], name: "index_ligas_on_owner_id"
+    t.index ["uuid"], name: "index_ligas_on_uuid", unique: true
   end
 
   create_table "notificacoes", force: :cascade do |t|
@@ -198,10 +205,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_21_224600) do
     t.integer "referred_by_id"
     t.integer "referrals_count", default: 0
     t.datetime "referral_counted_at"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["selecao_id"], name: "index_users_on_selecao_id"
+    t.index ["uuid"], name: "index_users_on_uuid", unique: true
   end
 
   add_foreign_key "assinaturas", "users", column: "usuario_id"

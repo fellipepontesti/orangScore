@@ -12,18 +12,18 @@
       <% @ligas.each do |liga| %>
         <li class="card bg-base-100 shadow-xl border border-base-200">
           <div class="card-body">
-            <h2 class="card-title text-xl"><%= liga.nome %></h2>
+            <h2 class="card-title text-xl break-words"><%= liga.nome %></h2>
             <div class="text-sm opacity-70 mt-2">
               <p><strong>Dono:</strong> <%= liga.owner.name %></p>
               <p><strong>Plano:</strong> <%= liga.owner.assinatura.plano.capitalize %></p>
             </div>
             
-            <div class="flex items-center gap-2 mt-4">
-              <div class="badge badge-primary"><%= liga.total_participantes %> participantes</div>
+            <div class="flex flex-wrap items-center gap-2 mt-4">
+              <div class="badge badge-primary whitespace-normal py-1" style="height: auto; min-height: 1.5rem;"><%= liga.total_participantes %> participantes</div>
               <% if liga.entrada_livre %>
-                <div class="badge badge-secondary badge-outline">Entrada Livre</div>
+                <div class="badge badge-secondary badge-outline whitespace-normal py-1" style="height: auto; min-height: 1.5rem;">Entrada Livre</div>
               <% else %>
-                <div class="badge badge-warning badge-outline">Requer Aprovação</div>
+                <div class="badge badge-warning badge-outline whitespace-normal py-1" style="height: auto; min-height: 1.5rem;">Requer Aprovação</div>
               <% end %>
             </div>
 

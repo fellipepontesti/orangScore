@@ -1,4 +1,6 @@
 class Liga < ApplicationRecord
+  include HasPublicUuid
+
   belongs_to :owner, class_name: 'User'
   before_create :generate_invite_token
 

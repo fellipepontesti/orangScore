@@ -8,8 +8,6 @@ class NotificacoesController < ApplicationController
   end
 
   def show
-    @notificacao = Notificacao.find(params[:id])
-
     @notificacao.read!
   end
 
@@ -101,7 +99,11 @@ class NotificacoesController < ApplicationController
 
   private
     def set_notificacao
-      @notificacao = Notificacao.find(params[:id])
+      @notificacao = if current_user.root?
+        Notificacao.find(params[:id])
+      else
+        current_user.notificacoes.find(params[:id])
+      end
     end
 
     def notificacao_params

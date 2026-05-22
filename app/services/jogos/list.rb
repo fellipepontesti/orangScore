@@ -21,7 +21,8 @@ module Jogos
       end
 
       if params[:tipo] == 'grupo' && params[:grupo].present?
-        query = query.where(grupo_id: params[:grupo])
+        grupo = Grupo.find_by(uuid: params[:grupo])
+        query = grupo ? query.where(grupo_id: grupo.id) : query.none
       end
 
       if params[:status].present?

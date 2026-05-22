@@ -81,8 +81,8 @@
     <div class="flex justify-center items-center gap-2 mb-6 flex-wrap">
       <% Grupo.order(:nome).each do |grupo| %>
         <%= link_to grupo.nome,
-          jogos_path(tipo: :grupo, grupo: grupo.id),
-          class: "btn btn-sm #{ @grupo_ativo.to_s == grupo.id.to_s ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
+          jogos_path(tipo: :grupo, grupo: grupo.uuid),
+          class: "btn btn-sm #{ @grupo_ativo.to_s == grupo.uuid.to_s ? 'bg-primary text-white border-primary' : 'btn-outline btn-white hover:bg-primary' }" %>
       <% end %>
     </div>
   <% end %>
@@ -179,7 +179,7 @@
                     class: "btn btn-sm btn-warning w-full font-bold" %>
                 <% else %>
                   <%= link_to "Palpitar",
-                    new_palpite_path(jogo_id: jogo.id),
+                    new_palpite_path(jogo_id: jogo.uuid),
                     class: "btn btn-sm btn-primary w-full font-bold" %>
                 <% end %>
               </div>

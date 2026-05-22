@@ -1,4 +1,6 @@
 class Jogo < ApplicationRecord
+  include HasPublicUuid
+
   belongs_to :mandante, class_name: 'Selecao', optional: true
   belongs_to :visitante, class_name: 'Selecao', optional: true
   belongs_to :grupo, optional: true

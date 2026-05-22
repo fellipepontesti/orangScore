@@ -12,7 +12,7 @@ class PalpitesController < ApplicationController
 
   # GET /palpites/new
   def new
-    @jogo = Jogo.find(params[:jogo_id])
+    @jogo = Jogo.find_by_uuid_param!(params[:jogo_id])
     @palpite = current_user.palpites.build
     @palpite.jogo = @jogo
   end
@@ -23,8 +23,8 @@ class PalpitesController < ApplicationController
   end
 
   def create
-    @palpite = current_user.palpites.build(palpite_params)
-    @jogo = Jogo.find_by(id: palpite_params[:jogo_id])
+    @jogo = Jogo.find_by(uuid: palpite_params[:jogo_id])
+    @palpite = current_user.palpites.build(palpite_params.except(:jogo_id))
 
     unless @jogo
       redirect_to jogos_path, alert: "Jogo não informado."
@@ -40,7 +40,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.save
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo_id), notice: "Palpite criado com sucesso!." }
+        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: "Palpite criado com sucesso!." }
         format.json { render :show, status: :created, location: @palpite }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -59,8 +59,8 @@ class PalpitesController < ApplicationController
     end
 
     respond_to do |format|
-      if @palpite.update(palpite_params)
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo_id), notice: "Palpite atualizado com sucesso!." }
+      if @palpite.update(palpite_params.except(:jogo_id))
+        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: "Palpite atualizado com sucesso!." }
         format.json { render :show, status: :ok, location: @palpite }
       else
         format.html { render :edit, status: :unprocessable_entity }

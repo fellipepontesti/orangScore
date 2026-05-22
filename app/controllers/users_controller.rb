@@ -88,7 +88,7 @@ class UsersController < ApplicationController
   private 
 
   def set_user
-    @usuario = User.find(params[:id])
+    @usuario = User.find_by_uuid_param!(params[:id])
   end
 
   def user_params

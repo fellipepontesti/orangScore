@@ -2,7 +2,7 @@
   <div class="card bg-base-100 shadow-2xl border border-base-200">
     <div class="card-body p-8 md:p-12">
       <%= form_with(model: palpite, class: "space-y-10") do |form| %>
-        <%= form.hidden_field :jogo_id %>
+        <%= form.hidden_field :jogo_id, value: @jogo&.uuid %>
 
         <% if palpite.errors.any? %>
           <div class="alert alert-error shadow-lg">

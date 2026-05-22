@@ -11,7 +11,7 @@ class JogosController < ApplicationController
     @grupo_ativo = if params[:grupo].present?
       params[:grupo]
     else
-      @grupos.first&.id
+      @grupos.first&.uuid
     end
     
     @status_filtro = params[:status]
@@ -37,7 +37,6 @@ class JogosController < ApplicationController
   end
 
   def edit
-    @jogo = Jogo.find(params[:id])
     @selecoes = Selecao.order(:nome)
     @grupos = Grupo.order(:nome)
   end
@@ -102,7 +101,7 @@ class JogosController < ApplicationController
 
   private
     def set_jogo
-      @jogo = Jogo.find(params[:id])
+      @jogo = Jogo.find_by_uuid_param!(params[:id])
     end
 
     def load_selecoes

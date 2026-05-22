@@ -2,6 +2,7 @@ class LigasController < ApplicationController
   before_action :authenticate_user!
   before_action :set_liga, only: %i[ show edit update destroy quit invite_member remove_member accept_member set_admin ]
   before_action :validar_dono_da_liga!, only: %i[ edit update destroy ]
+  before_action :validar_admin_da_liga!, only: %i[ accept_member invite_member remove_member ]
 
   def index
     @ligas = ligas_visiveis
@@ -33,7 +34,7 @@ class LigasController < ApplicationController
   end
 
   def join
-    @liga = Liga.find(params[:id])
+    @liga = Liga.find_by_uuid_param!(params[:id])
     
     unless @liga.publica
       return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
@@ -73,7 +74,7 @@ class LigasController < ApplicationController
   end
 
   def preview
-    @liga = Liga.find(params[:id])
+    @liga = Liga.find_by_uuid_param!(params[:id])
     
     unless @liga.publica
       return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
@@ -115,7 +116,7 @@ class LigasController < ApplicationController
   end
 
   def accept_admin
-    liga = Liga.find(params[:id])
+    liga = Liga.find_by_uuid_param!(params[:id])
     Ligas::AcceptAdmin.new(liga: liga, current_user: current_user).call
 
     redirect_to liga_path(liga), notice: "Agora você é administrador da liga."
@@ -124,7 +125,7 @@ class LigasController < ApplicationController
   end
 
   def recuse_admin
-    liga = Liga.find(params[:id])
+    liga = Liga.find_by_uuid_param!(params[:id])
     Ligas::RecuseAdmin.new(liga: liga, current_user: current_user).call
 
     redirect_to notificacoes_path, notice: "Convite de administrador recusado."
@@ -164,8 +165,6 @@ class LigasController < ApplicationController
   end
 
   def invite_member
-    @liga = Liga.find(params[:id])
-
     user_invited = Ligas::InviteMember.new(
       liga: @liga,
       current_user: current_user,
@@ -178,16 +177,20 @@ class LigasController < ApplicationController
   end
 
   def accept_invite
+    liga = Liga.find_by_uuid_param!(params[:id])
+
     liga = Ligas::AcceptInvite
-              .new(params[:id], current_user.id)
+              .new(liga.id, current_user.id)
               .call
 
     redirect_to liga_path(liga), notice: "Você entrou na liga."
   end
 
   def recuse_invite
+    liga = Liga.find_by_uuid_param!(params[:id])
+
     Ligas::RecuseInvite
-      .new(params[:id], current_user.id)
+      .new(liga.id, current_user.id)
       .call
 
     redirect_to notificacoes_path, notice: "Convite recusado."
@@ -217,8 +220,6 @@ class LigasController < ApplicationController
   end
 
   def set_admin
-    @liga = Liga.find(params[:id])
-
     liga_membro = Ligas::InviteAdmin.new(
       liga: @liga,
       current_user: current_user,
@@ -234,6 +235,14 @@ class LigasController < ApplicationController
     unless @liga.owner_id == current_user.id || current_user.root?
       redirect_to ligas_path, alert: "Acesso negado! Você não é o dono desta liga."
     end
+  end
+
+  def validar_admin_da_liga!
+    meu_vinculo = @liga.liga_membros.find_by(user_id: current_user.id)
+
+    return if meu_vinculo&.role.in?(%w[owner admin]) || current_user.root?
+
+    redirect_to @liga, alert: "Você não tem permissão para gerenciar membros desta liga."
   end
 
   def update
@@ -262,10 +271,10 @@ class LigasController < ApplicationController
   private
     def set_liga
       if current_user.root?
-        @liga = Liga.find(params[:id])
+        @liga = Liga.find_by_uuid_param!(params[:id])
       else
         @liga = Liga.joins(:liga_membros)
-                    .where(id: params[:id])
+                    .where(uuid: params[:id])
                     .where(liga_membros: { user_id: current_user.id })
                     .where.not(liga_membros: { status: 0 })
                     .first

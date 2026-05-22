@@ -343,11 +343,6 @@
                 target: "_blank",
                 rel: "noopener" %>
             </li>
-            <li>
-              <button type="button" onclick="shareInviteOnInstagram('<%= j invite_text %>')">
-                Instagram
-              </button>
-            </li>
           </ul>
         </div>
       <% else %>
@@ -470,22 +465,6 @@
       setTimeout(() => {
         alert.classList.add('hidden')
       }, 2500)
-    }
-
-    function shareInviteOnInstagram(text) {
-      navigator.clipboard.writeText(text)
-
-      const alert = document.getElementById('copy-alert')
-
-      alert.querySelector('span').textContent = 'Mensagem copiada. Cole no Direct do Instagram.'
-      alert.classList.remove('hidden')
-
-      window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener')
-
-      setTimeout(() => {
-        alert.classList.add('hidden')
-        alert.querySelector('span').textContent = 'Link copiado com sucesso!'
-      }, 3500)
     }
   </script>
 </div>
