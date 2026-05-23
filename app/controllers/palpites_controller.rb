@@ -82,7 +82,7 @@ class PalpitesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_palpite
-      @palpite = current_user.palpites.find(params[:id])
+      @palpite = current_user.palpites.find_by_uuid_param!(params[:id])
     end
 
     # Only allow a list of trusted parameters through.

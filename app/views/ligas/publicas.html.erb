@@ -28,8 +28,12 @@
             </div>
 
             <div class="card-actions justify-end mt-6">
-              <% if liga.users.exists?(current_user.id) %>
-                <%= link_to "Acessar Liga", liga_path(liga), class: "btn btn-primary w-full" %>
+              <% if liga.liga_membros.exists?(user_id: current_user.id, status: :accepted) %>
+                <%= link_to "Ver Liga", liga_path(liga), class: "btn btn-primary w-full" %>
+              <% elsif liga.liga_membros.exists?(user_id: current_user.id, status: :invited) %>
+                <%= link_to "Entrada pendente",
+                  "#",
+                  class: "btn btn-primary w-full opacity-50 cursor-not-allowed pointer-events-none" %>
               <% else %>
                 <% if liga.atingiu_limite_de_participantes? %>
                   <button class="btn btn-disabled w-full">Liga Cheia</button>

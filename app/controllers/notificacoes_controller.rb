@@ -64,7 +64,7 @@ class NotificacoesController < ApplicationController
   end
 
   def accept_admin_invite
-    notificacao = current_user.notificacoes.find(params[:id])
+    notificacao = current_user.notificacoes.find_by_uuid_param!(params[:id])
 
     unless notificacao.admin_invite? && notificacao.unread?
       redirect_to notificacoes_path, alert: 'Convite inválido.'
@@ -85,7 +85,7 @@ class NotificacoesController < ApplicationController
   end
 
   def reject_admin_invite
-    notificacao = current_user.notificacoes.find(params[:id])
+    notificacao = current_user.notificacoes.find_by_uuid_param!(params[:id])
 
     unless notificacao.admin_invite? && notificacao.unread?
       redirect_to notificacoes_path, alert: 'Convite inválido.'
@@ -100,9 +100,9 @@ class NotificacoesController < ApplicationController
   private
     def set_notificacao
       @notificacao = if current_user.root?
-        Notificacao.find(params[:id])
+        Notificacao.find_by_uuid_param!(params[:id])
       else
-        current_user.notificacoes.find(params[:id])
+        current_user.notificacoes.find_by_uuid_param!(params[:id])
       end
     end
 

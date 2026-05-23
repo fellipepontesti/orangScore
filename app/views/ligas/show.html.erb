@@ -105,7 +105,7 @@
 
                 <%= button_to accept_member_liga_path(
                       @liga,
-                      liga_membro_id: liga_membro.id
+                      liga_membro_id: liga_membro.uuid
                     ),
                     method: :patch,
                     form: {
@@ -119,7 +119,7 @@
 
                 <%= button_to remove_member_liga_path(
                       @liga,
-                      liga_membro_id: liga_membro.id
+                      liga_membro_id: liga_membro.uuid
                     ),
                     method: :delete,
                     form: {
@@ -174,7 +174,7 @@
 
                 <%= button_to remove_member_liga_path(
                         @liga,
-                        liga_membro_id: liga_membro.id
+                        liga_membro_id: liga_membro.uuid
                       ),
                       method: :delete,
                       form: {
@@ -272,7 +272,7 @@
                         <% message="Tem certeza que deseja adicionar o usuário #{liga_membro.user.name} como administrador da sua liga?"%>
                         <% img_name="adm"%>
                       <%end%>
-                      <%= button_to set_admin_liga_path(@liga, liga_membro_id: liga_membro.id),
+                      <%= button_to set_admin_liga_path(@liga, liga_membro_id: liga_membro.uuid),
                           method: :post,
                           form: { data: { turbo_confirm: message } },
                           class: "btn btn-sm btn-ghost hover:scale-110 transition p-1" do %>
@@ -287,7 +287,7 @@
                     <% method = is_owner ? :delete : :patch %>
                     <% confirm_message = is_owner ? "Remover este membro da liga?" : "Solicitar exclusão deste membro? O dono da liga precisará aprovar." %>
                     <% if current_user.root? || is_owner || current_user.id != liga_membro.user_id %>
-                      <%= button_to remove_member_liga_path(@liga, liga_membro_id: liga_membro.id),
+                      <%= button_to remove_member_liga_path(@liga, liga_membro_id: liga_membro.uuid),
                           method: method,
                           form: { data: { turbo_confirm: confirm_message } },
                           class: "btn btn-sm btn-ghost hover:scale-110 transition p-1" do %>
@@ -316,7 +316,7 @@
   <div class="mt-12 flex flex-wrap justify-center gap-4">
     <% if (@meu_vinculo&.role == "owner" && (@liga.owner.premium? || @liga.owner.plus?)) || @meu_vinculo&.role == "admin" %>
       <% invite_url = liga_convite_url(@liga.invite_token, ref: current_user.id) %>
-      <% invite_text = "Entre na minha liga #{@liga.nome} no OrangScore: #{invite_url}. A indicação só vale se você criar uma conta nova por esse convite e entrar nesta liga." %>
+      <% invite_text = "Entre na minha liga #{@liga.nome} no OrangScore: #{invite_url}. Em casos de indicação, a indicação só vale se você criar uma conta nova por esse convite e entrar nesta liga." %>
       <% can_share_social = current_user.assinatura&.plus? || current_user.assinatura&.premium? %>
 
       <% if can_share_social %>

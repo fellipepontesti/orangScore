@@ -2,22 +2,18 @@
 
 one:
   user: one
-  tipo: MyString
-  integer: MyString
-   text: MyString
-  text: MyString
-   status: MyString
-  integer: MyString
-   sender_id: MyString
-  integer: MyString
+  tipo: system
+  sender_id: 1
+  texto: "Notificação de teste 1"
+  status: unread
+  answered: true
+  uuid: "00000000-0000-0000-0000-000000000001"
 
 two:
   user: two
-  tipo: MyString
-  integer: MyString
-   text: MyString
-  text: MyString
-   status: MyString
-  integer: MyString
-   sender_id: MyString
-  integer: MyString
+  tipo: system
+  sender_id: 2
+  texto: "Notificação de teste 2"
+  status: unread
+  answered: true
+  uuid: "00000000-0000-0000-0000-000000000002"

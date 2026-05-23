@@ -17,7 +17,7 @@ class SelecoesController < ApplicationController
   end
 
   def edit
-    @selecao = Selecao.find(params[:id])
+    @selecao = Selecao.find_by_uuid_param!(params[:id])
   end
 
   def create
@@ -65,7 +65,7 @@ class SelecoesController < ApplicationController
 
   private
     def set_selecao
-      @selecao = Selecao.find(params[:id])
+      @selecao = Selecao.find_by_uuid_param!(params[:id])
     end
 
     def selecao_params

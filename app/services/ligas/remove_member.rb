@@ -13,7 +13,7 @@ module Ligas
         raise Exceptions::ServiceError, "Você não tem permissão para remover membros."
       end
 
-      liga_membro = @liga.liga_membros.find_by(id: @liga_membro_id)
+      liga_membro = @liga.liga_membros.find_by(uuid: @liga_membro_id) || @liga.liga_membros.find_by(id: @liga_membro_id)
 
       if liga_membro.nil?
         raise Exceptions::ServiceError, "Membro não encontrado."

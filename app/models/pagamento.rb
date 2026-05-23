@@ -1,4 +1,5 @@
 class Pagamento < ApplicationRecord
+  include HasPublicUuid
   belongs_to :user
   belongs_to :cobranca
 

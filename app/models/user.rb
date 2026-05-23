@@ -67,6 +67,7 @@ class User < ApplicationRecord
             allow_blank: true
   
   validates :terms_of_service, acceptance: true
+  validate :name_must_be_appropriate
         
   validates :password,
   format: {
@@ -173,10 +174,43 @@ class User < ApplicationRecord
       referrer.assinatura&.update!(plano: :semi_plus)
       Notificacao.create!(
         user: referrer,
-        texto: "Parabéns! Você indicou 5 amigos e agora tem o plano Semi-Plus ativo. Aproveite para criar ligas com até 10 pessoas!",
+        texto: "Parabéns! Você indicou 4 amigos e agora tem o plano Semi-Plus ativo. Aproveite para criar ligas com até 10 pessoas!",
         tipo: :info,
         status: :unread
       )
+    end
+  end
+
+  BAD_WORDS = [
+    "viado", "fdp", "caralho", "porra", "merda", "puta", "puto", "cu", "cacete", "bosta",
+    "chupa", "viadinho", "arrombado", "cuzao", "foder", "foda", "fodido", "fodida",
+    "babaca", "otario", "otaria", "escroto", "escrota", "corno", "cornuda", "vaca",
+    "paspalho", "imbecil", "idiota", "lixo", "verme", "maldito", "maldita", "desgraçado",
+    "desgraçada", "pinto", "caralhao", "xereca", "xota", "buceta", "grelo", "caceta",
+    "bostao", "merdao", "punheta", "siririca", "viadasso", "boiola", "bicha", "bichona",
+    "sapatao", "traveco", "rabeta", "rabao", "bundao", "foda-se", "fodase", "fodete",
+    "filhodaputa", "filha_da_puta", "filhodequenga", "cuzao", "cuzinho",
+    "v1ad0", "p0rra", "c4r4lh0", "sh1t", "f0d4", "f_d_p", "fdps", "arrombad0",
+    "fuck", "fucker", "fucking", "fuckface", "shit", "shitting", "shitter", "bitch",
+    "bitches", "ass", "asshole", "assholes", "bastard", "dick", "dickhead", "cunt",
+    "pussy", "twat", "wanker", "prick", "cock", "suck", "sucker", "motherfucker",
+    "milf", "slut", "whore", "nigger", "faggot", "dyke", "retard", "crap",
+    "macaco", "macaca", "tiziu", "crioulo", "crioula", "senzala", "nazista", "hitler",
+    "pedofilo", "pedofila", "estuprador", "estupro", "mãe"
+  ].freeze
+
+  def name_must_be_appropriate
+    return if name.blank?
+
+    normalized_name = name.to_s.downcase.parameterize(separator: ' ')
+    name_words = normalized_name.split
+    no_spaces_name = normalized_name.gsub(/\s+/, '')
+
+    BAD_WORDS.each do |bad_word|
+      if name_words.include?(bad_word) || no_spaces_name.include?(bad_word)
+        errors.add(:name, "contém termo impróprio")
+        break
+      end
     end
   end
 end

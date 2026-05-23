@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_23_001406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,7 +22,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.datetime "data_expiracao"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["usuario_id"], name: "index_assinaturas_on_usuario_id"
+    t.index ["uuid"], name: "index_assinaturas_on_uuid", unique: true
   end
 
   create_table "cobrancas", force: :cascade do |t|
@@ -41,9 +43,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.text "pix_qr_code"
     t.text "pix_qr_code_base64"
     t.string "gateway_status"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["gateway_cobranca_id"], name: "index_cobrancas_on_gateway_cobranca_id"
     t.index ["status"], name: "index_cobrancas_on_status"
     t.index ["user_id"], name: "index_cobrancas_on_user_id"
+    t.index ["uuid"], name: "index_cobrancas_on_uuid", unique: true
   end
 
   create_table "grupos", force: :cascade do |t|
@@ -85,9 +89,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.integer "status"
     t.integer "role"
     t.bigint "invited_by_id"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["liga_id", "user_id"], name: "index_liga_membros_on_liga_id_and_user_id", unique: true
     t.index ["liga_id"], name: "index_liga_membros_on_liga_id"
     t.index ["user_id"], name: "index_liga_membros_on_user_id"
+    t.index ["uuid"], name: "index_liga_membros_on_uuid", unique: true
   end
 
   create_table "ligas", force: :cascade do |t|
@@ -115,7 +121,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.datetime "updated_at", null: false
     t.integer "liga_id"
     t.boolean "answered", default: true
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["user_id"], name: "index_notificacoes_on_user_id"
+    t.index ["uuid"], name: "index_notificacoes_on_uuid", unique: true
   end
 
   create_table "pagamentos", force: :cascade do |t|
@@ -132,12 +140,14 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.datetime "updated_at", null: false
     t.bigint "cobranca_id", null: false
     t.string "mercado_pago_payment_id"
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["cobranca_id"], name: "index_pagamentos_on_cobranca_id"
     t.index ["mercado_pago_payment_id"], name: "index_pagamentos_on_mercado_pago_payment_id", unique: true
     t.index ["status"], name: "index_pagamentos_on_status"
     t.index ["stripe_invoice_id"], name: "index_pagamentos_on_stripe_invoice_id"
     t.index ["stripe_payment_intent_id"], name: "index_pagamentos_on_stripe_payment_intent_id", unique: true
     t.index ["user_id"], name: "index_pagamentos_on_user_id"
+    t.index ["uuid"], name: "index_pagamentos_on_uuid", unique: true
   end
 
   create_table "palpites", force: :cascade do |t|
@@ -147,9 +157,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.integer "gols_fora", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["jogo_id"], name: "index_palpites_on_jogo_id"
     t.index ["user_id", "jogo_id"], name: "index_palpites_on_user_id_and_jogo_id", unique: true
     t.index ["user_id"], name: "index_palpites_on_user_id"
+    t.index ["uuid"], name: "index_palpites_on_uuid", unique: true
   end
 
   create_table "selecoes", force: :cascade do |t|
@@ -166,7 +178,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.bigint "qtd_torcedores", default: 0
     t.bigint "gols", default: 0
     t.bigint "gols_sofridos", default: 0
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["grupo_id"], name: "index_selecoes_on_grupo_id"
+    t.index ["uuid"], name: "index_selecoes_on_uuid", unique: true
   end
 
   create_table "user_points", force: :cascade do |t|
@@ -176,8 +190,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_22_090000) do
     t.string "motivo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["jogo_id"], name: "index_user_points_on_jogo_id"
     t.index ["user_id"], name: "index_user_points_on_user_id"
+    t.index ["uuid"], name: "index_user_points_on_uuid", unique: true
   end
 
   create_table "users", force: :cascade do |t|

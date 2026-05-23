@@ -1,4 +1,5 @@
 class Notificacao < ApplicationRecord
+  include HasPublicUuid
   belongs_to :sender, class_name: 'User', optional: true
   belongs_to :user
   belongs_to :liga, optional: true

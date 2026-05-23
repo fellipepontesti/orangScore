@@ -104,7 +104,7 @@ class CheckoutController < ApplicationController
   end
 
   def pix
-    @cobranca = current_user.cobrancas.find(params[:id])
+    @cobranca = current_user.cobrancas.find_by_uuid_param!(params[:id])
     @cobranca.reload
 
     respond_to do |format|

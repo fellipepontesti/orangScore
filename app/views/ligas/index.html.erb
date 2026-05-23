@@ -11,6 +11,11 @@
         </button>
       <% end %>
 
+      <%= link_to "Ver ligas públicas",
+        publicas_ligas_path,
+        class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white flex items-center"
+      %>
+
       <% if !current_user.atingiu_limite_de_ligas? || current_user.root? %>
         <%= link_to "Criar nova liga",
           new_liga_path,

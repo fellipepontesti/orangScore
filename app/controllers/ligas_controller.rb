@@ -24,7 +24,7 @@ class LigasController < ApplicationController
   end
 
   def accept_member
-    liga_membro = @liga.liga_membros.find(params[:liga_membro_id])
+    liga_membro = @liga.liga_membros.find_by_uuid_param!(params[:liga_membro_id])
     liga_membro.update!(status: :accepted)
     redirect_to @liga, notice: "Membro aceito com sucesso."
   end
@@ -37,7 +37,7 @@ class LigasController < ApplicationController
     @liga = Liga.find_by_uuid_param!(params[:id])
     
     unless @liga.publica
-      return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
+      return redirect_to publicas_ligas_path, alert: "Esta liga não é pública."
     end
     
     if @liga.users.exists?(current_user.id)
@@ -47,11 +47,22 @@ class LigasController < ApplicationController
     if @liga.entrada_livre
       unless @liga.liga_membros.exists?(user_id: current_user.id, status: :accepted)
         if @liga.atingiu_limite_de_participantes?
-          redirect_to ligas_publicas_path, alert: "Esta liga já atingiu o limite de participantes."
+          redirect_to publicas_ligas_path, alert: "Esta liga já atingiu o limite de participantes."
           return
         end
         LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :accepted)
         @liga.increment!(:membros)
+
+        Notificacao.create!(
+          user_id: @liga.owner_id,
+          sender_id: current_user.id,
+          texto: "O usuário #{current_user.name} (email: #{current_user.email}) entrou na sua liga pública #{@liga.nome}.",
+          tipo: :info,
+          liga_id: @liga.id,
+          status: :unread,
+          answered: true
+        )
+
         redirect_to @liga, notice: "Você entrou na liga com sucesso!"
         return
       else
@@ -60,14 +71,25 @@ class LigasController < ApplicationController
       end
     else
       if @liga.liga_membros.exists?(user_id: current_user.id, status: :invited)
-        redirect_to ligas_publicas_path, notice: "Sua solicitação de convite já está pendente."
+        redirect_to publicas_ligas_path, notice: "Sua solicitação de convite já está pendente."
         return
       elsif @liga.liga_membros.exists?(user_id: current_user.id, status: :accepted)
         redirect_to @liga, notice: "Você já participa desta liga."
         return
       else
         LigaMembro.create!(liga: @liga, user: current_user, role: :member, status: :invited)
-        redirect_to ligas_publicas_path, notice: "Sua solicitação para entrar na liga foi enviada ao dono."
+
+        Notificacao.create!(
+          user_id: @liga.owner_id,
+          sender_id: current_user.id,
+          texto: "O usuário #{current_user.name} solicitou entrada na sua liga #{@liga.nome}.",
+          tipo: :info,
+          liga_id: @liga.id,
+          status: :unread,
+          answered: true
+        )
+
+        redirect_to publicas_ligas_path, notice: "Sua solicitação para entrar na liga foi enviada ao dono."
         return
       end
     end

@@ -2,24 +2,26 @@
 
 one:
   user: one
-  plano: MyString
-  valor: 1
-  status: MyString
-  gateway: MyString
-  gateway_cobranca_id: MyString
-  gateway_checkout_url: MyString
-  payment_method: MyString
+  plano: basic
+  valor: 1000
+  status: pendente
+  gateway: stripe
+  gateway_cobranca_id: MyString1
+  gateway_checkout_url: MyString1
+  payment_method: card
   expires_at: 2026-05-12 23:49:46
   paid_at: 2026-05-12 23:49:46
+  uuid: "00000000-0000-0000-0000-000000000101"
 
 two:
   user: two
-  plano: MyString
-  valor: 1
-  status: MyString
-  gateway: MyString
-  gateway_cobranca_id: MyString
-  gateway_checkout_url: MyString
-  payment_method: MyString
+  plano: basic
+  valor: 1000
+  status: pendente
+  gateway: stripe
+  gateway_cobranca_id: MyString2
+  gateway_checkout_url: MyString2
+  payment_method: card
   expires_at: 2026-05-12 23:49:46
   paid_at: 2026-05-12 23:49:46
+  uuid: "00000000-0000-0000-0000-000000000102"

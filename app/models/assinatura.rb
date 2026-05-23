@@ -1,4 +1,5 @@
 class Assinatura < ApplicationRecord
+  include HasPublicUuid
   self.table_name = 'assinaturas'
 
   belongs_to :usuario,

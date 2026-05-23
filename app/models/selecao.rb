@@ -1,4 +1,5 @@
 class Selecao < ApplicationRecord
+  include HasPublicUuid
   belongs_to :grupo
   has_many :users, foreign_key: "selecao_id"
   

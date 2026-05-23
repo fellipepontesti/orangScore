@@ -13,7 +13,7 @@ module Ligas
         raise Exceptions::ServiceError, 'Você não tem permissão para promover membros.'
       end
 
-      liga_membro = liga.liga_membros.find_by(id: liga_membro_id)
+      liga_membro = liga.liga_membros.find_by(uuid: liga_membro_id) || liga.liga_membros.find_by(id: liga_membro_id)
 
       raise Exceptions::ServiceError, 'Membro da liga não encontrado.' unless liga_membro
       raise Exceptions::ServiceError, 'Esse usuário já é owner da liga.' if liga_membro.owner?

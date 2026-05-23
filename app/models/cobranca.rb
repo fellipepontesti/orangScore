@@ -1,4 +1,5 @@
 class Cobranca < ApplicationRecord
+  include HasPublicUuid
   belongs_to :user
 
   enum status: {

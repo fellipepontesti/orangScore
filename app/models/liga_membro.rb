@@ -1,4 +1,5 @@
 class LigaMembro < ApplicationRecord
+  include HasPublicUuid
   belongs_to :liga
   belongs_to :user
 
