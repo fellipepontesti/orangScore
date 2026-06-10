@@ -40,7 +40,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.save
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: "Palpite criado com sucesso!." }
+        format.html { handle_quick_mode_redirect("Palpite criado com sucesso!") }
         format.json { render :show, status: :created, location: @palpite }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -60,7 +60,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.update(palpite_params.except(:jogo_id))
-        format.html { redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: "Palpite atualizado com sucesso!." }
+        format.html { handle_quick_mode_redirect("Palpite atualizado com sucesso!") }
         format.json { render :show, status: :ok, location: @palpite }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -88,5 +88,22 @@ class PalpitesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def palpite_params
       params.require(:palpite).permit(:jogo_id, :gols_casa, :gols_fora)
+    end
+
+    def handle_quick_mode_redirect(success_message)
+      if params[:quick_mode] == 'true' || params[:quick_mode].present?
+        next_jogo = Jogo.where(status: :programado, definir: false)
+                        .where.not(id: current_user.palpites.select(:jogo_id))
+                        .order(:data)
+                        .first
+
+        if next_jogo
+          redirect_to new_palpite_path(jogo_id: next_jogo.uuid, quick_mode: true), notice: "#{success_message} Próximo jogo..."
+        else
+          redirect_to jogos_path, notice: "Parabéns! Você palpitou em todos os jogos disponíveis no momento."
+        end
+      else
+        redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: success_message
+      end
     end
 end

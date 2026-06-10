@@ -5,6 +5,17 @@
     Jogos
   </h1>
 
+  <% next_jogo = Jogo.where(status: :programado, definir: false).where.not(id: current_user.palpites.select(:jogo_id)).order(:data).first %>
+  <% if next_jogo %>
+    <div class="flex justify-center mb-8">
+      <%= link_to new_palpite_path(jogo_id: next_jogo.uuid, quick_mode: true), class: "btn btn-primary btn-lg shadow-xl shadow-primary/20 hover:scale-105 transition group" do %>
+        <span class="text-2xl">⚡</span>
+        <span class="font-black tracking-wider uppercase">Modo Palpite Rápido</span>
+        <span class="text-xs opacity-70 group-hover:opacity-100 block">(Recomendado)</span>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="flex justify-center items-center gap-2 mb-6 flex-wrap">
     <%= link_to "Fase de grupos",
       jogos_path(tipo: :grupo),
@@ -169,6 +180,22 @@
               </div>
 
               <div class="card-actions justify-center mt-auto" onclick="event.stopPropagation()">
+                <% Jogos::FetchOdds.new(jogo: jogo).call if jogo.prob_mandante.nil? %>
+                <% if jogo.prob_mandante.present? %>
+                  <div class="w-full mt-2 mb-4">
+                    <div class="flex justify-between text-[10px] font-bold opacity-70 mb-1 px-1">
+                      <span><%= jogo.prob_mandante %>%</span>
+                      <span><%= jogo.prob_empate %>%</span>
+                      <span><%= jogo.prob_visitante %>%</span>
+                    </div>
+                    <div class="flex h-2 w-full rounded-full overflow-hidden">
+                      <div class="bg-primary" style="width: <%= jogo.prob_mandante %>%;"></div>
+                      <div class="bg-base-300" style="width: <%= jogo.prob_empate %>%;"></div>
+                      <div class="bg-error" style="width: <%= jogo.prob_visitante %>%;"></div>
+                    </div>
+                  </div>
+                <% end %>
+
                 <% if jogo.finalizado? || jogo.em_andamento? %>
                   <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Fechado</span>
                 <% elsif jogo.times_a_definir? || jogo.definir? %>

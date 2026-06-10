@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_23_001406) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_10_195509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -75,6 +75,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_23_001406) do
     t.string "nome_provisorio_visitante"
     t.integer "status", default: 0
     t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "prob_mandante"
+    t.integer "prob_empate"
+    t.integer "prob_visitante"
     t.index ["grupo_id"], name: "index_jogos_on_grupo_id"
     t.index ["mandante_id"], name: "index_jogos_on_mandante_id"
     t.index ["uuid"], name: "index_jogos_on_uuid", unique: true

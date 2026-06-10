@@ -15,12 +15,31 @@
           </div>
         <% end %>
 
+        <%= hidden_field_tag :quick_mode, params[:quick_mode] %>
+
         <% if @jogo.present? %>
           <div class="text-center mb-8">
             <h2 class="text-sm uppercase tracking-widest font-bold opacity-50 mb-1">Jogo Selecionado</h2>
             <div class="badge badge-primary badge-outline text-xs mb-4"><%= @jogo.data.strftime("%d/%m/%Y às %H:%M") %></div>
             <% if @jogo.estadio.present? %>
               <div class="text-xs opacity-50 mt-1"><%= @jogo.estadio %></div>
+            <% end %>
+
+            <% Jogos::FetchOdds.new(jogo: @jogo).call if @jogo.prob_mandante.nil? %>
+            <% if @jogo.prob_mandante.present? %>
+              <div class="mt-4 max-w-sm mx-auto bg-base-200/50 p-3 rounded-box border border-base-200">
+                <h3 class="text-[10px] uppercase font-bold opacity-50 mb-2">Probabilidades</h3>
+                <div class="flex justify-between text-xs font-bold mb-1 px-1">
+                  <span class="text-primary"><%= @jogo.prob_mandante %>% (Casa)</span>
+                  <span class="opacity-70"><%= @jogo.prob_empate %>% (Empate)</span>
+                  <span class="text-secondary"><%= @jogo.prob_visitante %>% (Fora)</span>
+                </div>
+                <div class="flex h-3 w-full rounded-full overflow-hidden shadow-inner">
+                  <div class="bg-primary" style="width: <%= @jogo.prob_mandante %>%;"></div>
+                  <div class="bg-base-300" style="width: <%= @jogo.prob_empate %>%;"></div>
+                  <div class="bg-secondary" style="width: <%= @jogo.prob_visitante %>%;"></div>
+                </div>
+              </div>
             <% end %>
           </div>
         <% end %>
@@ -98,8 +117,9 @@
             jogos_path(tipo: @jogo&.tipo || params[:tipo]),
             class: "btn btn-ghost" %>
 
-          <%= form.submit "Confirmar Palpite",
-            class: "btn btn-primary btn-lg px-12 shadow-lg" %>
+          <% se_quick_mode = params[:quick_mode].present? || params[:quick_mode] == 'true' %>
+          <%= form.submit se_quick_mode ? "Salvar e Próximo Jogo ➔" : "Confirmar Palpite",
+            class: "btn btn-primary btn-lg px-12 shadow-lg #{se_quick_mode ? 'animate-pulse' : ''}" %>
         </div>
       <% end %>
     </div>
