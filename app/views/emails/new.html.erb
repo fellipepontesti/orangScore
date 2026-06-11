@@ -1,0 +1,55 @@
+<% content_for :title, "Enviar email" %>
+
+<div class="flex-1 w-full p-6 md:p-8">
+  <div class="max-w-3xl">
+    <div class="mb-8">
+      <p class="text-sm uppercase font-bold opacity-60">Administrador</p>
+      <h1 class="font-bold text-3xl md:text-4xl mt-1">Enviar email para todos</h1>
+      <p class="opacity-70 mt-3">
+        Envie um email personalizado para todos os usuários do sistema. Somente usuários root têm acesso a esta funcionalidade.
+      </p>
+    </div>
+
+    <% if flash[:alert].present? %>
+      <div class="alert alert-error mb-6">
+        <div>
+          <p class="font-bold">Não foi possível enviar o email.</p>
+          <p><%= flash[:alert] %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="bg-base-100 border border-base-300 rounded-box shadow-md p-6">
+      <%= form_with url: emails_path, method: :post, local: true, class: "contents" do |form| %>
+        <div class="form-control mb-6">
+          <%= form.label :assunto, "Assunto", class: "label font-semibold" %>
+          <%= form.text_field :assunto,
+            value: params[:assunto],
+            required: true,
+            maxlength: 120,
+            placeholder: "Digite o assunto do email",
+            class: "input input-bordered w-full text-base" %>
+        </div>
+
+        <div class="form-control mb-6">
+          <%= form.label :mensagem, "Mensagem", class: "label font-semibold" %>
+          <%= form.text_area :mensagem,
+            value: params[:mensagem],
+            rows: 10,
+            required: true,
+            maxlength: 2000,
+            placeholder: "Digite a mensagem que será enviada para todos os usuários",
+            class: "textarea textarea-bordered w-full text-base resize-y" %>
+          <div class="label">
+            <span class="label-text-alt opacity-70">A mensagem será enviada por email para todos os usuários cadastrados.</span>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <%= form.submit "Enviar email para todos", class: "btn btn-primary" %>
+          <%= link_to "Cancelar", root_path, class: "btn btn-ghost" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

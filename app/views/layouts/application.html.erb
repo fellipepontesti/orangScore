@@ -331,6 +331,16 @@
                     <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Avisos</span>
                   </a>
                 </li>
+                <li>
+                  <a href="<%= new_email_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(new_email_path) %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0 transition-transform group-hover:scale-110 text-white">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75 12 12.75l9.75-6" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 22.5c-5.385 0-9.75-4.365-9.75-9.75V6.75" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v5.25c0 5.385-4.365 9.75-9.75 9.75" />
+                    </svg>
+                    <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Enviar emails</span>
+                  </a>
+                </li>
               <% end %>
               <li>
                 <a href="<%= pontuacao_users_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(pontuacao_users_path) %>">

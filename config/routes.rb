@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
   resources :palpites
 
+  resources :emails, only: %i[new create]
+
   resources :notificacoes do
     member do
       patch :accept_admin_invite

@@ -1,0 +1,9 @@
+Olá <%= @user_name.presence || @user_email %>,
+
+Assunto: <%= @assunto %>
+
+<%= @mensagem %>
+
+Atenciosamente,
+<%= @sender_name.presence || @sender_email || 'Equipe OrangScore' %>
+OrangScore

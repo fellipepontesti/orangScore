@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <body style="margin:0; padding:0; background:#0f172a; height:100%;">
-    <table width="100%" height="100%" cellpadding="0" cellspacing="0">
+  <body style="margin:0; padding:0; background:#0f172a; color:#f9fafb; font-family:Arial,Helvetica,sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0f172a">
       <tr>
-        <td align="center" valign="middle">
-          <%= yield %>
+        <td align="center" style="padding:24px 16px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px; background:#111827; border-radius:24px; overflow:hidden;">
+            <tr>
+              <td style="padding:28px 32px; background:#111827; text-align:center;">
+                <h1 style="margin:0; font-size:24px; color:#f97316;">OrangScore</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:32px; background:#111827;">
+                <%= yield %>
+              </td>
+            </tr>
+            <tr>
+              <td style="background:#0f172a; padding:20px 28px; color:#94a3b8; font-size:13px; line-height:1.5; text-align:center;">
+                <p style="margin:0;">Recebemos uma mensagem para você com informações importantes.</p>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
