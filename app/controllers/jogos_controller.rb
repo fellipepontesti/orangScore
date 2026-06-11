@@ -90,6 +90,10 @@ class JogosController < ApplicationController
     end
   end
 
+  def sync
+    @sync_report = Jogos::SyncFromFootballApi.new.call
+  end
+
   def destroy
     Jogos::Destroy.new(jogo: @jogo).call
 

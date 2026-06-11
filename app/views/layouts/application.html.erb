@@ -341,6 +341,14 @@
                     <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Enviar emails</span>
                   </a>
                 </li>
+                <li>
+                  <a href="<%= sync_jogos_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(sync_jogos_path) %>">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0 transition-transform group-hover:scale-110 text-white">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0113.5-5.5M19.5 12a7.5 7.5 0 01-13.5 5.5M12 4.5v-2.25M12 21.75v-2.25M6.75 6.75l-1.59-1.59M18.84 18.84l-1.59-1.59M6.75 17.25l-1.59 1.59M18.84 5.16l-1.59 1.59" />
+                    </svg>
+                    <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Sincronizar jogos</span>
+                  </a>
+                </li>
               <% end %>
               <li>
                 <a href="<%= pontuacao_users_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(pontuacao_users_path) %>">

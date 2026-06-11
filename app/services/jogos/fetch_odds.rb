@@ -55,32 +55,70 @@ module Jogos
     end
 
     def search_team_id(name)
-      # Pega apenas o primeiro nome (ex: "Coreia do Sul" -> "Coreia") para facilitar a busca
-      search_term = URI.encode_www_form_component(name.split.first)
-      response = request("/teams?search=#{search_term}")
-      
-      return nil if response.nil? || response['response'].empty?
-      response['response'].first.dig('team', 'id')
+      return nil if name.blank?
+
+      normalized = name.strip
+      [normalized, normalized.split.first].each do |query|
+        next if query.blank?
+
+        response = request("/teams?search=#{URI.encode_www_form_component(query)}")
+        next unless response && response['response'].present?
+
+        match = response['response'].find do |item|
+          api_name = item.dig('team', 'name').to_s.downcase
+          api_name == normalized.downcase || api_name.include?(normalized.downcase)
+        end
+
+        match ||= response['response'].first
+        return match.dig('team', 'id') if match
+      end
+
+      nil
     end
 
     def find_fixture_id(home_id, away_id)
+      date = @jogo.data&.strftime('%Y-%m-%d')
+
+      if date.present?
+        response = request("/fixtures?date=#{date}&team=#{home_id}")
+        fixture = find_matching_fixture(response, home_id, away_id)
+        return fixture.dig('fixture', 'id') if fixture
+
+        response = request("/fixtures?date=#{date}&team=#{away_id}")
+        fixture = find_matching_fixture(response, home_id, away_id)
+        return fixture.dig('fixture', 'id') if fixture
+      end
+
+      response = request("/fixtures?h2h=#{home_id}-#{away_id}&next=1")
+      fixture = response['response']&.first if response && response['response'].present?
+      return fixture.dig('fixture', 'id') if fixture
+
       response = request("/fixtures?h2h=#{home_id}-#{away_id}&last=1")
-      
-      return nil if response.nil? || response['response'].empty?
-      response['response'].first.dig('fixture', 'id')
+      fixture = response['response']&.first if response && response['response'].present?
+      fixture&.dig('fixture', 'id')
+    end
+
+    def find_matching_fixture(response, home_id, away_id)
+      return nil unless response && response['response'].present?
+
+      response['response'].find do |item|
+        [item.dig('teams', 'home', 'id'), item.dig('teams', 'away', 'id')].sort == [home_id, away_id].sort
+      end
     end
 
     def get_prediction(fixture_id)
       response = request("/predictions?fixture=#{fixture_id}")
       return nil if response.nil? || response['response'].empty?
 
-      percents = response['response'].first.dig('predictions', 'percent')
-      return nil unless percents
+      prediction = response['response'].first.dig('predictions')
+      prediction = prediction.first if prediction.is_a?(Array)
+      percent = prediction&.dig('percent')
+      return nil unless percent
 
       {
-        home: percents['home'].to_i,
-        draw: percents['draw'].to_i,
-        away: percents['away'].to_i
+        home: percent['home'].to_i,
+        draw: percent['draw'].to_i,
+        away: percent['away'].to_i
       }
     end
 

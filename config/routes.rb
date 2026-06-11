@@ -82,6 +82,10 @@ Rails.application.routes.draw do
   post '/convite/:token/aceitar', to: 'liga_convites#accept', as: :aceitar_liga_convite
   
   resources :jogos do
+    collection do
+      get :sync
+    end
+
     member do
       patch :start
       get :finalize
