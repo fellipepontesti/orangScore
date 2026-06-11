@@ -31,13 +31,11 @@ class DashboardController < ApplicationController
     # Ranking Global para todos
     # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
     todos_usuarios = User
-                      .joins("LEFT JOIN user_points ON user_points.user_id = users.id")
-                      .joins("LEFT JOIN palpites ON palpites.user_id = users.id")
-                      .group("users.id")
-                      .select("users.*, 
-                               COALESCE(SUM(user_points.pontos), 0) as total_pontos_ranking, 
-                               COUNT(DISTINCT palpites.id) as total_palpites")
-                      .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC").to_a
+                      .select("users.*,
+                               COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = users.id), 0) AS total_pontos_ranking,
+                               COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = users.id), 0) AS total_palpites")
+                      .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                      .to_a
 
     @ranking_global = todos_usuarios.first(5)
     @user_global_rank = todos_usuarios.index(current_user) ? todos_usuarios.index(current_user) + 1 : "-"
