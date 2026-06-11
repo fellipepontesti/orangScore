@@ -94,6 +94,13 @@ Rails.application.routes.draw do
   end
 
   resources :grupos
+
+  resources :api_football_teams, only: %i[index update] do
+    collection do
+      post :sync
+    end
+  end
+
   resources :selecoes
 
   get '/termos', to: 'static_pages#termos', as: :termos

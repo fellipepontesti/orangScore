@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_10_195509) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_11_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "api_football_teams", force: :cascade do |t|
+    t.integer "api_id", null: false
+    t.string "name", null: false
+    t.string "country"
+    t.string "code"
+    t.string "logo"
+    t.integer "founded"
+    t.string "city"
+    t.bigint "selecao_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_id"], name: "index_api_football_teams_on_api_id", unique: true
+    t.index ["name"], name: "index_api_football_teams_on_name"
+    t.index ["selecao_id"], name: "index_api_football_teams_on_selecao_id"
+  end
 
   create_table "assinaturas", force: :cascade do |t|
     t.bigint "usuario_id", null: false
@@ -232,6 +248,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_10_195509) do
     t.index ["uuid"], name: "index_users_on_uuid", unique: true
   end
 
+  add_foreign_key "api_football_teams", "selecoes"
   add_foreign_key "assinaturas", "users", column: "usuario_id"
   add_foreign_key "cobrancas", "users"
   add_foreign_key "jogos", "grupos"

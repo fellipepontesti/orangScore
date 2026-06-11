@@ -1,0 +1,73 @@
+<% content_for :title, 'Seleções API Football' %>
+
+<div class="space-y-6 max-w-7xl mx-auto py-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+      <h1 class="text-4xl font-bold">Seleções API Football</h1>
+      <p class="opacity-70">Associe cada seleção do seu sistema à seleção correspondente da API Football para melhorar a identificação de jogos e odds.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <%= button_to sync_api_football_teams_path, method: :post, class: 'btn btn-primary', data: { turbo: false, confirm: 'Deseja sincronizar todas as seleções da API Football agora?' } do %>
+        Sincronizar seleções
+      <% end %>
+      <%= link_to selecoes_path, class: 'btn btn-ghost' do %>
+        Voltar às seleções
+      <% end %>
+    </div>
+  </div>
+
+  <% if @api_football_teams.any? %>
+    <div class="overflow-x-auto bg-base-100 rounded-box border border-base-200 shadow-sm">
+      <table class="min-w-full text-left">
+        <thead>
+          <tr class="bg-base-200 text-slate-500 uppercase text-xs tracking-wide">
+            <th class="px-4 py-3">ID API</th>
+            <th class="px-4 py-3">Seleção</th>
+            <th class="px-4 py-3">País</th>
+            <th class="px-4 py-3">Código</th>
+            <th class="px-4 py-3">Seleção do sistema</th>
+            <th class="px-4 py-3">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @api_football_teams.each do |team| %>
+            <tr class="border-t border-base-200 hover:bg-base-200/50 transition">
+              <td class="px-4 py-4 text-sm font-medium"><%= team.api_id %></td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <% if team.logo.present? %>
+                    <div class="w-10 h-10 rounded-full overflow-hidden bg-base-200 flex items-center justify-center">
+                      <%= image_tag team.logo, alt: team.name, class: 'w-full h-full object-cover' %>
+                    </div>
+                  <% end %>
+                  <span><%= team.name %></span>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-sm text-slate-600"><%= team.country.presence || '—' %></td>
+              <td class="px-4 py-4 text-sm text-slate-600"><%= team.code.presence || '—' %></td>
+              <td class="px-4 py-4">
+                <%= form_with model: team, url: api_football_team_path(team), method: :patch, local: true do |f| %>
+                  <div class="flex items-center gap-2">
+                    <%= f.collection_select :selecao_id, @selecoes, :id, :nome, { include_blank: 'Nenhuma seleção associada' }, class: 'select select-bordered select-sm w-full' %>
+                    <%= f.submit 'Salvar', class: 'btn btn-sm btn-primary' %>
+                  </div>
+                <% end %>
+                <% if team.selecao.present? %>
+                  <p class="text-xs opacity-70 mt-2">Associado a: <strong><%= team.selecao.nome %></strong></p>
+                <% end %>
+              </td>
+              <td class="px-4 py-4 text-right text-sm text-slate-600">
+                <%= team.created_at.strftime('%d/%m/%Y') %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-base-100 rounded-box border border-base-200 shadow-sm p-8 text-center">
+      <p class="text-lg font-medium">Nenhuma seleção da API Football cadastrada ainda.</p>
+      <p class="opacity-70 mt-2">Clique em Sincronizar seleções para importar as equipes da Copa do Mundo da API Football.</p>
+    </div>
+  <% end %>
+</div>

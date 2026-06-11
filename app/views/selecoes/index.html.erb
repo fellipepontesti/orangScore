@@ -9,6 +9,9 @@
         <button class="btn btn-outline" onclick="modal_filtros_selecoes.showModal()">
           Filtros
         </button>
+        <%= link_to api_football_teams_path, class: "btn btn-secondary" do %>
+          Seleções API Football
+        <% end %>
         <%= link_to "Cadastrar seleção",
           new_selecao_path,
           class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium flex items-center"
