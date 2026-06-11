@@ -122,18 +122,9 @@ module Jogos
       }
     end
 
-    def request(endpoint)
-      uri = URI("#{@base_url}#{endpoint}")
-      req = Net::HTTP::Get.new(uri)
-      req['x-apisports-key'] = @api_key
-
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-        http.request(req)
-      end
-
-      return nil unless res.is_a?(Net::HTTPSuccess)
-      JSON.parse(res.body)
-    end
+def request(endpoint)
+  ApiFootballClient.request(endpoint)
+end
 
     def calculate_fallback_odds
       # Base de cálculo para fallback quando a API não encontra times fictícios/customizados

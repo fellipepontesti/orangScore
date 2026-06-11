@@ -18,8 +18,8 @@ module Selecoes
       gols = 0
       gols_sofridos = 0
 
-      # Jogos como mandante na fase de grupos que já tiveram início (em_andamento ou finalizado)
-      Jogo.grupo.where(mandante_id: selecao.id).where(status: [:em_andamento, :finalizado]).find_each do |jogo|
+      # Jogos como mandante na fase de grupos
+      Jogo.grupo.where(mandante_id: selecao.id).find_each do |jogo|
         gols += jogo.gols_mandante || 0
         gols_sofridos += jogo.gols_visitante || 0
 
@@ -37,8 +37,8 @@ module Selecoes
         end
       end
 
-      # Jogos como visitante na fase de grupos que já tiveram início (em_andamento ou finalizado)
-      Jogo.grupo.where(visitante_id: selecao.id).where(status: [:em_andamento, :finalizado]).find_each do |jogo|
+      # Jogos como visitante na fase de grupos
+      Jogo.grupo.where(visitante_id: selecao.id).find_each do |jogo|
         gols += jogo.gols_visitante || 0
         gols_sofridos += jogo.gols_mandante || 0
 
