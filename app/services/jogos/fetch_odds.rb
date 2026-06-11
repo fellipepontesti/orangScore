@@ -57,11 +57,23 @@ module Jogos
     def search_team_id(name)
       return nil if name.blank?
 
+      # Tenta encontrar o time pela associação na tabela ApiFootballTeam
+      api_team = find_api_football_team(name)
+      return api_team&.api_id if api_team
+
+      # Fallback: busca na API por nome (caso a associação não tenha sido feita)
       lookup_name = Jogos::TeamMapping.api_search_name(name)
       response = request("/teams?search=#{URI.encode_www_form_component(lookup_name)}")
       return nil unless response && response['response'].present?
 
       response['response'].first.dig('team', 'id')
+    end
+
+    def find_api_football_team(name)
+      selecao = Selecao.find_by(nome: name)
+      return ApiFootballTeam.find_by(selecao_id: selecao.id) if selecao
+
+      nil
     end
 
     def find_fixture_id(home_id, away_id)
