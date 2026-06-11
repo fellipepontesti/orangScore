@@ -26,6 +26,7 @@
             <% end %>
 
             <% Jogos::FetchOdds.new(jogo: @jogo).call if @jogo.prob_mandante.nil? %>
+            <%# Esconder odds por enquanto, ainda não sincronizadas corretamente
             <% if @jogo.prob_mandante.present? %>
               <div class="mt-4 max-w-sm mx-auto bg-base-200/50 p-3 rounded-box border border-base-200">
                 <h3 class="text-[10px] uppercase font-bold opacity-50 mb-2">Probabilidades</h3>
@@ -41,6 +42,7 @@
                 </div>
               </div>
             <% end %>
+            %>
           </div>
         <% end %>
 

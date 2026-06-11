@@ -184,6 +184,7 @@
 
               <div class="card-actions justify-center mt-auto" onclick="event.stopPropagation()">
                 <% Jogos::FetchOdds.new(jogo: jogo).call if jogo.prob_mandante.nil? %>
+                <%# Esconder odds por enquanto, ainda não sincronizadas corretamente
                 <% if jogo.prob_mandante.present? %>
                   <div class="w-full mt-2 mb-4">
                     <div class="flex justify-between text-[10px] font-bold opacity-70 mb-1 px-1">
@@ -198,6 +199,7 @@
                     </div>
                   </div>
                 <% end %>
+                %>
 
                 <% if jogo.finalizado? || jogo.em_andamento? %>
                   <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Fechado</span>
