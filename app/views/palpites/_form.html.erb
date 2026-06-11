@@ -26,23 +26,21 @@
             <% end %>
 
             <% Jogos::FetchOdds.new(jogo: @jogo).call if @jogo.prob_mandante.nil? %>
-            <%# Esconder odds por enquanto, ainda não sincronizadas corretamente
             <% if @jogo.prob_mandante.present? %>
-              <div class="mt-4 max-w-sm mx-auto bg-base-200/50 p-3 rounded-box border border-base-200">
-                <h3 class="text-[10px] uppercase font-bold opacity-50 mb-2">Probabilidades</h3>
-                <div class="flex justify-between text-xs font-bold mb-1 px-1">
-                  <span class="text-primary"><%= @jogo.prob_mandante %>% (Casa)</span>
-                  <span class="opacity-70"><%= @jogo.prob_empate %>% (Empate)</span>
-                  <span class="text-secondary"><%= @jogo.prob_visitante %>% (Fora)</span>
+              <div class="mt-4 max-w-md mx-auto bg-base-200/60 p-4 rounded-xl border border-base-200 shadow-inner">
+                <h3 class="text-xs uppercase font-extrabold tracking-widest text-slate-500 mb-2">Probabilidades de Resultado</h3>
+                <div class="flex justify-between text-xs font-bold mb-1.5 px-1">
+                  <span class="text-success"><%= @jogo.mandante&.nome || 'Casa' %>: <%= @jogo.prob_mandante %>%</span>
+                  <span class="text-slate-500">Empate: <%= @jogo.prob_empate %>%</span>
+                  <span class="text-error"><%= @jogo.visitante&.nome || 'Fora' %>: <%= @jogo.prob_visitante %>%</span>
                 </div>
-                <div class="flex h-3 w-full rounded-full overflow-hidden shadow-inner">
-                  <div class="bg-primary" style="width: <%= @jogo.prob_mandante %>%;"></div>
-                  <div class="bg-base-300" style="width: <%= @jogo.prob_empate %>%;"></div>
-                  <div class="bg-secondary" style="width: <%= @jogo.prob_visitante %>%;"></div>
+                <div class="flex h-3 w-full rounded-full overflow-hidden shadow-inner bg-base-300">
+                  <div class="bg-success" style="width: <%= @jogo.prob_mandante %>%;"></div>
+                  <div class="bg-slate-400" style="width: <%= @jogo.prob_empate %>%;"></div>
+                  <div class="bg-error" style="width: <%= @jogo.prob_visitante %>%;"></div>
                 </div>
               </div>
             <% end %>
-            %>
           </div>
         <% end %>
 

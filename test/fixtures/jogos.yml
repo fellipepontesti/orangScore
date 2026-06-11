@@ -2,14 +2,18 @@
 
 one:
   mandante: one
-  visitante: one
-  gols_mandante: 1
-  gols_visitante: 1
-  data: 2025-12-13 16:38:14
-
-two:
-  mandante: two
   visitante: two
   gols_mandante: 1
   gols_visitante: 1
   data: 2025-12-13 16:38:14
+  tipo: grupo
+  grupo: one
+
+two:
+  mandante: two
+  visitante: one
+  gols_mandante: 1
+  gols_visitante: 1
+  data: 2025-12-13 16:38:14
+  tipo: grupo
+  grupo: one

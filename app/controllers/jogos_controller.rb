@@ -50,6 +50,7 @@ class JogosController < ApplicationController
         format.json { render :show, status: :created, location: @jogo }
       else
         @selecoes = Selecao.order(:nome)
+        @grupos = Grupo.order(:nome)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @jogo.errors, status: :unprocessable_entity }
       end
@@ -61,9 +62,17 @@ class JogosController < ApplicationController
 
     respond_to do |format|
       if @jogo.errors.empty?
-        format.html { redirect_to @jogo, notice: "Jogo atualizado com sucesso!.", status: :see_other }
+        format.html do
+          if params[:redirect_to_dashboard] == 'true'
+            redirect_to authenticated_root_path, notice: "Placar atualizado com sucesso!"
+          else
+            redirect_to @jogo, notice: "Jogo atualizado com sucesso!.", status: :see_other
+          end
+        end
         format.json { render :show, status: :ok, location: @jogo }
       else
+        @selecoes = Selecao.order(:nome)
+        @grupos = Grupo.order(:nome)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @jogo.errors, status: :unprocessable_entity }
       end

@@ -184,22 +184,20 @@
 
               <div class="card-actions justify-center mt-auto" onclick="event.stopPropagation()">
                 <% Jogos::FetchOdds.new(jogo: jogo).call if jogo.prob_mandante.nil? %>
-                <%# Esconder odds por enquanto, ainda não sincronizadas corretamente
                 <% if jogo.prob_mandante.present? %>
-                  <div class="w-full mt-2 mb-4">
-                    <div class="flex justify-between text-[10px] font-bold opacity-70 mb-1 px-1">
-                      <span><%= jogo.prob_mandante %>%</span>
-                      <span><%= jogo.prob_empate %>%</span>
-                      <span><%= jogo.prob_visitante %>%</span>
+                  <div class="w-full mt-2 mb-4 px-2">
+                    <div class="flex justify-between text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                      <span class="text-success" title="<%= jogo.mandante&.nome %>"><%= jogo.mandante&.nome&.truncate(12) || 'Mandante' %>: <%= jogo.prob_mandante %>%</span>
+                      <span class="text-slate-400">Empate: <%= jogo.prob_empate %>%</span>
+                      <span class="text-error" title="<%= jogo.visitante&.nome %>"><%= jogo.visitante&.nome&.truncate(12) || 'Visitante' %>: <%= jogo.prob_visitante %>%</span>
                     </div>
-                    <div class="flex h-2 w-full rounded-full overflow-hidden">
-                      <div class="bg-primary" style="width: <%= jogo.prob_mandante %>%;"></div>
-                      <div class="bg-base-300" style="width: <%= jogo.prob_empate %>%;"></div>
-                      <div class="bg-error" style="width: <%= jogo.prob_visitante %>%;"></div>
+                    <div class="flex h-2.5 w-full rounded-full overflow-hidden bg-base-300 shadow-inner">
+                      <div class="bg-success" style="width: <%= jogo.prob_mandante %>%;" title="<%= jogo.mandante&.nome %>: <%= jogo.prob_mandante %>%"></div>
+                      <div class="bg-slate-400" style="width: <%= jogo.prob_empate %>%;" title="Empate: <%= jogo.prob_empate %>%"></div>
+                      <div class="bg-error" style="width: <%= jogo.prob_visitante %>%;" title="<%= jogo.visitante&.nome %>: <%= jogo.prob_visitante %>%"></div>
                     </div>
                   </div>
                 <% end %>
-                %>
 
                 <% if jogo.finalizado? || jogo.em_andamento? %>
                   <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Fechado</span>

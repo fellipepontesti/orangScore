@@ -5,6 +5,7 @@ class Jogo < ApplicationRecord
   belongs_to :visitante, class_name: 'Selecao', optional: true
   belongs_to :grupo, optional: true
   has_many :palpites, dependent: :destroy
+  has_many :user_points, dependent: :destroy
 
   enum :tipo, { grupo: 0, segunda_fase: 1, oitavas: 2, quartas: 3, semi: 4, final: 5, terceiro_lugar: 6 }
   enum :status, { programado: 0, em_andamento: 1, finalizado: 2, times_a_definir: 3 }
@@ -36,7 +37,33 @@ class Jogo < ApplicationRecord
     "Estadio Akron (Guadalajara, México)"
   ]
 
+  after_save :recalcular_estatisticas_selecoes, if: :saved_changes_para_grupo?
+  after_destroy :recalcular_estatisticas_selecoes_apos_destruicao, if: :grupo?
+
   private
+
+  def saved_changes_para_grupo?
+    grupo? && (saved_change_to_gols_mandante? || saved_change_to_gols_visitante? || saved_change_to_status? || saved_change_to_mandante_id? || saved_change_to_visitante_id?)
+  end
+
+  def recalcular_estatisticas_selecoes
+    if saved_change_to_mandante_id? && mandante_id_before_last_save
+      antigo_mandante = Selecao.find_by(id: mandante_id_before_last_save)
+      Selecoes::RecalcularEstatisticas.recalcular(antigo_mandante) if antigo_mandante
+    end
+    if saved_change_to_visitante_id? && visitante_id_before_last_save
+      antigo_visitante = Selecao.find_by(id: visitante_id_before_last_save)
+      Selecoes::RecalcularEstatisticas.recalcular(antigo_visitante) if antigo_visitante
+    end
+
+    Selecoes::RecalcularEstatisticas.recalcular(mandante) if mandante
+    Selecoes::RecalcularEstatisticas.recalcular(visitante) if visitante
+  end
+
+  def recalcular_estatisticas_selecoes_apos_destruicao
+    Selecoes::RecalcularEstatisticas.recalcular(mandante) if mandante
+    Selecoes::RecalcularEstatisticas.recalcular(visitante) if visitante
+  end
 
   def times_diferentes
     return if mandante_id.blank? || visitante_id.blank?

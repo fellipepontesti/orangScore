@@ -2,6 +2,8 @@ require "test_helper"
 
 class JogosControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
+    sign_in @user
     @jogo = jogos(:one)
   end
 
@@ -17,7 +19,7 @@ class JogosControllerTest < ActionDispatch::IntegrationTest
 
   test "should create jogo" do
     assert_difference("Jogo.count") do
-      post jogos_url, params: { jogo: { data: @jogo.data, gols_mandante: @jogo.gols_mandante, gols_visitante: @jogo.gols_visitante, mandante_id: @jogo.mandante_id, visitante_id: @jogo.visitante_id } }
+      post jogos_url, params: { jogo: { data: @jogo.data, gols_mandante: @jogo.gols_mandante, gols_visitante: @jogo.gols_visitante, mandante_id: @jogo.mandante_id, visitante_id: @jogo.visitante_id, tipo: @jogo.tipo, grupo_id: @jogo.grupo_id } }
     end
 
     assert_redirected_to jogo_url(Jogo.last)
@@ -34,7 +36,7 @@ class JogosControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update jogo" do
-    patch jogo_url(@jogo), params: { jogo: { data: @jogo.data, gols_mandante: @jogo.gols_mandante, gols_visitante: @jogo.gols_visitante, mandante_id: @jogo.mandante_id, visitante_id: @jogo.visitante_id } }
+    patch jogo_url(@jogo), params: { jogo: { data: @jogo.data, gols_mandante: @jogo.gols_mandante, gols_visitante: @jogo.gols_visitante, mandante_id: @jogo.mandante_id, visitante_id: @jogo.visitante_id, tipo: @jogo.tipo, grupo_id: @jogo.grupo_id } }
     assert_redirected_to jogo_url(@jogo)
   end
 
