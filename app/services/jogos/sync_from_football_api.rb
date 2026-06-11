@@ -77,11 +77,36 @@ module Jogos
       away_id = search_team_id(jogo.visitante.nome)
       return nil unless home_id && away_id
 
-      date = jogo.data.strftime('%Y-%m-%d')
-      response = request("/fixtures?h2h=#{home_id}-#{away_id}&from=#{date}&to=#{date}")
+      date = jogo.data&.strftime('%Y-%m-%d')
+      fixture = search_fixture_by_date(home_id, away_id, date) if date.present?
+      fixture ||= search_fixture_by_h2h(home_id, away_id)
+      fixture
+    end
+
+    def search_fixture_by_date(home_id, away_id, date)
+      response = request("/fixtures?date=#{date}&team=#{home_id}")
+      fixture = find_matching_fixture(response, home_id, away_id)
+      return fixture if fixture
+
+      response = request("/fixtures?date=#{date}&team=#{away_id}")
+      find_matching_fixture(response, home_id, away_id)
+    end
+
+    def search_fixture_by_h2h(home_id, away_id)
+      response = request("/fixtures?h2h=#{home_id}-#{away_id}&next=1")
+      return response['response'].first if response && response['response'].present?
+
+      response = request("/fixtures?h2h=#{home_id}-#{away_id}&last=1")
+      response['response'].first if response && response['response'].present?
+    end
+
+    def find_matching_fixture(response, home_id, away_id)
       return nil unless response && response['response'].present?
 
-      response['response'].find { |item| same_match_date?(item, jogo.data) } || response['response'].first
+      response['response'].find do |item|
+        teams = [item.dig('teams', 'home', 'id'), item.dig('teams', 'away', 'id')].compact.map(&:to_i).sort
+        [home_id, away_id].sort == teams
+      end
     end
 
     def collect_fixture_stats(fixture)
@@ -105,23 +130,11 @@ module Jogos
     def search_team_id(name)
       return nil if name.blank?
 
-      normalized = name.strip
-      [normalized, normalized.split.first].each do |query|
-        next if query.blank?
+      lookup_name = Jogos::TeamMapping.api_search_name(name)
+      response = request("/teams?search=#{URI.encode_www_form_component(lookup_name)}")
+      return nil unless response && response['response'].present?
 
-        response = request("/teams?search=#{URI.encode_www_form_component(query)}")
-        next unless response && response['response'].present?
-
-        match = response['response'].find do |item|
-          api_name = item.dig('team', 'name').to_s.downcase
-          api_name == normalized.downcase || api_name.include?(normalized.downcase)
-        end
-
-        match ||= response['response'].first
-        return match.dig('team', 'id') if match
-      end
-
-      nil
+      response['response'].first.dig('team', 'id')
     end
 
     def update_probabilities(jogo, fixture)

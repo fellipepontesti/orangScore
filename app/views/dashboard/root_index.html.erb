@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-3">
         <h1 class="text-4xl font-bold">Olá, <%= current_user.name %></h1>
-        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-b from-purple-500 via-purple-700 to-purple-900 text-white border border-purple-300">
+        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-b from-purple-500 via-purple-700 to-purple-900 text-white border border-purple-300">
           <span class="text-xs font-black tracking-wide">ADMINISTRADOR</span>
         </div>
       </div>
@@ -91,3 +91,63 @@
     </div>
   </div>
 </div>
+
+<% if @jogos_em_andamento.any? %>
+  <div class="bg-base-100 shadow-xl rounded-box border border-base-200 p-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div>
+        <h2 class="text-2xl font-bold">Jogos em andamento</h2>
+        <p class="opacity-70">Atualize o placar oficial rapidamente para partidas que já começaram.</p>
+      </div>
+      <span class="badge badge-secondary text-sm font-bold"><%= @jogos_em_andamento.size %> partidas ativas</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 text-xs uppercase tracking-wide text-slate-500">Jogo</th>
+            <th class="px-4 py-3 text-xs uppercase tracking-wide text-slate-500">Horário</th>
+            <th class="px-4 py-3 text-xs uppercase tracking-wide text-slate-500">Placar</th>
+            <th class="px-4 py-3 text-xs uppercase tracking-wide text-slate-500">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @jogos_em_andamento.each do |jogo| %>
+            <tr class="border-t border-base-200 hover:bg-base-200/50 transition">
+              <td class="px-4 py-4">
+                <div class="font-bold"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %> x <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %></div>
+                <div class="text-xs opacity-60"><%= jogo.grupo&.nome || jogo.tipo.humanize %></div>
+              </td>
+              <td class="px-4 py-4 text-sm text-slate-600"><%= jogo.data.strftime('%d/%m %H:%M') %></td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-lg"><%= jogo.gols_mandante || 0 %></span>
+                  <span class="text-slate-400">-</span>
+                  <span class="font-bold text-lg"><%= jogo.gols_visitante || 0 %></span>
+                </div>
+              </td>
+              <td class="px-4 py-4">
+                <%= form_with model: jogo, url: jogo_path(jogo), method: :patch, local: true, class: 'flex flex-col gap-2' do |f| %>
+                  <div class="grid grid-cols-2 gap-2">
+                    <%= f.number_field :gols_mandante, min: 0, class: 'input input-bordered input-sm w-full', placeholder: 'Gols M' %>
+                    <%= f.number_field :gols_visitante, min: 0, class: 'input input-bordered input-sm w-full', placeholder: 'Gols V' %>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <%= f.hidden_field :status, value: jogo.status %>
+                    <%= f.submit 'Atualizar placar', class: 'btn btn-sm btn-primary w-full' %>
+                  </div>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% else %>
+  <div class="bg-base-100 shadow-xl rounded-box border border-base-200 p-6 text-center">
+    <p class="font-bold">Não há jogos em andamento no momento.</p>
+    <p class="opacity-70">Quando um jogo começar, ele vai aparecer aqui para atualização rápida.</p>
+  </div>
+<% end %>

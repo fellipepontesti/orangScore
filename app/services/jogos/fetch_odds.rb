@@ -57,23 +57,11 @@ module Jogos
     def search_team_id(name)
       return nil if name.blank?
 
-      normalized = name.strip
-      [normalized, normalized.split.first].each do |query|
-        next if query.blank?
+      lookup_name = Jogos::TeamMapping.api_search_name(name)
+      response = request("/teams?search=#{URI.encode_www_form_component(lookup_name)}")
+      return nil unless response && response['response'].present?
 
-        response = request("/teams?search=#{URI.encode_www_form_component(query)}")
-        next unless response && response['response'].present?
-
-        match = response['response'].find do |item|
-          api_name = item.dig('team', 'name').to_s.downcase
-          api_name == normalized.downcase || api_name.include?(normalized.downcase)
-        end
-
-        match ||= response['response'].first
-        return match.dig('team', 'id') if match
-      end
-
-      nil
+      response['response'].first.dig('team', 'id')
     end
 
     def find_fixture_id(home_id, away_id)
