@@ -92,7 +92,7 @@ module Jogos
       'Iraque' => 'IRQ',
       'Noruega' => 'NOR',
       'Portugal' => 'POR',
-      'RD Congo' => 'COD',
+      'RD Congo' => 'CON',
       'Áustria' => 'AUT',
       'Uzbequistão' => 'UZB',
       'Colômbia' => 'COL',
