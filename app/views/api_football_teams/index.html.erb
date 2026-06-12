@@ -7,16 +7,32 @@
       <p class="opacity-70">Associe cada seleção do seu sistema à seleção correspondente da API Football para melhorar a identificação de jogos e odds.</p>
     </div>
     <div class="flex flex-col sm:flex-row gap-2">
-      <%= button_to sync_brazil_api_football_teams_path, method: :post, class: 'btn btn-secondary', data: { turbo: false } do %>
-        Testar Brasil (1 Request)
+      <%= button_to sync_brazil_api_football_teams_path, method: :post, class: 'btn btn-secondary', disabled: @next_pending_selecao.blank?, data: { turbo: false } do %>
+        <%= @next_pending_selecao ? "Testar #{@next_pending_selecao.nome} (1 request)" : "Nenhuma seleção pendente" %>
       <% end %>
-      <%= button_to sync_api_football_teams_path, method: :post, class: 'btn btn-primary', data: { turbo: false, confirm: 'Deseja sincronizar todas as seleções da API Football agora?' } do %>
-        Sincronizar seleções
+      <%= button_to sync_api_football_teams_path, method: :post, class: 'btn btn-primary', disabled: @next_pending_selecao.blank?, data: { turbo: false, confirm: 'Deseja sincronizar a próxima seleção pendente da API Football agora?' } do %>
+        Sincronizar próxima seleção
       <% end %>
       <%= link_to selecoes_path, class: 'btn btn-ghost' do %>
         Voltar às seleções
       <% end %>
     </div>
+  </div>
+
+  <div class="rounded-box bg-base-100 border border-base-200 shadow-sm p-4">
+    <% if @next_pending_selecao %>
+      <p class="text-sm">
+        Próxima seleção pendente:
+        <strong><%= @next_pending_selecao.nome %></strong>
+        <span class="opacity-60">
+          (<%= @next_pending_selecao.nome_en.presence || "sem nome mapeado" %>)
+        </span>
+      </p>
+    <% else %>
+      <p class="text-sm font-medium text-success">
+        Todas as seleções locais já possuem associação na tabela API Football.
+      </p>
+    <% end %>
   </div>
 
   <% if @api_football_teams.any? %>

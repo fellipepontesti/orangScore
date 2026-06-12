@@ -8,26 +8,51 @@ module ApiFootballTeams
 
     def call
       @report = { created: [], updated: [], skipped: [], errors: [] }
-      
-      Selecao.where.not(nome: ['A definir', 'Provisório']).each do |selecao|
-        result = sync_team(selecao.nome)
-        if result[:success]
-          status_key = result[:new_record] ? :created : :updated
-          @report[status_key] << result[:api_team]
-        elsif result[:skipped]
-          @report[:skipped] << { name: selecao.nome, reason: result[:reason] }
-        else
-          @report[:errors] << { name: selecao.nome, error: result[:error] }
-        end
-        
-        # Rate limit preventivo
-        sleep 7
+
+      selecao = next_pending_selection
+
+      unless selecao
+        @report[:skipped] << { name: nil, reason: "Todas as seleções já estão na tabela API Football." }
+        return @report
+      end
+
+      result = sync_team(selecao.nome)
+      if result[:success]
+        status_key = result[:new_record] ? :created : :updated
+        @report[status_key] << result[:api_team]
+      elsif result[:skipped]
+        @report[:skipped] << { name: selecao.nome, reason: result[:reason] }
+      else
+        @report[:errors] << { name: selecao.nome, error: result[:error] }
       end
 
       @report
     end
 
+    def sync_next_pending_team
+      selecao = next_pending_selection
+      return { skipped: true, reason: "Todas as seleções já estão na tabela API Football." } unless selecao
+
+      result = sync_team(selecao.nome)
+      result.merge(selecao: selecao)
+    end
+
+    def next_pending_selection
+      Selecao
+        .where.not(nome: ['A definir', 'Provisório'])
+        .where.not(id: ApiFootballTeam.where.not(selecao_id: nil).select(:selecao_id))
+        .order(:nome)
+        .first
+    end
+
     def sync_team(nome_selecao)
+      selecao = Selecao.find_by(nome: nome_selecao)
+      return { error: "Seleção local '#{nome_selecao}' não encontrada no banco" } unless selecao
+
+      if ApiFootballTeam.exists?(selecao_id: selecao.id)
+        return { skipped: true, reason: "Seleção '#{nome_selecao}' já existe na tabela API Football." }
+      end
+
       lookup_name = Jogos::TeamMapping.api_search_name(nome_selecao)
       if lookup_name.nil? || lookup_name.to_s.strip.empty?
         return { error: "Nome de busca não mapeado para #{nome_selecao}" }
@@ -51,9 +76,6 @@ module ApiFootballTeams
 
       api_id = team_data.dig('id')
       return { error: "ID da API ausente para o time #{lookup_name}" } if api_id.nil?
-
-      selecao = Selecao.find_by(nome: nome_selecao)
-      return { error: "Seleção local '#{nome_selecao}' não encontrada no banco" } unless selecao
 
       # Salva ou atualiza
       api_team = ApiFootballTeam.find_or_initialize_by(api_id: api_id)
