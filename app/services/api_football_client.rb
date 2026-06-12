@@ -31,11 +31,19 @@ module ApiFootballClient
         next unless res.is_a?(Net::HTTPSuccess)
 
         body = JSON.parse(res.body)
-        # Detect rate limit error structure from API
-        if body.is_a?(Hash) && body['errors'].is_a?(Hash) && body['errors']['requests']
-          # Rate limit reached for this key, try next one
-          next
+
+        # Detecta erros da API que indicam que devemos tentar a próxima chave:
+        # - rateLimit: limite de requisições atingido para esta chave
+        # - access: conta suspensa
+        # - token: chave inválida
+        if body.is_a?(Hash) && body['errors'].is_a?(Hash)
+          errors = body['errors']
+          if errors['rateLimit'] || errors['access'] || errors['token']
+            Rails.logger.warn("API-Football: erro com chave #{key[0..4]}...: #{errors.inspect}")
+            next
+          end
         end
+
         return body
       end
       # All keys exhausted or failed
