@@ -1,7 +1,7 @@
 <div class="w-full max-w-3xl mx-auto px-4 pb-8">
   <div class="card bg-base-100 shadow-2xl border border-base-200">
-    <div class="card-body p-8 md:p-12">
-      <%= form_with(model: palpite, class: "space-y-10") do |form| %>
+    <div class="card-body p-4 sm:p-8 md:p-12">
+      <%= form_with(model: palpite, class: "space-y-6 sm:space-y-10") do |form| %>
         <%= form.hidden_field :jogo_id, value: @jogo&.uuid %>
 
         <% if palpite.errors.any? %>
@@ -44,7 +44,7 @@
         <% end %>
 
         <!-- VERSUS BOARD -->
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 relative">
+        <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:flex md:flex-row items-start md:items-center justify-center gap-3 md:gap-12 relative">
           
           <!-- Mandante -->
           <%= render "components/score_input",
@@ -53,17 +53,14 @@
               value: form.object.gols_casa,
               avatar_class: "ring ring-primary",
               image_path: @jogo.mandante&.logo.present? ? "selecoes/#{@jogo.mandante.logo}" : nil,
-              team_name: @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
+              team_name: @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante",
+              compact_mobile: true %>
 
           <!-- VS Badge -->
-          <div class="hidden md:flex flex-col items-center justify-center">
-            <div class="w-12 h-12 rounded-full bg-base-300 flex items-center justify-center shadow-inner font-black text-xl opacity-70 z-10">
+          <div class="flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0">
+            <div class="w-9 h-9 md:w-12 md:h-12 rounded-full bg-base-300 flex items-center justify-center shadow-inner font-black text-base md:text-xl opacity-70 z-10">
               X
             </div>
-          </div>
-
-          <div class="md:hidden w-full flex justify-center py-2">
-            <div class="badge badge-neutral">VS</div>
           </div>
 
           <!-- Visitante -->
@@ -73,7 +70,8 @@
               value: form.object.gols_fora,
               avatar_class: "ring ring-secondary",
               image_path: @jogo.visitante&.logo.present? ? "selecoes/#{@jogo.visitante.logo}" : nil,
-              team_name: @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+              team_name: @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante",
+              compact_mobile: true %>
 
         </div>
 
