@@ -1,5 +1,3 @@
-require 'uri'
-
 module ApiFootballTeams
   class Sync
     def initialize
@@ -53,29 +51,19 @@ module ApiFootballTeams
         return { skipped: true, reason: "Seleção '#{nome_selecao}' já existe na tabela API Football." }
       end
 
-      lookup_name = Jogos::TeamMapping.api_search_name(nome_selecao)
-      if lookup_name.nil? || lookup_name.to_s.strip.empty?
-        return { error: "Nome de busca não mapeado para #{nome_selecao}" }
+      team_code = Jogos::TeamMapping.api_team_code(nome_selecao)
+      if team_code.nil? || team_code.to_s.strip.empty?
+        return { error: "Código FIFA não mapeado para #{nome_selecao}" }
       end
 
-      # Log de depuração para acompanhar no console do Rails
-      Rails.logger.info("[API FOOTBALL] Buscando seleção nacional por name: '#{lookup_name}'")
-
-      # 1. Tenta buscar pelo parâmetro oficial ?name=
-      response = ApiFootballClient.request("/teams?name=#{URI.encode_www_form_component(lookup_name)}")
+      Rails.logger.info("[API FOOTBALL] Buscando seleção nacional por code: '#{team_code}'")
+      response = ApiFootballClient.request("/teams?code=#{team_code}")
       team_data = find_national_team(response)
 
-      # 2. Fallback por ?search= caso o name estrito falhe
-      if team_data.nil?
-        Rails.logger.warn("[API FOOTBALL] Não encontrado por 'name', tentando por 'search': '#{lookup_name}'")
-        response = ApiFootballClient.request("/teams?search=#{URI.encode_www_form_component(lookup_name)}")
-        team_data = find_national_team(response)
-      end
-
-      return { error: "Nenhuma seleção nacional encontrada na API para '#{lookup_name}'" } if team_data.nil?
+      return { error: "Nenhuma seleção nacional encontrada na API para o código '#{team_code}'" } if team_data.nil?
 
       api_id = team_data.dig('id')
-      return { error: "ID da API ausente para o time #{lookup_name}" } if api_id.nil?
+      return { error: "ID da API ausente para o código #{team_code}" } if api_id.nil?
 
       # Salva ou atualiza
       api_team = ApiFootballTeam.find_or_initialize_by(api_id: api_id)

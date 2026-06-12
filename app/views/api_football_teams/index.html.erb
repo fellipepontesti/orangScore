@@ -25,7 +25,7 @@
         Próxima seleção pendente:
         <strong><%= @next_pending_selecao.nome %></strong>
         <span class="opacity-60">
-          (<%= @next_pending_selecao.nome_en.presence || "sem nome mapeado" %>)
+          (<%= Jogos::TeamMapping.api_team_code(@next_pending_selecao.nome).presence || "sem código mapeado" %>)
         </span>
       </p>
     <% else %>

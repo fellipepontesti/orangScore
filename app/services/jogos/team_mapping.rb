@@ -55,11 +55,72 @@ module Jogos
       'África do Sul' => 'South Africa'
     }.freeze
 
+    WORLD_CUP_TEAM_CODES = {
+      'Brasil' => 'BRA',
+      'Canadá' => 'CAN',
+      'Bósnia e Herzegovina' => 'BIH',
+      'Catar' => 'QAT',
+      'Suíça' => 'SUI',
+      'Suiça' => 'SUI',
+      'Marrocos' => 'MAR',
+      'Haiti' => 'HAI',
+      'Escócia' => 'SCO',
+      'Bélgica' => 'BEL',
+      'Estados Unidos' => 'USA',
+      'Paraguai' => 'PAR',
+      'Austrália' => 'AUS',
+      'Egito' => 'EGY',
+      'Turquia' => 'TUR',
+      'Alemanha' => 'GER',
+      'Curação' => 'CUW',
+      'Costa do Marfim' => 'CIV',
+      'Equador' => 'ECU',
+      'Irã' => 'IRN',
+      'Holanda' => 'NED',
+      'Japão' => 'JPN',
+      'Nova Zelândia' => 'NZL',
+      'Espanha' => 'ESP',
+      'Cabo Verde' => 'CPV',
+      'Suécia' => 'SWE',
+      'Tunísia' => 'TUN',
+      'Arábia Saudita' => 'KSA',
+      'Uruguai' => 'URU',
+      'França' => 'FRA',
+      'Argentina' => 'ARG',
+      'Senegal' => 'SEN',
+      'Argélia' => 'ALG',
+      'Iraque' => 'IRQ',
+      'Noruega' => 'NOR',
+      'Portugal' => 'POR',
+      'RD Congo' => 'COD',
+      'Áustria' => 'AUT',
+      'Uzbequistão' => 'UZB',
+      'Colômbia' => 'COL',
+      'Jordânia' => 'JOR',
+      'Gana' => 'GHA',
+      'Inglaterra' => 'ENG',
+      'Cróacia' => 'CRO',
+      'Croácia' => 'CRO',
+      'Panamá' => 'PAN',
+      'Coreia do Sul' => 'KOR',
+      'Coréia do Sul' => 'KOR',
+      'República Tcheca' => 'CZE',
+      'México' => 'MEX',
+      'África do Sul' => 'RSA'
+    }.freeze
+
     def self.api_search_name(local_name)
       return nil if local_name.nil? || local_name.to_s.strip.empty?
 
       normalized = local_name.to_s.strip
       WORLD_CUP_TEAM_SEARCH.fetch(normalized, normalized)
+    end
+
+    def self.api_team_code(local_name)
+      return nil if local_name.nil? || local_name.to_s.strip.empty?
+
+      normalized = local_name.to_s.strip
+      WORLD_CUP_TEAM_CODES[normalized]
     end
   end
 end
