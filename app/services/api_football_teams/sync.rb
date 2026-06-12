@@ -90,12 +90,15 @@ module ApiFootballTeams
     def find_national_team(response)
       return nil if response.nil? || response['response'].blank?
 
-      # Garante a captura avaliando o booleano de forma segura
       national_item = response['response'].find do |item| 
-        item.dig('team', 'national') == true
+        national_team?(item.dig('team'))
       end
       
       national_item&.dig('team')
+    end
+
+    def national_team?(team)
+      ActiveModel::Type::Boolean.new.cast(team&.dig('national'))
     end
   end
 end

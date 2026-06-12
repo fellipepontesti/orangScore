@@ -97,6 +97,7 @@ module Jogos
       'Uzbequistão' => 'UZB',
       'Colômbia' => 'COL',
       'Jordânia' => 'JOR',
+      'Jordania' => 'JOR',
       'Gana' => 'GHA',
       'Inglaterra' => 'ENG',
       'Cróacia' => 'CRO',
@@ -120,7 +121,15 @@ module Jogos
       return nil if local_name.nil? || local_name.to_s.strip.empty?
 
       normalized = local_name.to_s.strip
-      WORLD_CUP_TEAM_CODES[normalized]
+      WORLD_CUP_TEAM_CODES[normalized] || code_by_normalized_name(normalized)
+    end
+
+    def self.code_by_normalized_name(local_name)
+      normalized_lookup = I18n.transliterate(local_name).downcase
+
+      WORLD_CUP_TEAM_CODES.find do |name, _code|
+        I18n.transliterate(name).downcase == normalized_lookup
+      end&.last
     end
   end
 end

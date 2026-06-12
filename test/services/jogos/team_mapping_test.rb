@@ -10,6 +10,8 @@ module Jogos
       assert_equal "CRO", TeamMapping.api_team_code("Croácia")
       assert_equal "KOR", TeamMapping.api_team_code("Coréia do Sul")
       assert_equal "KOR", TeamMapping.api_team_code("Coreia do Sul")
+      assert_equal "JOR", TeamMapping.api_team_code("Jordânia")
+      assert_equal "JOR", TeamMapping.api_team_code("Jordania")
     end
 
     test "retorna nil quando codigo FIFA nao esta mapeado" do

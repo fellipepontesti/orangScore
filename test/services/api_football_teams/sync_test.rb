@@ -37,6 +37,48 @@ module ApiFootballTeams
       end
     end
 
+    test "sincroniza Jordania com resposta real da API Football" do
+      selecao = create_selecao!("Jordânia")
+      requested_endpoints = []
+
+      ApiFootballClient.stub(:request, ->(endpoint) {
+        requested_endpoints << endpoint
+        {
+          "get" => "teams",
+          "parameters" => { "code" => "JOR" },
+          "errors" => [],
+          "results" => 1,
+          "paging" => { "current" => 1, "total" => 1 },
+          "response" => [
+            {
+              "team" => {
+                "id" => 1548,
+                "name" => "Jordan",
+                "code" => "JOR",
+                "country" => "Jordan",
+                "founded" => 1949,
+                "national" => true,
+                "logo" => "https://media.api-sports.io/football/teams/1548.png"
+              },
+              "venue" => {
+                "id" => 988,
+                "name" => "Amman International Stadium"
+              }
+            }
+          ]
+        }
+      }) do
+        result = Sync.new.sync_team(selecao.nome)
+
+        assert result[:success], result[:error]
+        assert_equal ["/teams?code=JOR"], requested_endpoints
+        assert_equal 1548, result[:api_team].api_id
+        assert_equal "Jordan", result[:api_team].name
+        assert_equal "JOR", result[:api_team].code
+        assert_equal selecao, result[:api_team].selecao
+      end
+    end
+
     test "nao chama API quando selecao ja esta associada" do
       selecao = create_selecao!("Brasil")
       ApiFootballTeam.create!(
