@@ -58,7 +58,13 @@ class UsersController < ApplicationController
   end
 
   def toggle_odds
-    current_user.update!(esconder_odds: !current_user.esconder_odds)
+    novo_estado = !User.first&.esconder_odds
+
+    User.update_all(esconder_odds: novo_estado)
+
+    status = novo_estado ? "escondidas" : "visíveis"
+    flash[:notice] = "As odds foram #{status} para todos os usuários do sistema."
+
     redirect_back fallback_location: authenticated_root_path
   end
 
