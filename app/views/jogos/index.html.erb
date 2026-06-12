@@ -183,7 +183,7 @@
               </div>
 
               <div class="card-actions justify-center mt-auto" onclick="event.stopPropagation()">
-                <% if jogo.prob_mandante.present? %>
+                <% if jogo.prob_mandante.present? && !current_user.esconder_odds %>
                   <div class="w-full mt-2 mb-4 px-2">
                     <div class="flex justify-between text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
                       <span class="text-success" title="<%= jogo.mandante&.nome %>"><%= jogo.mandante&.nome&.truncate(12) || 'Mandante' %>: <%= jogo.prob_mandante %>%</span>

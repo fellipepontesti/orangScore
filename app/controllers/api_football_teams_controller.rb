@@ -21,9 +21,22 @@ class ApiFootballTeamsController < ApplicationController
 
   def sync
     @report = ApiFootballTeams::Sync.new.call
-    redirect_to api_football_teams_path, notice: "Sincronização concluída. Registros criados: #{@report[:created].size}, atualizados: #{@report[:updated].size}, erros: #{@report[:errors].size}."
+    skipped_count = @report[:skipped] ? @report[:skipped].size : 0
+    redirect_to api_football_teams_path, notice: "Sincronização concluída. Registros criados: #{@report[:created].size}, atualizados: #{@report[:updated].size}, ignorados: #{skipped_count}, erros: #{@report[:errors].size}."
   rescue => e
     redirect_to api_football_teams_path, alert: "Falha na sincronização: #{e.message}"
+  end
+
+  def sync_brazil
+    result = ApiFootballTeams::Sync.new.sync_team("Brasil")
+    if result[:success]
+      status_label = result[:new_record] ? "criada" : "atualizada"
+      redirect_to api_football_teams_path, notice: "Teste do Brasil concluído com sucesso! Associação #{status_label} (API ID: #{result[:api_team].api_id})."
+    else
+      redirect_to api_football_teams_path, alert: "Falha no teste do Brasil: #{result[:error]}"
+    end
+  rescue => e
+    redirect_to api_football_teams_path, alert: "Erro ao testar Brasil: #{e.message}"
   end
 
   private

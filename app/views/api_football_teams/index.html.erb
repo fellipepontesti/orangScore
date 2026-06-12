@@ -7,6 +7,9 @@
       <p class="opacity-70">Associe cada seleção do seu sistema à seleção correspondente da API Football para melhorar a identificação de jogos e odds.</p>
     </div>
     <div class="flex flex-col sm:flex-row gap-2">
+      <%= button_to sync_brazil_api_football_teams_path, method: :post, class: 'btn btn-secondary', data: { turbo: false } do %>
+        Testar Brasil (1 Request)
+      <% end %>
       <%= button_to sync_api_football_teams_path, method: :post, class: 'btn btn-primary', data: { turbo: false, confirm: 'Deseja sincronizar todas as seleções da API Football agora?' } do %>
         Sincronizar seleções
       <% end %>

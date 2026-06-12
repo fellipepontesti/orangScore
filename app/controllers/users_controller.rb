@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -55,6 +55,11 @@ class UsersController < ApplicationController
     @selecoes = Selecao.order(:nome)
     flash.now[:alert] = e.record.errors.full_messages.to_sentence.presence || e.message
     render :edit_perfil, status: :unprocessable_entity
+  end
+
+  def toggle_odds
+    current_user.update!(esconder_odds: !current_user.esconder_odds)
+    redirect_back fallback_location: authenticated_root_path
   end
 
   def show

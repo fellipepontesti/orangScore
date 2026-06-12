@@ -32,29 +32,13 @@
         <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 relative">
           
           <!-- Mandante -->
-          <div class="flex flex-col items-center gap-4 w-full md:w-1/3">
-            <div class="avatar">
-              <div class="w-24 h-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-4 shadow-xl bg-base-200 flex items-center justify-center overflow-hidden">
-                <% if @jogo.mandante&.logo.present? %>
-                  <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover w-full h-full" %>
-                <% else %>
-                  <span class="text-3xl font-black opacity-30">?</span>
-                <% end %>
-              </div>
-            </div>
-            
-            <span class="text-xl font-bold text-center">
-              <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
-            </span>
-
-            <div class="form-control w-24">
-              <%= form.number_field :gols_mandante,
-                min: 0,
-                max: 99,
-                placeholder: "0",
-                class: "input input-bordered input-lg text-center text-4xl font-black h-20 shadow-inner bg-base-200 #{@jogo.errors[:gols_mandante].any? ? 'input-error' : 'focus:border-primary focus:ring-2 focus:ring-primary/20'}" %>
-            </div>
-          </div>
+          <%= render "components/score_input",
+              input_id: "gols_mandante",
+              input_name: "jogo[gols_mandante]",
+              value: @jogo.gols_mandante,
+              avatar_class: "ring ring-primary",
+              image_path: @jogo.mandante&.logo.present? ? "selecoes/#{@jogo.mandante.logo}" : nil,
+              team_name: @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
 
           <!-- VS Badge -->
           <div class="hidden md:flex flex-col items-center justify-center">
@@ -68,29 +52,13 @@
           </div>
 
           <!-- Visitante -->
-          <div class="flex flex-col items-center gap-4 w-full md:w-1/3">
-            <div class="avatar">
-              <div class="w-24 h-24 rounded-full ring ring-secondary ring-offset-base-100 ring-offset-4 shadow-xl bg-base-200 flex items-center justify-center overflow-hidden">
-                <% if @jogo.visitante&.logo.present? %>
-                  <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover w-full h-full" %>
-                <% else %>
-                  <span class="text-3xl font-black opacity-30">?</span>
-                <% end %>
-              </div>
-            </div>
-            
-            <span class="text-xl font-bold text-center">
-              <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
-            </span>
-
-            <div class="form-control w-24">
-              <%= form.number_field :gols_visitante,
-                min: 0,
-                max: 99,
-                placeholder: "0",
-                class: "input input-bordered input-lg text-center text-4xl font-black h-20 shadow-inner bg-base-200 #{@jogo.errors[:gols_visitante].any? ? 'input-error' : 'focus:border-secondary focus:ring-2 focus:ring-secondary/20'}" %>
-            </div>
-          </div>
+          <%= render "components/score_input",
+              input_id: "gols_visitante",
+              input_name: "jogo[gols_visitante]",
+              value: @jogo.gols_visitante,
+              avatar_class: "ring ring-secondary",
+              image_path: @jogo.visitante&.logo.present? ? "selecoes/#{@jogo.visitante.logo}" : nil,
+              team_name: @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
 
         </div>
 

@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   get "/perfil", to: "users#perfil", as: :perfil
   get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
   patch "/perfil", to: "users#update_perfil"
+  patch "/toggle_odds", to: "users#toggle_odds", as: :toggle_odds
 
   post "/checkout/stripe", to: "checkout#stripe"
   post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"
@@ -98,10 +99,15 @@ Rails.application.routes.draw do
   resources :api_football_teams, only: %i[index update] do
     collection do
       post :sync
+      post :sync_brazil
     end
   end
 
-  resources :selecoes
+  resources :selecoes do
+    member do
+      post :sync_api
+    end
+  end
 
   get '/termos', to: 'static_pages#termos', as: :termos
   get '/privacidade', to: 'static_pages#privacidade', as: :privacidade

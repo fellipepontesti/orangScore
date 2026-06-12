@@ -32,7 +32,7 @@ module ApiFootballClient
 
         body = JSON.parse(res.body)
         # Detect rate limit error structure from API
-        if body.is_a?(Hash) && body['errors'] && body['errors']['requests']
+        if body.is_a?(Hash) && body['errors'].is_a?(Hash) && body['errors']['requests']
           # Rate limit reached for this key, try next one
           next
         end

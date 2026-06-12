@@ -21,6 +21,10 @@ class Selecao < ApplicationRecord
     message: 'já está sendo utilizada por outra seleção'
   }, unless: -> { logo == 'sem-escudo.png' }
 
+  def nome_en
+    Jogos::TeamMapping.api_search_name(nome)
+  end
+
   def qtd_torcedores
     attributes['qtd_torcedores'] || users.count
   end

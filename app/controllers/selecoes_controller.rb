@@ -3,7 +3,7 @@ class SelecoesController < ApplicationController
   before_action :authorize_root!, except: %i[index show]
   before_action :load_grupos, only: %i[new create edit update]
   before_action :logos_disponiveis, only: %i[new create edit update]
-  before_action :set_selecao, only: %i[ show edit update destroy ]
+  before_action :set_selecao, only: %i[ show edit update destroy sync_api ]
 
   def index
     @selecoes = Selecoes::List.new(params).call
@@ -61,6 +61,18 @@ class SelecoesController < ApplicationController
       format.html { redirect_to selecoes_path, notice: "Seleção excluída com sucesso!", status: :see_other }
       format.json { head :no_content }
     end
+  end
+
+  def sync_api
+    result = ApiFootballTeams::Sync.new.sync_team(@selecao.nome)
+    if result[:success]
+      status_label = result[:new_record] ? "criada" : "atualizada"
+      redirect_to selecoes_path, notice: "Seleção \"#{@selecao.nome}\" sincronizada com sucesso! Associação #{status_label} com a API Football (API ID: #{result[:api_team].api_id})."
+    else
+      redirect_to selecoes_path, alert: "Falha ao sincronizar \"#{@selecao.nome}\": #{result[:error]}"
+    end
+  rescue => e
+    redirect_to selecoes_path, alert: "Erro ao sincronizar \"#{@selecao.nome}\": #{e.message}"
   end
 
   private
