@@ -1,5 +1,4 @@
 <div class="space-y-8 max-w-7xl mx-auto py-8">
-  <!-- Cabeçalho de Boas-vindas -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-3">
@@ -12,7 +11,6 @@
     </div>
   </div>
 
-  <!-- SEÇÃO DE JOGOS EM ANDAMENTO (MENSAGEM/CONTROLE NO TOPO) -->
   <% if @jogos_em_andamento.any? %>
     <div class="space-y-6 bg-base-200/30 p-6 rounded-3xl border border-base-200 shadow-inner">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -27,7 +25,6 @@
         <% @jogos_em_andamento.each do |jogo| %>
           <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden hover:shadow-2xl transition duration-300">
             
-            <!-- Topo do Card: Grupo e Odds/Probabilidades -->
             <div class="bg-base-200/40 dark:bg-base-300/20 px-4 py-3 flex justify-between items-center border-b border-base-200/60">
               <div class="flex flex-col">
                 <span class="text-xs font-extrabold uppercase tracking-widest text-primary">
@@ -38,7 +35,6 @@
                 </span>
               </div>
 
-              <!-- Probabilidades -->
               <div class="flex flex-col items-end">
                 <% if jogo.prob_mandante.present? && !current_user.esconder_odds %>
                   <span class="text-[9px] font-black uppercase text-slate-400 tracking-wider">Chances de vitória</span>
@@ -60,10 +56,8 @@
                 <%= hidden_field_tag :redirect_to_dashboard, 'true' %>
                 <%= f.hidden_field :status, id: "status_#{jogo.uuid}", value: jogo.status %>
 
-                <!-- Grid Principal das Seleções -->
                 <div class="flex justify-between items-center gap-4">
                   
-                  <!-- Mandante -->
                   <div class="flex flex-col items-center flex-1 text-center group">
                     <div class="avatar mb-2">
                       <div class="mask mask-squircle h-16 w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
@@ -79,7 +73,6 @@
                       <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>
                     </span>
 
-                    <!-- Estatísticas do Grupo em Tempo Real -->
                     <% if jogo.grupo? && jogo.mandante %>
                       <div class="text-[10px] opacity-70 mt-1 font-semibold flex items-center gap-1.5 justify-center">
                         <span class="badge badge-sm badge-ghost py-0 px-1.5 text-[9px]">SG: <%= jogo.mandante.gols - jogo.mandante.gols_sofridos %></span>
@@ -87,7 +80,6 @@
                       </div>
                     <% end %>
 
-                    <!-- Controle de Gols Mandante -->
                     <div class="flex items-center gap-1 mt-3.5 bg-base-200/50 p-1 rounded-full border border-base-300/40">
                       <button type="button" class="btn btn-circle btn-ghost btn-xs text-error font-extrabold text-base" onclick="decrementGoal('<%= jogo.uuid %>', 'mandante')">
                         −
@@ -104,14 +96,12 @@
                     </div>
                   </div>
 
-                  <!-- Divisor VS -->
                   <div class="flex flex-col items-center justify-center px-2">
                     <span class="text-[10px] font-black tracking-widest text-slate-400">VS</span>
                     <div class="w-px h-12 bg-base-200 my-2"></div>
                     <span class="text-[9px] font-extrabold tracking-wider uppercase opacity-40">Gols</span>
                   </div>
 
-                  <!-- Visitante -->
                   <div class="flex flex-col items-center flex-1 text-center group">
                     <div class="avatar mb-2">
                       <div class="mask mask-squircle h-16 w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
@@ -127,7 +117,6 @@
                       <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>
                     </span>
 
-                    <!-- Estatísticas do Grupo em Tempo Real -->
                     <% if jogo.grupo? && jogo.visitante %>
                       <div class="text-[10px] opacity-70 mt-1 font-semibold flex items-center gap-1.5 justify-center">
                         <span class="badge badge-sm badge-ghost py-0 px-1.5 text-[9px]">SG: <%= jogo.visitante.gols - jogo.visitante.gols_sofridos %></span>
@@ -135,7 +124,6 @@
                       </div>
                     <% end %>
 
-                    <!-- Controle de Gols Visitante -->
                     <div class="flex items-center gap-1 mt-3.5 bg-base-200/50 p-1 rounded-full border border-base-300/40">
                       <button type="button" class="btn btn-circle btn-ghost btn-xs text-error font-extrabold text-base" onclick="decrementGoal('<%= jogo.uuid %>', 'visitante')">
                         −
@@ -154,7 +142,6 @@
 
                 </div>
 
-                <!-- Ações -->
                 <div class="flex gap-2.5 mt-2 pt-4 border-t border-base-200/60">
                   <button type="submit" class="btn btn-sm btn-primary flex-1 font-bold">
                     Atualizar Placar
@@ -209,7 +196,6 @@
     </script>
   <% end %>
 
-  <!-- Estatísticas Gerais -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <div class="card bg-base-100 shadow-xl border border-base-200">
       <div class="card-body items-center text-center justify-center">
@@ -240,7 +226,6 @@
     </div>
   </div>
 
-  <!-- Ações Rápidas e Usuários Registrados -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <div class="flex flex-col gap-4">
       <h2 class="text-2xl font-bold flex items-center gap-2">
@@ -271,39 +256,72 @@
         Ações Rápidas
       </h2>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <%= link_to users_path, class: "btn btn-outline btn-primary h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-          Usuários
+        <%= link_to users_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <%= image_tag "icons/user.png", class: "w-6 h-6 invert opacity-80" %>
+          <span>Usuários</span>
         <% end %>
-        <%= link_to pagamentos_path, class: "btn btn-outline btn-secondary h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          Pagamentos
+
+        <%= link_to pagamentos_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Pagamentos</span>
         <% end %>
-        <%= link_to jogos_path, class: "btn btn-outline btn-accent h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          Jogos
+
+        <%= link_to jogos_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Jogos</span>
         <% end %>
-        <%= link_to ligas_path, class: "btn btn-outline btn-info h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-          Ligas
+
+        <%= link_to ligas_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+          <span>Ligas</span>
         <% end %>
-        <%= link_to sync_jogos_path, class: "btn btn-outline btn-warning h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+
+        <%= link_to new_notificacao_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 opacity-80">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <span>Avisos</span>
+        <% end %>
+
+        <%= link_to new_email_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 opacity-80">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75 12 12.75l9.75-6" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 22.5c-5.385 0-9.75-4.365-9.75-9.75V6.75" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v5.25c0 5.385-4.365 9.75-9.75 9.75" />
+          </svg>
+          <span>Enviar E-mails</span>
+        <% end %>
+
+        <%= link_to sync_jogos_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 opacity-80">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
           </svg>
-          Sincronizar Jogos
+          <span>Sincronizar Jogos</span>
         <% end %>
-        <%= link_to api_football_teams_path, class: "btn btn-outline btn-success h-24 flex flex-col gap-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+
+        <%= link_to api_football_teams_path, class: "btn bg-base-100 hover:bg-base-200 border border-base-200 h-24 flex flex-col gap-2 justify-center items-center text-center text-white shadow-xl" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 opacity-80">
             <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
           </svg>
-          Sincronizar Seleções
+          <span>Sincronizar Seleções</span>
         <% end %>
-        <%= button_to sync_brazil_api_football_teams_path, method: :post, form_class: "w-full h-full", class: "btn btn-outline btn-secondary w-full h-full flex flex-col gap-2 justify-center items-center", data: { turbo: false } do %>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-          </svg>
-          <span class="normal-case">Testar Brasil (API)</span>
+
+        <%= button_to toggle_odds_path, 
+            method: :patch, 
+            form: { class: "w-full" }, 
+            class: "btn #{current_user.esconder_odds ? 'btn-success text-white' : 'bg-base-100 hover:bg-base-200 text-error border border-base-200'} h-24 flex flex-col gap-2 w-full justify-center items-center text-center shadow-xl" do %>
+          <% if current_user.esconder_odds %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            <span>Mostrar Odds (Todos)</span>
+          <% else %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.815 7.815 3 3m-3-3a9.715 9.715 0 0 1-3.34 2.115m3.34-2.115-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+            </svg>
+            <span>Esconder Odds (Todos)</span>
+          <% end %>
         <% end %>
       </div>
     </div>
