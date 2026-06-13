@@ -1,6 +1,4 @@
 <div class="space-y-8 max-w-7xl mx-auto">
-  <%= render "referral_notice" unless current_user.root? %>
-
   <!-- Cabeçalho -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
   <div class="flex flex-col gap-2">
@@ -110,9 +108,6 @@
   <% end %>
 
 </div>
-
-  <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>
-
   <!-- Cards de Resumo -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <!-- Card 1: Sua Seleção -->

@@ -1,8 +1,5 @@
 module Jogos
   class FetchOdds
-    # -------------------------------------------------------
-    # Métodos de classe (utilitários para sync em massa)
-    # -------------------------------------------------------
     def self.sync_all
       jogos = Jogo.where.not(status: :finalizado)
                   .where.not(mandante_id: nil)
@@ -22,7 +19,6 @@ module Jogos
       { updated: updated, errors: errors }
     end
 
-    # -------------------------------------------------------
     def initialize(jogo:)
       @jogo = jogo
     end
@@ -48,9 +44,6 @@ module Jogos
 
     private
 
-    # -------------------------------------------------------
-    # Lógica central do cálculo de odds
-    # -------------------------------------------------------
     def calculate_local_odds
       hm = @jogo.mandante
       aw = @jogo.visitante
@@ -58,16 +51,11 @@ module Jogos
       hm_jogos = (hm.qtd_jogos || 0)
       aw_jogos = (aw.qtd_jogos || 0)
 
-      # Baseline: nenhuma seleção jogou ainda
       if hm_jogos == 0 && aw_jogos == 0
         @jogo.update_columns(prob_mandante: 45, prob_empate: 25, prob_visitante: 30)
         return
       end
 
-      # --- 1. Força base (estatísticas gerais do campeonato) ---
-      #  PPG  = pontos por jogo
-      #  GF/j = gols marcados por jogo
-      #  GS/j = gols sofridos por jogo
       hm_ppg = (hm.pontos || 0).to_f / [hm_jogos, 1].max
       aw_ppg = (aw.pontos || 0).to_f / [aw_jogos, 1].max
 
@@ -77,46 +65,37 @@ module Jogos
       hm_gs  = (hm.gols_sofridos || 0).to_f / [hm_jogos, 1].max
       aw_gs  = (aw.gols_sofridos || 0).to_f / [aw_jogos, 1].max
 
-      # Pesos: aproveitamento importa mais, depois ataque e defesa
       f_home = (hm_ppg * 15.0) + (hm_gf * 10.0) - (hm_gs * 8.0) + 15.0
       f_away = (aw_ppg * 15.0) + (aw_gf * 10.0) - (aw_gs * 8.0) + 15.0
 
-      # --- 2. Histórico de confrontos diretos (H2H) neste sistema ---
       h2h = confrontos_diretos(hm.id, aw.id)
 
       if h2h[:total] > 0
-        # Cada vitória passada adiciona um bônus proporcional à força
         h2h_bonus_home = (h2h[:home_wins].to_f / h2h[:total]) * 8.0
         h2h_bonus_away = (h2h[:away_wins].to_f / h2h[:total]) * 8.0
         f_home += h2h_bonus_home
         f_away += h2h_bonus_away
       end
 
-      # --- 3. Vantagem de jogar em casa (+5%) ---
       f_home *= 1.05
 
-      # --- 4. Engajamento da torcida (log de torcedores como bônus suave) ---
       f_home += Math.log((hm.qtd_torcedores || 0) + 1) * 0.5
       f_away += Math.log((aw.qtd_torcedores || 0) + 1) * 0.5
 
-      # Garantir mínimo de 1.0
       f_home = [f_home, 1.0].max
       f_away = [f_away, 1.0].max
 
-      # --- 5. Força do empate (baseada no histórico de empates de ambos) ---
       hm_empates_rate = (hm.empates || 0).to_f / [hm_jogos, 1].max
       aw_empates_rate = (aw.empates || 0).to_f / [aw_jogos, 1].max
 
       h2h_draw_bonus = h2h[:total] > 0 ? (h2h[:draws].to_f / h2h[:total]) * 6.0 : 0.0
       f_draw = ((hm_empates_rate + aw_empates_rate) * 5.0) + 6.0 + h2h_draw_bonus
 
-      # --- 6. Normalizar para 100% ---
       total  = f_home + f_away + f_draw
       p_home = ((f_home / total) * 100).round
       p_away = ((f_away / total) * 100).round
       p_draw = 100 - p_home - p_away
 
-      # Garantir que p_draw >= 1 (evitar 0% de empate)
       if p_draw < 1
         p_draw = 1
         p_home = 100 - p_draw - p_away
@@ -129,9 +108,6 @@ module Jogos
       )
     end
 
-    # -------------------------------------------------------
-    # H2H: confrontos diretos entre as duas seleções nos jogos finalizados
-    # -------------------------------------------------------
     def confrontos_diretos(hm_id, aw_id)
       jogos_h2h = Jogo.finalizado.where(
         "(mandante_id = :hm AND visitante_id = :aw) OR (mandante_id = :aw AND visitante_id = :hm)",
@@ -150,10 +126,8 @@ module Jogos
         if gm == gv
           draws += 1
         elsif j.mandante_id == hm_id
-          # hm estava como mandante nesse H2H
           gm > gv ? home_wins += 1 : away_wins += 1
         else
-          # hm estava como visitante nesse H2H
           gv > gm ? home_wins += 1 : away_wins += 1
         end
       end
