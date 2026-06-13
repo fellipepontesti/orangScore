@@ -1,5 +1,196 @@
-<% content_for :title, "Detalhes do jogo" %>
+<% content_for :title, "Detalhes do Jogo" %>
 
-<div class="w-full">
-  <%= render @jogo %>
+<div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
+  <!-- Top Navigation & Header -->
+  <div class="flex items-center justify-between border-b border-base-200 pb-4">
+    <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm gap-2" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+      Painel
+    <% end %>
+
+    <div class="text-right">
+      <span class="badge badge-outline badge-sm uppercase tracking-wider font-semibold opacity-70">
+        <%=
+          case @jogo.tipo
+          when "grupo"
+            @jogo.mandante&.grupo.present? ? "Grupo #{@jogo.mandante.grupo.nome.last}" : "Fase de Grupos"
+          else
+            @jogo.tipo.humanize
+          end
+        %>
+      </span>
+    </div>
+  </div>
+
+  <!-- Scoreboard Box (Minimal & Clean) -->
+  <div class="bg-base-100 rounded-3xl border border-base-200 p-6 sm:p-8 shadow-sm text-center space-y-6">
+    <!-- Match Info -->
+    <div class="text-xs opacity-60 font-medium space-y-1">
+      <p><%= @jogo.data.present? ? l(@jogo.data, format: :long) : "Data a definir" %></p>
+      <p class="opacity-40"><%= @jogo.estadio.presence || "Estádio a definir" %></p>
+    </div>
+
+    <!-- The Scoreboard -->
+    <div class="flex items-center justify-center gap-6 sm:gap-10 py-4">
+      <!-- Mandante -->
+      <div class="flex flex-col items-center flex-1 text-right sm:flex-row sm:justify-end gap-3">
+        <span class="font-extrabold text-lg sm:text-2xl text-base-content leading-tight">
+          <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
+        </span>
+        <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden shadow-inner">
+          <% if @jogo.mandante&.logo.present? %>
+            <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover" %>
+          <% else %>
+            <span class="text-xl font-bold">?</span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Placar / VS -->
+      <div class="flex items-center gap-3">
+        <% if @jogo.programado? || @jogo.times_a_definir? %>
+          <span class="text-2xl font-black opacity-30 px-4">VS</span>
+        <% else %>
+          <span class="text-4xl font-black px-4 bg-base-200 rounded-2xl py-2 shadow-inner min-w-[3.5rem]">
+            <%= @jogo.gols_mandante %>
+          </span>
+          <span class="text-xl opacity-40 font-bold">:</span>
+          <span class="text-4xl font-black px-4 bg-base-200 rounded-2xl py-2 shadow-inner min-w-[3.5rem]">
+            <%= @jogo.gols_visitante %>
+          </span>
+        <% end %>
+      </div>
+
+      <!-- Visitante -->
+      <div class="flex flex-col items-center flex-1 text-left sm:flex-row-reverse sm:justify-end gap-3">
+        <span class="font-extrabold text-lg sm:text-2xl text-base-content leading-tight">
+          <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+        </span>
+        <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden shadow-inner">
+          <% if @jogo.visitante&.logo.present? %>
+            <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover" %>
+          <% else %>
+            <span class="text-xl font-bold">?</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Badges -->
+    <div class="flex justify-center">
+      <% if @jogo.em_andamento? %>
+        <span class="badge badge-success gap-1.5 font-bold animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-white"></span>
+          Em Andamento
+        </span>
+      <% elsif @jogo.finalizado? %>
+        <span class="badge badge-error gap-1.5 font-bold text-white">
+          Finalizado
+        </span>
+      <% else %>
+        <span class="badge badge-info gap-1.5 font-bold text-white">
+          Programado
+        </span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Local Odds / Probabilities -->
+  <% if @jogo.prob_mandante.present? && !current_user.esconder_odds %>
+    <div class="bg-base-100 rounded-2xl border border-base-200 p-5 space-y-3">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Probabilidades do Sistema</h3>
+      <div class="flex items-center justify-between text-sm font-semibold">
+        <span class="text-success"><%= @jogo.mandante&.nome || 'Casa' %>: <%= @jogo.prob_mandante %>%</span>
+        <span class="text-base-content/70">Empate: <%= @jogo.prob_empate %>%</span>
+        <span class="text-error"><%= @jogo.visitante&.nome || 'Fora' %>: <%= @jogo.prob_visitante %>%</span>
+      </div>
+      <div class="flex h-3 w-full rounded-full overflow-hidden bg-base-200">
+        <div class="bg-success" style="width: <%= @jogo.prob_mandante %>%;" title="Vitória <%= @jogo.mandante&.nome %>"></div>
+        <div class="bg-base-content/25" style="width: <%= @jogo.prob_empate %>%;" title="Empate"></div>
+        <div class="bg-error" style="width: <%= @jogo.prob_visitante %>%;" title="Vitória <%= @jogo.visitante&.nome %>"></div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- User Palpite Section (Clickable / Responsive Card) -->
+  <div class="bg-base-100 rounded-3xl border border-base-200 p-6 shadow-sm space-y-4">
+    <div class="flex items-center justify-between border-b border-base-200 pb-3">
+      <h3 class="font-extrabold text-lg flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-primary">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-2.25a1.125 1.125 0 0 0-1.125 1.125V18.75m9 0h-9M12 2.25a3 3 0 0 0-3 3v1.5a3 3 0 0 0 6 0v-1.5a3 3 0 0 0-3-3Z" />
+        </svg>
+        Seu Palpite
+      </h3>
+
+      <% if @palpite && @jogo.programado? %>
+        <%= link_to "Editar Palpite", edit_palpite_path(@palpite), class: "btn btn-outline btn-xs btn-primary font-bold" %>
+      <% end %>
+    </div>
+
+    <% if @palpite %>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
+        <!-- Palpite Score -->
+        <div class="flex items-center gap-4 text-center">
+          <span class="text-sm font-semibold opacity-70"><%= @jogo.mandante&.nome || 'Casa' %></span>
+          <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_casa %></span>
+          <span class="opacity-40">x</span>
+          <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_fora %></span>
+          <span class="text-sm font-semibold opacity-70"><%= @jogo.visitante&.nome || 'Fora' %></span>
+        </div>
+
+        <!-- Palpite Result / Points Earned -->
+        <div class="text-center sm:text-right">
+          <% if @jogo.finalizado? %>
+            <% if @user_point %>
+              <div class="space-y-1">
+                <span class="badge badge-success text-white font-bold py-3 px-4 text-sm">
+                  +<%= @user_point.pontos %> Pontos
+                </span>
+                <p class="text-xs opacity-60"><%= @user_point.motivo %></p>
+              </div>
+            <% else %>
+              <span class="badge badge-ghost font-bold py-3 px-4 text-xs opacity-60">
+                0 Pontos acumulados
+              </span>
+            <% end %>
+          <% else %>
+            <span class="badge badge-outline font-bold text-xs opacity-60 py-3 px-4">
+              Aguardando início
+            </span>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="py-4 text-center space-y-3">
+        <p class="text-sm opacity-60">Você ainda não registrou palpite para este jogo.</p>
+        <% if @jogo.programado? %>
+          <%= link_to new_palpite_path(jogo_id: @jogo.uuid), class: "btn btn-primary btn-sm font-bold shadow-md shadow-primary/20" do %>
+            Registrar Palpite
+          <% end %>
+        <% else %>
+          <span class="badge badge-ghost opacity-50 py-3 px-4 font-bold text-xs">Palpites encerrados</span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Admin Action Controls (Roots only) -->
+  <% if current_user.root? %>
+    <div class="bg-base-200/50 rounded-2xl border border-base-200 p-4 space-y-3">
+      <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Ferramentas de Administrador</h4>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <%= link_to "Editar Jogo", edit_jogo_path(@jogo), class: "btn btn-warning btn-sm font-bold" %>
+        
+        <%= button_to "Excluir Jogo", @jogo, method: :delete, class: "btn btn-error btn-sm font-bold text-white", data: { turbo_confirm: "Tem certeza?" } %>
+
+        <% if @jogo.programado? %>
+          <%= button_to "Iniciar Partida", start_jogo_path(@jogo), method: :patch, class: "btn btn-success btn-sm font-bold text-white", data: { turbo_confirm: "Deseja iniciar a partida? Todos os palpiteiros serão notificados." } %>
+        <% elsif @jogo.em_andamento? %>
+          <%= link_to "Finalizar Partida", finalize_jogo_path(@jogo), class: "btn btn-info btn-sm font-bold text-white" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

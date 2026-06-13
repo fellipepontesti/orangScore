@@ -15,7 +15,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "api_football_teams", force: :cascade do |t|
+  create_table "api_football_teams", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.integer "api_id", null: false
     t.string "name", null: false
     t.string "country"
@@ -24,209 +25,182 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.integer "founded"
     t.string "city"
     t.bigint "selecao_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["api_id"], name: "index_api_football_teams_on_api_id", unique: true
-    t.index ["name"], name: "index_api_football_teams_on_name"
-    t.index ["selecao_id"], name: "index_api_football_teams_on_selecao_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  create_table "assinaturas", force: :cascade do |t|
+  create_table "assinaturas", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "usuario_id", null: false
-    t.integer "plano", default: 0, null: false
-    t.boolean "ativa", default: true, null: false
+    t.integer "plano", null: false
+    t.boolean "ativa", null: false
     t.datetime "data_expiracao"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["usuario_id"], name: "index_assinaturas_on_usuario_id"
-    t.index ["uuid"], name: "index_assinaturas_on_uuid", unique: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.uuid "uuid", null: false
   end
 
-  create_table "cobrancas", force: :cascade do |t|
+  create_table "cobrancas", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "user_id", null: false
     t.string "plano", null: false
     t.integer "valor", null: false
-    t.integer "status", default: 0, null: false
+    t.integer "status", null: false
     t.string "gateway", null: false
     t.string "gateway_cobranca_id"
     t.string "gateway_checkout_url"
     t.string "payment_method", null: false
     t.datetime "expires_at"
     t.datetime "paid_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text "pix_qr_code"
     t.text "pix_qr_code_base64"
     t.string "gateway_status"
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["gateway_cobranca_id"], name: "index_cobrancas_on_gateway_cobranca_id"
-    t.index ["status"], name: "index_cobrancas_on_status"
-    t.index ["user_id"], name: "index_cobrancas_on_user_id"
-    t.index ["uuid"], name: "index_cobrancas_on_uuid", unique: true
+    t.uuid "uuid", null: false
   end
 
-  create_table "grupos", force: :cascade do |t|
+  create_table "grupos", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.string "nome"
-    t.integer "rodadas", default: 0
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["uuid"], name: "index_grupos_on_uuid", unique: true
+    t.integer "rodadas"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.uuid "uuid", null: false
   end
 
-  create_table "jogos", force: :cascade do |t|
+  create_table "jogos", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "mandante_id"
     t.bigint "visitante_id"
-    t.integer "gols_mandante", default: 0
-    t.integer "gols_visitante", default: 0
+    t.integer "gols_mandante"
+    t.integer "gols_visitante"
     t.datetime "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "tipo", default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer "tipo", null: false
     t.bigint "grupo_id"
-    t.boolean "definir", default: false, null: false
+    t.boolean "definir", null: false
     t.string "estadio"
     t.string "nome_provisorio_mandante"
     t.string "nome_provisorio_visitante"
-    t.integer "status", default: 0
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.integer "status"
+    t.uuid "uuid", null: false
     t.integer "prob_mandante"
     t.integer "prob_empate"
     t.integer "prob_visitante"
-    t.index ["grupo_id"], name: "index_jogos_on_grupo_id"
-    t.index ["mandante_id"], name: "index_jogos_on_mandante_id"
-    t.index ["uuid"], name: "index_jogos_on_uuid", unique: true
-    t.index ["visitante_id"], name: "index_jogos_on_visitante_id"
   end
 
-  create_table "liga_membros", force: :cascade do |t|
+  create_table "liga_membros", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "liga_id", null: false
     t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "status"
     t.integer "role"
     t.bigint "invited_by_id"
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["liga_id", "user_id"], name: "index_liga_membros_on_liga_id_and_user_id", unique: true
-    t.index ["liga_id"], name: "index_liga_membros_on_liga_id"
-    t.index ["user_id"], name: "index_liga_membros_on_user_id"
-    t.index ["uuid"], name: "index_liga_membros_on_uuid", unique: true
+    t.uuid "uuid", null: false
   end
 
-  create_table "ligas", force: :cascade do |t|
+  create_table "ligas", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "owner_id", null: false
     t.string "nome"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "membros", default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer "membros", null: false
     t.string "invite_token"
-    t.boolean "publica", default: false, null: false
-    t.boolean "entrada_livre", default: false, null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["invite_token"], name: "index_ligas_on_invite_token", unique: true
-    t.index ["owner_id"], name: "index_ligas_on_owner_id"
-    t.index ["uuid"], name: "index_ligas_on_uuid", unique: true
+    t.boolean "publica", null: false
+    t.boolean "entrada_livre", null: false
+    t.uuid "uuid", null: false
   end
 
-  create_table "notificacoes", force: :cascade do |t|
+  create_table "notificacoes", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "user_id", null: false
     t.integer "tipo"
     t.integer "sender_id"
     t.text "texto"
     t.integer "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer "liga_id"
-    t.boolean "answered", default: true
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["user_id"], name: "index_notificacoes_on_user_id"
-    t.index ["uuid"], name: "index_notificacoes_on_uuid", unique: true
+    t.boolean "answered"
+    t.uuid "uuid", null: false
   end
 
-  create_table "pagamentos", force: :cascade do |t|
+  create_table "pagamentos", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "user_id", null: false
     t.string "stripe_payment_intent_id"
     t.string "stripe_customer_id"
     t.string "stripe_invoice_id"
     t.integer "valor", null: false
-    t.integer "status", default: 0, null: false
+    t.integer "status", null: false
     t.string "plano"
     t.datetime "pago_em"
     t.jsonb "metadata"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.bigint "cobranca_id", null: false
     t.string "mercado_pago_payment_id"
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["cobranca_id"], name: "index_pagamentos_on_cobranca_id"
-    t.index ["mercado_pago_payment_id"], name: "index_pagamentos_on_mercado_pago_payment_id", unique: true
-    t.index ["status"], name: "index_pagamentos_on_status"
-    t.index ["stripe_invoice_id"], name: "index_pagamentos_on_stripe_invoice_id"
-    t.index ["stripe_payment_intent_id"], name: "index_pagamentos_on_stripe_payment_intent_id", unique: true
-    t.index ["user_id"], name: "index_pagamentos_on_user_id"
-    t.index ["uuid"], name: "index_pagamentos_on_uuid", unique: true
+    t.uuid "uuid", null: false
   end
 
-  create_table "palpites", force: :cascade do |t|
+  create_table "palpites", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "user_id", null: false
     t.bigint "jogo_id", null: false
     t.integer "gols_casa", null: false
     t.integer "gols_fora", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["jogo_id"], name: "index_palpites_on_jogo_id"
-    t.index ["user_id", "jogo_id"], name: "index_palpites_on_user_id_and_jogo_id", unique: true
-    t.index ["user_id"], name: "index_palpites_on_user_id"
-    t.index ["uuid"], name: "index_palpites_on_uuid", unique: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.uuid "uuid", null: false
   end
 
-  create_table "selecoes", force: :cascade do |t|
+  create_table "selecoes", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.string "nome"
-    t.integer "pontos", default: 0
-    t.integer "qtd_jogos", default: 0
-    t.integer "vitorias", default: 0
-    t.integer "derrotas", default: 0
-    t.integer "empates", default: 0
+    t.integer "pontos"
+    t.integer "qtd_jogos"
+    t.integer "vitorias"
+    t.integer "derrotas"
+    t.integer "empates"
     t.string "logo"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.bigint "grupo_id", null: false
-    t.bigint "qtd_torcedores", default: 0
-    t.bigint "gols", default: 0
-    t.bigint "gols_sofridos", default: 0
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["grupo_id"], name: "index_selecoes_on_grupo_id"
-    t.index ["uuid"], name: "index_selecoes_on_uuid", unique: true
+    t.bigint "qtd_torcedores"
+    t.bigint "gols"
+    t.bigint "gols_sofridos"
+    t.uuid "uuid", null: false
   end
 
-  create_table "user_points", force: :cascade do |t|
+  create_table "user_points", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
     t.bigint "user_id", null: false
     t.bigint "jogo_id", null: false
     t.integer "pontos"
     t.string "motivo"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["jogo_id"], name: "index_user_points_on_jogo_id"
-    t.index ["user_id"], name: "index_user_points_on_user_id"
-    t.index ["uuid"], name: "index_user_points_on_uuid", unique: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.uuid "uuid", null: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
+  create_table "users", id: false, force: :cascade do |t|
+    t.bigserial "id", null: false
+    t.string "email", null: false
+    t.string "encrypted_password", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "name", null: false
     t.string "logo_selecao"
     t.integer "pontos"
-    t.integer "tipo", default: 0
+    t.integer "tipo"
     t.bigint "selecao_id"
     t.string "password_recovery_token"
     t.datetime "password_recovery_sent_at"
@@ -238,33 +212,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.string "provider"
     t.string "uid"
     t.integer "referred_by_id"
-    t.integer "referrals_count", default: 0
+    t.integer "referrals_count"
     t.datetime "referral_counted_at"
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
-    t.boolean "esconder_odds", default: false, null: false
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["selecao_id"], name: "index_users_on_selecao_id"
-    t.index ["uuid"], name: "index_users_on_uuid", unique: true
+    t.uuid "uuid", null: false
+    t.boolean "esconder_odds", null: false
   end
 
-  add_foreign_key "api_football_teams", "selecoes"
-  add_foreign_key "assinaturas", "users", column: "usuario_id"
-  add_foreign_key "cobrancas", "users"
-  add_foreign_key "jogos", "grupos"
-  add_foreign_key "jogos", "selecoes", column: "mandante_id"
-  add_foreign_key "jogos", "selecoes", column: "visitante_id"
-  add_foreign_key "liga_membros", "ligas"
-  add_foreign_key "liga_membros", "users"
-  add_foreign_key "ligas", "users", column: "owner_id"
-  add_foreign_key "notificacoes", "users"
-  add_foreign_key "pagamentos", "cobrancas"
-  add_foreign_key "pagamentos", "users"
-  add_foreign_key "palpites", "jogos"
-  add_foreign_key "palpites", "users"
-  add_foreign_key "selecoes", "grupos"
-  add_foreign_key "user_points", "jogos"
-  add_foreign_key "user_points", "users"
-  add_foreign_key "users", "selecoes"
 end

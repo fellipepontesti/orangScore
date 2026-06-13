@@ -150,33 +150,7 @@ module Jogos
     end
 
     def update_probabilities(jogo, fixture)
-      fixture_id = fixture.dig('fixture', 'id')
-      prediction = get_prediction(fixture_id)
-      return unless prediction
-
-      jogo.update_columns(
-        prob_mandante: prediction[:home],
-        prob_empate: prediction[:draw],
-        prob_visitante: prediction[:away]
-      )
-    end
-
-    def get_prediction(fixture_id)
-      response = request("/predictions?fixture=#{fixture_id}")
-      return nil if response.nil? || response['response'].empty?
-
-      prediction = response['response'].first.dig('predictions')
-      prediction = prediction.first if prediction.is_a?(Array)
-      percent = prediction&.dig('percent')
-      return nil unless percent
-
-      {
-        home: percent['home'].to_i,
-        draw: percent['draw'].to_i,
-        away: percent['away'].to_i
-      }
-    rescue
-      nil
+      Jogos::FetchOdds.new(jogo: jogo).call
     end
 
     def same_match_date?(fixture, local_date)

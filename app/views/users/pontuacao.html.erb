@@ -17,8 +17,12 @@
         </thead>
         <tbody>
           <% if @user_points.any? %>
-            <% @user_points.each do |point| %>
-              <tr class="hover:bg-base-200/50 transition">
+             <% @user_points.each do |point| %>
+              <% if point.jogo %>
+                <tr data-href="<%= jogo_path(point.jogo) %>" onclick="window.location=this.dataset.href" class="cursor-pointer hover:bg-base-200/80 transition">
+              <% else %>
+                <tr class="hover:bg-base-200/50 transition">
+              <% end %>
                 <td class="text-xs opacity-70">
                   <%= point.created_at.strftime("%d/%m/%Y %H:%M") %>
                 </td>

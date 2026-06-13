@@ -28,6 +28,8 @@ class JogosController < ApplicationController
   end
 
   def show
+    @palpite = current_user.palpites.find_by(jogo_id: @jogo.id)
+    @user_point = current_user.user_points.find_by(jogo_id: @jogo.id)
   end
 
   def new
@@ -101,6 +103,19 @@ class JogosController < ApplicationController
 
   def sync
     @sync_report = Jogos::SyncFromFootballApi.new.call
+  end
+
+  def sync_odds
+    result = Jogos::FetchOdds.sync_all
+    if result[:errors].empty?
+      redirect_to authenticated_root_path,
+        notice: "Odds recalculadas com sucesso para #{result[:updated]} jogo(s)."
+    else
+      redirect_to authenticated_root_path,
+        alert: "Odds calculadas para #{result[:updated]} jogo(s), mas #{result[:errors].size} erro(s) ocorreram."
+    end
+  rescue => e
+    redirect_to authenticated_root_path, alert: "Falha ao calcular odds: #{e.message}"
   end
 
   def destroy

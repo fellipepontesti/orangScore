@@ -1,162 +1,164 @@
-require 'net/http'
-require 'json'
-require 'uri'
-
 module Jogos
   class FetchOdds
+    # -------------------------------------------------------
+    # Métodos de classe (utilitários para sync em massa)
+    # -------------------------------------------------------
+    def self.sync_all
+      jogos = Jogo.where.not(status: :finalizado)
+                  .where.not(mandante_id: nil)
+                  .where.not(visitante_id: nil)
+      updated = 0
+      errors  = []
+
+      jogos.find_each do |jogo|
+        result = new(jogo: jogo).call
+        if result[:success]
+          updated += 1
+        else
+          errors << { jogo_id: jogo.id, error: result[:error] }
+        end
+      end
+
+      { updated: updated, errors: errors }
+    end
+
+    # -------------------------------------------------------
     def initialize(jogo:)
       @jogo = jogo
-      @api_key = ENV['API_FOOTBALL_KEY']
-      @base_url = 'https://v3.football.api-sports.io'
     end
 
     def call
-      # Se as odds já estão salvas, não chama a API novamente
-      return if @jogo.prob_mandante.present? && @jogo.prob_visitante.present?
+      return { success: false, error: "Jogo sem mandante ou visitante definido." } unless @jogo.mandante && @jogo.visitante
 
-      # Tenta buscar a odd real pela API
-      odds = fetch_from_api_if_possible
+      calculate_local_odds
 
-      if odds
-        @jogo.update_columns(
-          prob_mandante: odds[:home],
-          prob_empate: odds[:draw],
-          prob_visitante: odds[:away]
-        )
-      else
-        # Fallback inteligente (se estourou limite da API ou o jogo é customizado e não existe na API)
-        calculate_fallback_odds
-      end
+      {
+        success: true,
+        method: :local,
+        odds: {
+          home: @jogo.prob_mandante,
+          draw: @jogo.prob_empate,
+          away: @jogo.prob_visitante
+        }
+      }
+    rescue => e
+      Rails.logger.error "Erro no cálculo local de odds do jogo #{@jogo.id}: #{e.message}"
+      { success: false, error: e.message }
     end
 
     private
 
-    def fetch_from_api_if_possible
-      return nil if @api_key.blank? || !@jogo.mandante || !@jogo.visitante
-
-      mandante_nome = @jogo.mandante.nome
-      visitante_nome = @jogo.visitante.nome
-
-      # 1. Tentar encontrar os IDs dos times na API
-      team_home_id = search_team_id(mandante_nome)
-      team_away_id = search_team_id(visitante_nome)
-
-      return nil unless team_home_id && team_away_id
-
-      # 2. Buscar o head-to-head ou próximo jogo entre eles
-      fixture_id = find_fixture_id(team_home_id, team_away_id)
-      return nil unless fixture_id
-
-      # 3. Buscar a "Prediction" para extrair a porcentagem
-      get_prediction(fixture_id)
-    rescue => e
-      Rails.logger.error "Erro na API-Football: #{e.message}"
-      nil
-    end
-
-    def search_team_id(name)
-      return nil if name.blank?
-
-      # Tenta encontrar o time pela associação na tabela ApiFootballTeam
-      api_team = find_api_football_team(name)
-      return api_team&.api_id if api_team
-
-      # Fallback: busca na API por nome (caso a associação não tenha sido feita)
-      lookup_name = Jogos::TeamMapping.api_search_name(name)
-      response = request("/teams?search=#{URI.encode_www_form_component(lookup_name)}")
-      return nil unless response && response['response'].present?
-
-      response['response'].first.dig('team', 'id')
-    end
-
-    def find_api_football_team(name)
-      selecao = Selecao.find_by(nome: name)
-      return ApiFootballTeam.find_by(selecao_id: selecao.id) if selecao
-
-      nil
-    end
-
-    def find_fixture_id(home_id, away_id)
-      date = @jogo.data&.strftime('%Y-%m-%d')
-
-      if date.present?
-        response = request("/fixtures?date=#{date}&team=#{home_id}")
-        fixture = find_matching_fixture(response, home_id, away_id)
-        return fixture.dig('fixture', 'id') if fixture
-
-        response = request("/fixtures?date=#{date}&team=#{away_id}")
-        fixture = find_matching_fixture(response, home_id, away_id)
-        return fixture.dig('fixture', 'id') if fixture
-      end
-
-      response = request("/fixtures?h2h=#{home_id}-#{away_id}&next=1")
-      fixture = response['response']&.first if response && response['response'].present?
-      return fixture.dig('fixture', 'id') if fixture
-
-      response = request("/fixtures?h2h=#{home_id}-#{away_id}&last=1")
-      fixture = response['response']&.first if response && response['response'].present?
-      fixture&.dig('fixture', 'id')
-    end
-
-    def find_matching_fixture(response, home_id, away_id)
-      return nil unless response && response['response'].present?
-
-      response['response'].find do |item|
-        [item.dig('teams', 'home', 'id'), item.dig('teams', 'away', 'id')].sort == [home_id, away_id].sort
-      end
-    end
-
-    def get_prediction(fixture_id)
-      response = request("/predictions?fixture=#{fixture_id}")
-      return nil if response.nil? || response['response'].empty?
-
-      prediction = response['response'].first.dig('predictions')
-      prediction = prediction.first if prediction.is_a?(Array)
-      percent = prediction&.dig('percent')
-      return nil unless percent
-
-      {
-        home: percent['home'].to_i,
-        draw: percent['draw'].to_i,
-        away: percent['away'].to_i
-      }
-    end
-
-def request(endpoint)
-  ApiFootballClient.request(endpoint)
-end
-
-    def calculate_fallback_odds
-      # Base de cálculo para fallback quando a API não encontra times fictícios/customizados
-      # Usa a pontuação e vitórias atuais do sistema
+    # -------------------------------------------------------
+    # Lógica central do cálculo de odds
+    # -------------------------------------------------------
+    def calculate_local_odds
       hm = @jogo.mandante
       aw = @jogo.visitante
-      
-      return unless hm && aw
 
-      # Força = Pontos + (Vitórias * 2) + Gols
-      f_home = (hm.pontos || 0) + ((hm.vitorias || 0) * 2) + (hm.gols || 0)
-      f_away = (aw.pontos || 0) + ((aw.vitorias || 0) * 2) + (aw.gols || 0)
-      
-      if f_home == 0 && f_away == 0
-        @jogo.update_columns(prob_mandante: 40, prob_empate: 20, prob_visitante: 40)
+      hm_jogos = (hm.qtd_jogos || 0)
+      aw_jogos = (aw.qtd_jogos || 0)
+
+      # Baseline: nenhuma seleção jogou ainda
+      if hm_jogos == 0 && aw_jogos == 0
+        @jogo.update_columns(prob_mandante: 45, prob_empate: 25, prob_visitante: 30)
         return
       end
 
-      f_draw = ((hm.empates || 0) + (aw.empates || 0)) * 2 + 5
-      f_draw = 1 if f_draw == 0
+      # --- 1. Força base (estatísticas gerais do campeonato) ---
+      #  PPG  = pontos por jogo
+      #  GF/j = gols marcados por jogo
+      #  GS/j = gols sofridos por jogo
+      hm_ppg = (hm.pontos || 0).to_f / [hm_jogos, 1].max
+      aw_ppg = (aw.pontos || 0).to_f / [aw_jogos, 1].max
 
-      total = (f_home + f_away + f_draw).to_f
-      
+      hm_gf  = (hm.gols || 0).to_f / [hm_jogos, 1].max
+      aw_gf  = (aw.gols || 0).to_f / [aw_jogos, 1].max
+
+      hm_gs  = (hm.gols_sofridos || 0).to_f / [hm_jogos, 1].max
+      aw_gs  = (aw.gols_sofridos || 0).to_f / [aw_jogos, 1].max
+
+      # Pesos: aproveitamento importa mais, depois ataque e defesa
+      f_home = (hm_ppg * 15.0) + (hm_gf * 10.0) - (hm_gs * 8.0) + 15.0
+      f_away = (aw_ppg * 15.0) + (aw_gf * 10.0) - (aw_gs * 8.0) + 15.0
+
+      # --- 2. Histórico de confrontos diretos (H2H) neste sistema ---
+      h2h = confrontos_diretos(hm.id, aw.id)
+
+      if h2h[:total] > 0
+        # Cada vitória passada adiciona um bônus proporcional à força
+        h2h_bonus_home = (h2h[:home_wins].to_f / h2h[:total]) * 8.0
+        h2h_bonus_away = (h2h[:away_wins].to_f / h2h[:total]) * 8.0
+        f_home += h2h_bonus_home
+        f_away += h2h_bonus_away
+      end
+
+      # --- 3. Vantagem de jogar em casa (+5%) ---
+      f_home *= 1.05
+
+      # --- 4. Engajamento da torcida (log de torcedores como bônus suave) ---
+      f_home += Math.log((hm.qtd_torcedores || 0) + 1) * 0.5
+      f_away += Math.log((aw.qtd_torcedores || 0) + 1) * 0.5
+
+      # Garantir mínimo de 1.0
+      f_home = [f_home, 1.0].max
+      f_away = [f_away, 1.0].max
+
+      # --- 5. Força do empate (baseada no histórico de empates de ambos) ---
+      hm_empates_rate = (hm.empates || 0).to_f / [hm_jogos, 1].max
+      aw_empates_rate = (aw.empates || 0).to_f / [aw_jogos, 1].max
+
+      h2h_draw_bonus = h2h[:total] > 0 ? (h2h[:draws].to_f / h2h[:total]) * 6.0 : 0.0
+      f_draw = ((hm_empates_rate + aw_empates_rate) * 5.0) + 6.0 + h2h_draw_bonus
+
+      # --- 6. Normalizar para 100% ---
+      total  = f_home + f_away + f_draw
       p_home = ((f_home / total) * 100).round
       p_away = ((f_away / total) * 100).round
-      p_draw = 100 - p_home - p_away # Garantir soma de 100%
+      p_draw = 100 - p_home - p_away
+
+      # Garantir que p_draw >= 1 (evitar 0% de empate)
+      if p_draw < 1
+        p_draw = 1
+        p_home = 100 - p_draw - p_away
+      end
 
       @jogo.update_columns(
         prob_mandante: p_home,
-        prob_empate: p_draw,
+        prob_empate:   p_draw,
         prob_visitante: p_away
       )
+    end
+
+    # -------------------------------------------------------
+    # H2H: confrontos diretos entre as duas seleções nos jogos finalizados
+    # -------------------------------------------------------
+    def confrontos_diretos(hm_id, aw_id)
+      jogos_h2h = Jogo.finalizado.where(
+        "(mandante_id = :hm AND visitante_id = :aw) OR (mandante_id = :aw AND visitante_id = :hm)",
+        hm: hm_id, aw: aw_id
+      )
+
+      total      = jogos_h2h.count
+      home_wins  = 0
+      away_wins  = 0
+      draws      = 0
+
+      jogos_h2h.each do |j|
+        gm = j.gols_mandante || 0
+        gv = j.gols_visitante || 0
+
+        if gm == gv
+          draws += 1
+        elsif j.mandante_id == hm_id
+          # hm estava como mandante nesse H2H
+          gm > gv ? home_wins += 1 : away_wins += 1
+        else
+          # hm estava como visitante nesse H2H
+          gv > gm ? home_wins += 1 : away_wins += 1
+        end
+      end
+
+      { total: total, home_wins: home_wins, away_wins: away_wins, draws: draws }
     end
   end
 end

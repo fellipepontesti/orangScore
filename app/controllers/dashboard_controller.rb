@@ -11,6 +11,10 @@ class DashboardController < ApplicationController
       @total_ligas = Liga.count
       @ultimos_usuarios = User.order(created_at: :desc).limit(5)
       @jogos_em_andamento = Jogo.em_andamento.order(data: :asc).limit(10)
+      @jogos_programados = Jogo.programado
+                                .where(definir: false)
+                                .where(data: Time.current.beginning_of_day..Time.current.end_of_day)
+                                .order(data: :asc)
       return render :root_index
     end
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count

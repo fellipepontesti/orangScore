@@ -65,6 +65,13 @@ module Selecoes
         gols: gols,
         gols_sofridos: gols_sofridos
       )
+
+      # Recalcula as odds locais para todos os próximos jogos programados desta seleção
+      Jogo.where.not(status: :finalizado)
+          .where("mandante_id = ? OR visitante_id = ?", selecao.id, selecao.id)
+          .find_each do |jogo|
+            Jogos::FetchOdds.new(jogo: jogo).call
+          end
     end
   end
 end
