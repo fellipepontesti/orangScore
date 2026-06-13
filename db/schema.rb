@@ -10,13 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "api_football_teams", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "api_football_teams", force: :cascade do |t|
     t.integer "api_id", null: false
     t.string "name", null: false
     t.string "country"
@@ -29,8 +28,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.datetime "updated_at"
   end
 
-  create_table "assinaturas", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "assinaturas", force: :cascade do |t|
     t.bigint "usuario_id", null: false
     t.integer "plano", null: false
     t.boolean "ativa", null: false
@@ -40,8 +38,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "cobrancas", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "cobrancas", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "plano", null: false
     t.integer "valor", null: false
@@ -60,8 +57,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "grupos", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "grupos", force: :cascade do |t|
     t.string "nome"
     t.integer "rodadas"
     t.datetime "created_at"
@@ -69,8 +65,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "jogos", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "jogos", force: :cascade do |t|
     t.bigint "mandante_id"
     t.bigint "visitante_id"
     t.integer "gols_mandante"
@@ -91,8 +86,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.integer "prob_visitante"
   end
 
-  create_table "liga_membros", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "liga_membros", force: :cascade do |t|
     t.bigint "liga_id", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at"
@@ -103,8 +97,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "ligas", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "ligas", force: :cascade do |t|
     t.bigint "owner_id", null: false
     t.string "nome"
     t.datetime "created_at"
@@ -116,8 +109,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "notificacoes", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "notificacoes", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.integer "tipo"
     t.integer "sender_id"
@@ -130,8 +122,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "pagamentos", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "pagamentos", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "stripe_payment_intent_id"
     t.string "stripe_customer_id"
@@ -148,8 +139,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "palpites", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "palpites", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "jogo_id", null: false
     t.integer "gols_casa", null: false
@@ -159,8 +149,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "selecoes", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "selecoes", force: :cascade do |t|
     t.string "nome"
     t.integer "pontos"
     t.integer "qtd_jogos"
@@ -177,8 +166,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "user_points", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "user_points", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "jogo_id", null: false
     t.integer "pontos"
@@ -188,8 +176,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.uuid "uuid", null: false
   end
 
-  create_table "users", id: false, force: :cascade do |t|
-    t.bigserial "id", null: false
+  create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "encrypted_password", null: false
     t.string "reset_password_token"
@@ -216,6 +203,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_022623) do
     t.datetime "referral_counted_at"
     t.uuid "uuid", null: false
     t.boolean "esconder_odds", null: false
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
   end
 
 end

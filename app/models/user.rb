@@ -5,6 +5,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable,
+         :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_omniauth(auth, ref_id = nil)

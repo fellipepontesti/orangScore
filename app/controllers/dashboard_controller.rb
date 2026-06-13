@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  include JogosHelper
+
   before_action :authenticate_user!
 
   def index 
@@ -15,8 +17,12 @@ class DashboardController < ApplicationController
                                 .where(definir: false)
                                 .where(data: Time.current.beginning_of_day..Time.current.end_of_day)
                                 .order(data: :asc)
+      @next_jogo_rapido = next_jogo_rapido(current_user)
+      @jogos_pendentes = jogos_pendentes_count(current_user)
       return render :root_index
     end
+    @next_jogo_rapido = next_jogo_rapido(current_user)
+    @jogos_pendentes = jogos_pendentes_count(current_user)
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
     @jogos_hoje = Jogo.where(data: Date.today.beginning_of_day..Date.today.end_of_day).count
     @proximos_jogos = Jogo.where("data >= ?", Time.current).order(data: :asc).limit(5)

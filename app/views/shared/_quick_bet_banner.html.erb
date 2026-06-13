@@ -1,0 +1,39 @@
+<% next_jogo = local_assigns[:next_jogo] || next_jogo_rapido(current_user) %>
+<% pendentes = local_assigns[:pendentes] || jogos_pendentes_count(current_user) %>
+
+<% if next_jogo %>
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-orange-600 shadow-2xl shadow-primary/25 mb-8">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white"></div>
+      <div class="absolute -bottom-12 -left-8 w-56 h-56 rounded-full bg-white"></div>
+    </div>
+
+    <div class="relative p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5">
+      <div class="flex items-center gap-4 flex-1 min-w-0">
+        <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl animate-pulse">
+          ⚡
+        </div>
+
+        <div class="min-w-0 text-white">
+          <p class="text-xs font-black uppercase tracking-widest opacity-80 mb-0.5">Modo Palpite Rápido</p>
+          <p class="font-black text-lg sm:text-xl leading-tight truncate">
+            <%= next_jogo.mandante&.nome || next_jogo.nome_provisorio_mandante || "A definir" %>
+            <span class="opacity-60 mx-1">×</span>
+            <%= next_jogo.visitante&.nome || next_jogo.nome_provisorio_visitante || "A definir" %>
+          </p>
+          <p class="text-xs opacity-70 mt-1">
+            <%= next_jogo.data.strftime("%d/%m às %H:%M") %>
+            <% if pendentes > 1 %>
+              · <span class="font-bold"><%= pendentes %> jogos sem palpite</span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+
+      <%= link_to new_palpite_path(jogo_id: next_jogo.uuid, quick_mode: true),
+          class: "btn btn-lg bg-white text-primary border-0 hover:bg-white/90 hover:scale-105 transition-all shadow-xl font-black uppercase tracking-wide whitespace-nowrap w-full sm:w-auto" do %>
+        Palpitar Agora →
+      <% end %>
+    </div>
+  </div>
+<% end %>

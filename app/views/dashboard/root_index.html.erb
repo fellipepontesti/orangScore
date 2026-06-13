@@ -11,6 +11,8 @@
     </div>
   </div>
 
+  <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>
+
   <% if @jogos_em_andamento.any? %>
     <div class="space-y-6 bg-base-200/30 p-6 rounded-3xl border border-base-200 shadow-inner">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -288,13 +290,17 @@
       <div class="bg-base-100 shadow-xl rounded-box border border-base-200">
         <ul class="list">
           <% @ultimos_usuarios.each do |user| %>
-            <li class="p-4 border-b last:border-b-0 border-base-200 flex justify-between items-center">
-              <div>
-                <p class="font-bold"><%= user.name %></p>
-                <p class="text-xs opacity-60"><%= user.email %></p>
+            <li class="p-4 border-b last:border-b-0 border-base-200 flex justify-between items-center gap-3">
+              <div class="min-w-0">
+                <p class="font-bold truncate"><%= user.name %></p>
+                <div class="flex flex-wrap items-center gap-2 mt-1">
+                  <%= conta_status_badge(user) %>
+                  <span class="text-xs opacity-50"><%= login_count_label(user) %></span>
+                </div>
               </div>
-              <div class="text-xs opacity-50">
-                <%= user.created_at.strftime("%d/%m/%Y %H:%M") %>
+              <div class="text-xs opacity-50 shrink-0 text-right">
+                <p class="font-semibold"><%= user.created_at.strftime("%d/%m/%Y") %></p>
+                <p><%= user.created_at.strftime("%H:%M") %></p>
               </div>
             </li>
           <% end %>
