@@ -1,9 +1,9 @@
-<div class="space-y-8 max-w-7xl mx-auto">
+<div class="space-y-8 w-full max-w-7xl mx-auto overflow-x-hidden">
   <!-- Cabeçalho -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-  <div class="flex flex-col gap-2">
-    <div class="flex items-center gap-3">
-      <h1 class="text-4xl font-bold">Olá, <%= current_user.name %></h1>
+  <div class="flex flex-col gap-2 min-w-0">
+    <div class="flex flex-wrap items-center gap-3 min-w-0">
+      <h1 class="text-3xl sm:text-4xl font-bold break-words min-w-0">Olá, <%= current_user.name %></h1>
       <% if current_user.assinatura&.plus? %>
 
         <div class="flex items-center gap-2 px-4 py-2 rounded-full
@@ -91,7 +91,7 @@
 
       <% end %>
     </div>
-    <p class="opacity-70 text-lg">Aqui está um resumo do seu OrangScore</p>
+    <p class="opacity-70 text-base sm:text-lg">Aqui está um resumo do seu OrangScore</p>
   </div>
 
   <% if current_user.assinatura&.basic? %>
@@ -108,22 +108,113 @@
   <% end %>
 
 </div>
-  <!-- Cards de Resumo -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Card 1: Sua Seleção -->
-    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= jogos_path(grupo: current_user.selecao.grupo&.uuid) %>'">
-      <div class="card-body items-center text-center">
-        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider mb-2">Sua Seleção</h2>
-        <div class="flex flex-col items-center gap-3">
-          <div class="avatar">
-            <div class="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 overflow-hidden bg-base-200">
-              <%= image_tag "selecoes/#{current_user.logo_selecao}", class: "w-full h-full object-cover", alt: current_user.selecao.nome if current_user.logo_selecao.present? %>
+  <!-- Jogos de Hoje -->
+  <section class="space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Jogos de hoje
+        </h2>
+        <p class="text-sm opacity-70 mt-1">Partidas em andamento e próximas para você acompanhar ou palpitar.</p>
+      </div>
+
+      <%= link_to "Ver todos os jogos", jogos_path(data: Time.zone.today), class: "btn btn-ghost bg-base-100 w-full sm:w-auto" %>
+    </div>
+
+    <% if @jogos_de_hoje.any? %>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <% @jogos_de_hoje.each do |jogo| %>
+          <% palpite = @palpites_por_jogo_id[jogo.id] %>
+          <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-4 overflow-hidden">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <div class="min-w-0">
+                <p class="text-[10px] uppercase font-black opacity-50">Hoje às <%= horario_jogo(jogo, "%H:%M") %></p>
+                <p class="text-xs opacity-60 truncate"><%= jogo.estadio.presence || "Estádio não definido" %></p>
+              </div>
+
+              <div class="badge <%= jogo.em_andamento? ? 'badge-success' : 'badge-info' %> badge-outline shrink-0 font-bold">
+                <%= jogo.em_andamento? ? "Em andamento" : "Programado" %>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3 rounded-box bg-base-200/50 p-3">
+              <div class="flex flex-col items-center text-center min-w-0">
+                <div class="avatar mb-2">
+                  <div class="mask mask-squircle h-10 w-10">
+                    <% if jogo.mandante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                    <% else %>
+                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
+                    <% end %>
+                  </div>
+                </div>
+                <span class="font-bold text-sm break-words max-w-full"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
+              </div>
+
+              <div class="flex flex-col items-center min-w-[92px]">
+                <% if jogo.em_andamento? %>
+                  <span class="text-[10px] uppercase font-black text-success mb-1">Placar</span>
+                  <span class="text-2xl font-black font-mono whitespace-nowrap">
+                    <%= jogo.gols_mandante.to_i %> - <%= jogo.gols_visitante.to_i %>
+                  </span>
+                <% else %>
+                  <span class="text-[10px] uppercase font-black opacity-50 mb-1">Início</span>
+                  <span class="text-xl font-black font-mono whitespace-nowrap"><%= horario_jogo(jogo, "%H:%M") %></span>
+                <% end %>
+
+                <% if palpite.present? %>
+                  <span class="mt-2 text-[10px] font-bold text-primary whitespace-nowrap">
+                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                  </span>
+                <% end %>
+              </div>
+
+              <div class="flex flex-col items-center text-center min-w-0">
+                <div class="avatar mb-2">
+                  <div class="mask mask-squircle h-10 w-10">
+                    <% if jogo.visitante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                    <% else %>
+                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
+                    <% end %>
+                  </div>
+                </div>
+                <span class="font-bold text-sm break-words max-w-full"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap justify-end gap-2 mt-4">
+              <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200" %>
+
+              <% if jogo.em_andamento? %>
+                <button class="btn btn-sm btn-success btn-outline cursor-not-allowed" disabled>Palpites encerrados</button>
+              <% elsif palpite.present? %>
+                <%= link_to "Editar palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white" %>
+              <% else %>
+                <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary" %>
+              <% end %>
             </div>
           </div>
-          <span class="text-xl font-bold">
-            <%= current_user.selecao.nome %>
-          </span>
-        </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-6 text-center">
+        <p class="font-bold">Nenhum jogo em andamento ou programado para hoje.</p>
+        <p class="text-sm opacity-70 mt-1">Quando houver partida no dia, ela aparece aqui primeiro.</p>
+      </div>
+    <% end %>
+  </section>
+
+  <!-- Cards de Resumo -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+    <!-- Card 1: Jogos de Hoje -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= jogos_path(data: Time.zone.today) %>'">
+      <div class="card-body items-center text-center justify-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Jogos de Hoje</h2>
+        <p class="text-6xl font-black text-secondary"><%= @jogos_de_hoje.size %></p>
       </div>
     </div>
 
@@ -143,18 +234,10 @@
         <p class="text-6xl font-black text-primary"><%= @ligas_ativas %></p>
       </div>
     </div>
-
-    <!-- Card 4: Jogos Hoje -->
-    <div class="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= jogos_path(data: Date.today) %>'">
-      <div class="card-body items-center text-center justify-center">
-        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Jogos Hoje</h2>
-        <p class="text-6xl font-black text-secondary"><%= @jogos_hoje %></p>
-      </div>
-    </div>
   </div>
 
   <!-- Conteúdo Principal em 3 Colunas -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
     
     <!-- Coluna 1: Próximos Jogos -->
     <div class="flex flex-col gap-4">
@@ -166,8 +249,8 @@
       <% if @proximos_jogos.any? %>
         <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full overflow-hidden">
           <% @proximos_jogos.each do |jogo| %>
-            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex justify-between items-center hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= jogo_path(jogo) %>'">
-              <div class="flex items-center gap-3 w-[40%]">
+            <li class="list-row p-3 sm:p-4 border-b last:border-b-0 border-base-200 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-3 items-center hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= jogo_path(jogo) %>'">
+              <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                 <div class="avatar shrink-0">
                   <div class="mask mask-squircle w-8 h-8">
                     <% if jogo.mandante&.logo.present? %>
@@ -177,16 +260,16 @@
                     <% end %>
                   </div>
                 </div>
-                <span class="font-bold text-sm truncate"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
+                <span class="font-bold text-sm min-w-0 break-words"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
               </div>
 
-              <div class="flex flex-col items-center justify-center w-[20%]">
-                <span class="text-[10px] font-bold opacity-60 uppercase mb-1"><%= jogo.data.strftime("%d/%m %H:%M") %></span>
+              <div class="flex flex-col items-center justify-center min-w-[64px]">
+                <span class="text-[10px] font-bold opacity-60 uppercase mb-1"><%= horario_jogo(jogo) %></span>
                 <span class="text-lg font-black font-mono opacity-20">VS</span>
               </div>
 
-              <div class="flex items-center gap-3 w-[40%] justify-end text-right">
-                <span class="font-bold text-sm truncate"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
+              <div class="flex items-center gap-2 sm:gap-3 justify-end text-right min-w-0">
+                <span class="font-bold text-sm min-w-0 break-words"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
                 <div class="avatar shrink-0">
                   <div class="mask mask-squircle w-8 h-8">
                     <% if jogo.visitante&.logo.present? %>
@@ -217,12 +300,12 @@
       <% if @ligas_publicas.any? %>
         <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full overflow-hidden">
           <% @ligas_publicas.each_with_index do |liga, index| %>
-            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between <%= 'bg-warning/5' if index == 0 %> hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= preview_liga_path(liga) %>'">
-              <div class="flex items-center gap-4">
+            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between gap-3 <%= 'bg-warning/5' if index == 0 %> hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= preview_liga_path(liga) %>'">
+              <div class="flex items-center gap-3 min-w-0">
                 <div class="w-8 text-center font-black text-xl <%= index == 0 ? 'text-warning' : 'opacity-40' %>">
                   <%= index + 1 %>º
                 </div>
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0">
                   <span class="font-bold text-sm truncate max-w-[150px]"><%= liga.nome %></span>
                   <span class="text-xs opacity-60"><%= liga.owner.name %></span>
                 </div>
@@ -257,47 +340,47 @@
       <% if current_user.plus? || current_user.premium? %>
         <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full overflow-hidden">
           <% @ranking_global.each_with_index do |user, index| %>
-            <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <div class="w-8 text-center font-black text-xl <%= index < 3 ? 'text-secondary' : 'opacity-40' %>">
+            <li class="list-row p-4 border-b last:border-b-0 border-base-200 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+              <div class="flex items-center gap-3 min-w-0 overflow-hidden">
+                <div class="w-8 shrink-0 text-center font-black text-xl <%= index < 3 ? 'text-secondary' : 'opacity-40' %>">
                   <%= index + 1 %>º
                 </div>
-                <div class="flex flex-col">
-                  <span class="font-bold text-sm truncate max-w-[150px]"><%= user.name %></span>
+                <div class="flex flex-col min-w-0 overflow-hidden">
+                  <span class="font-bold text-sm truncate"><%= user.name %></span>
                   <% if user.id == current_user.id %>
-                    <span class="badge badge-secondary badge-xs mt-1">Você</span>
+                    <span class="badge badge-secondary badge-xs mt-1 w-fit">Você</span>
                   <% end %>
                 </div>
               </div>
-              <div class="flex items-center gap-4 text-right">
-                <div class="flex flex-col items-end w-16">
+              <div class="flex items-center gap-2 sm:gap-4 text-right shrink-0">
+                <div class="flex flex-col items-end w-12 sm:w-16">
                   <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
                   <span class="font-bold text-md text-slate-300"><%= user.try(:total_palpites) || 0 %></span>
                 </div>
-                <div class="flex flex-col items-end w-20">
+                <div class="flex flex-col items-end w-14 sm:w-20">
                   <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter text-secondary">Pontuação</span>
-                  <span class="text-2xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %></span>
+                  <span class="text-xl sm:text-2xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %></span>
                 </div>
               </div>
             </li>
           <% end %>
 
-          <% if @user_global_rank > 5 %>
+          <% if @user_global_rank.is_a?(Integer) && @user_global_rank > 5 %>
             <li class="p-2 flex justify-center opacity-30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
             </li>
-            <li class="list-row p-4 bg-secondary/5 border-t border-secondary/20 flex items-center justify-between">
-              <div class="flex items-center gap-4">
-                <div class="w-8 text-center font-black text-xl text-secondary">
+            <li class="list-row p-4 bg-secondary/5 border-t border-secondary/20 grid grid-cols-[minmax(0,1fr)_auto] gap-3 items-center">
+              <div class="flex items-center gap-3 min-w-0 overflow-hidden">
+                <div class="w-8 shrink-0 text-center font-black text-xl text-secondary">
                   <%= @user_global_rank %>º
                 </div>
-                <div class="flex flex-col">
-                  <span class="font-bold text-sm truncate max-w-[150px]"><%= current_user.name %></span>
-                  <span class="badge badge-secondary badge-xs mt-1">Sua Posição</span>
+                <div class="flex flex-col min-w-0 overflow-hidden">
+                  <span class="font-bold text-sm truncate"><%= current_user.name %></span>
+                  <span class="badge badge-secondary badge-xs mt-1 w-fit">Sua Posição</span>
                 </div>
               </div>
-              <div class="flex flex-col items-end">
-                <span class="text-2xl font-black text-secondary"><%= current_user.total_pontos %></span>
+              <div class="flex flex-col items-end shrink-0 w-14 sm:w-20">
+                <span class="text-xl sm:text-2xl font-black text-secondary"><%= current_user.total_pontos %></span>
               </div>
             </li>
           <% end %>
@@ -325,13 +408,13 @@
 </div>
 
 <!-- Botão Flutuante de Doação (Aberto para todos os usuários) -->
-<div class="fixed bottom-6 right-6 z-50 dropdown dropdown-top dropdown-end">
+<div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 dropdown dropdown-top dropdown-end">
   <div tabindex="0" role="button" class="btn btn-primary btn-circle btn-lg shadow-2xl hover:scale-110 transition-transform animate-pulse hover:animate-none">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
     </svg>
   </div>
-  <div tabindex="0" class="dropdown-content w-64 bg-base-100 p-4 rounded-2xl shadow-2xl border border-primary/20 z-[1] mb-2 cursor-default">
+  <div tabindex="0" class="dropdown-content w-[calc(100vw-2rem)] sm:w-64 max-w-[16rem] bg-base-100 p-4 rounded-2xl shadow-2xl border border-primary/20 z-[1] mb-2 cursor-default">
     <div class="flex flex-col gap-2">
       <h3 class="font-bold text-primary flex items-center gap-2">
         Apoie o OrangScore ❤️

@@ -5,18 +5,18 @@ class JogosController < ApplicationController
   before_action :authorize_root!, except: %i[index show]
 
   def index
-    @tipo_ativo = params[:tipo].presence || 'grupo'
+    filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
+    @tipo_ativo = params[:tipo].presence
+    @tipo_ativo ||= 'grupo' unless filtro_por_data
     @grupos = Grupo.order(:nome)
 
-    @grupo_ativo = if params[:grupo].present?
-      params[:grupo]
-    else
-      @grupos.first&.uuid
+    @grupo_ativo = if @tipo_ativo == 'grupo'
+      params[:grupo].presence || @grupos.first&.uuid
     end
     
     @status_filtro = params[:status]
-    @data_inicio = params[:start_date]
-    @data_fim = params[:end_date]
+    @data_inicio = params[:start_date].presence || params[:data]
+    @data_fim = params[:end_date].presence || params[:data]
 
     @jogos = Jogos::List.new(params: {
       tipo: @tipo_ativo,

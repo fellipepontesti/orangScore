@@ -4,7 +4,9 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
-    @usuarios = Users::List.new(params).call.order(created_at: :desc).paginate(page: params[:page], per_page: 10)
+    @usuarios = Users::List.new(params).call.paginate(page: params[:page], per_page: 10)
+    @ordenacao_usuarios = Users::List::ORDER_OPTIONS
+    @direcoes_ordenacao = Users::List::DIRECTION_OPTIONS
     
     @total_usuarios = User.count
     @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count

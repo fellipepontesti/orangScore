@@ -1,25 +1,74 @@
-<% content_for :title, "Palpites" %>
+<% content_for :title, current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
 
-<div class="flex-1 flex flex-col w-full">
-  <div class="flex items-center justify-between p-8">
-    <h1 class="font-bold text-4xl">Palpites</h1>
+<div class="flex-1 flex flex-col w-full max-w-7xl mx-auto overflow-x-hidden">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-8">
+    <div>
+      <h1 class="font-bold text-3xl sm:text-4xl">
+        <%= current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
+      </h1>
+      <p class="opacity-70 mt-2">
+        <%= current_user.root? ? "Acompanhe os palpites de todos os usuários." : "Acompanhe todos os palpites que você já fez." %>
+      </p>
+    </div>
 
     <%= link_to "Criar palpite",
       jogos_path,
-      class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80 font-bold text-white" %>
+      class: "btn btn-primary w-full sm:w-auto" %>
   </div>
 
-  <div class="w-full px-4 pb-8">
+  <div class="w-full px-4 sm:px-8 pb-4">
+    <%= form_with url: palpites_path, method: :get, class: "rounded-box bg-base-100 border border-base-200 shadow-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-3", data: { turbo_frame: "_top" } do %>
+      <% if current_user.root? %>
+        <div class="form-control">
+          <label class="label py-1">
+            <span class="label-text font-bold">Usuário</span>
+          </label>
+          <%= select_tag :user_id,
+            options_from_collection_for_select(@usuarios_filter, :id, :name, params[:user_id]),
+            include_blank: "Todos os usuários",
+            class: "select select-bordered w-full" %>
+        </div>
+      <% end %>
+
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text font-bold">Status do jogo</span>
+        </label>
+        <%= select_tag :status,
+          options_for_select(Jogo.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
+          include_blank: "Todos os status",
+          class: "select select-bordered w-full" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text font-bold">Ordenação</span>
+        </label>
+        <%= select_tag :order,
+          options_for_select(@order_options.map { |value, label| [label, value] }, params[:order].presence || "recentes"),
+          class: "select select-bordered w-full" %>
+      </div>
+
+      <div class="flex flex-col sm:flex-row md:flex-col xl:flex-row gap-2 md:self-end">
+        <button type="submit" class="btn btn-primary flex-1">Filtrar</button>
+        <%= link_to "Limpar", palpites_path, class: "btn btn-ghost flex-1" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="w-full px-4 sm:px-8 pb-8">
     <% if @palpites.any? %>
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <% @palpites.each do |palpite| %>
-          <%= render "palpite_card", palpite: palpite %>
+          <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
         <% end %>
       </div>
     <% else %>
       <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
         <h2 class="text-2xl font-bold mb-2">Nenhum palpite encontrado</h2>
-        <p class="opacity-70 mb-6">Você ainda não fez nenhum palpite.</p>
+        <p class="opacity-70 mb-6">
+          <%= current_user.root? ? "Nenhum palpite combina com os filtros selecionados." : "Você ainda não fez nenhum palpite." %>
+        </p>
 
         <%= link_to "Ir para jogos",
           jogos_path,

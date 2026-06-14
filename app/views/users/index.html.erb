@@ -70,6 +70,29 @@
               class: "select select-bordered w-full" %>
           </div>
 
+          <!-- Ordenação -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Ordenar por</span>
+              </label>
+              <%= f.select :order,
+                options_for_select(@ordenacao_usuarios.map { |value, label| [label, value] }, params[:order].presence || "created_at"),
+                {},
+                class: "select select-bordered w-full" %>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Direção</span>
+              </label>
+              <%= f.select :direction,
+                options_for_select(@direcoes_ordenacao.map { |value, label| [label, value] }, params[:direction].presence || "desc"),
+                {},
+                class: "select select-bordered w-full" %>
+            </div>
+          </div>
+
         </div>
 
         <!-- 🔘 Ações -->
@@ -133,6 +156,13 @@
           </div>
 
           <div class="grid grid-cols-2 md:flex items-end gap-4 w-full md:w-auto mt-2 sm:mt-0">
+            <div class="flex flex-col items-start">
+              <span class="text-xs uppercase font-semibold opacity-60">Criado em</span>
+              <span class="font-bold text-sm text-base-content/80 whitespace-nowrap">
+                <%= usuario.created_at.in_time_zone("America/Sao_Paulo").strftime("%d/%m/%Y") %>
+              </span>
+            </div>
+
             <div class="flex flex-col items-start">
               <span class="text-xs uppercase font-semibold opacity-60">Logins</span>
               <span class="font-bold text-lg text-accent"><%= usuario.sign_in_count.to_i %></span>

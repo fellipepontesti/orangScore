@@ -22,7 +22,7 @@
         <% end %>
 
         <div class="text-center mb-8">
-          <div class="badge badge-primary badge-outline text-xs mb-4"><%= @jogo.data.strftime("%d/%m/%Y às %H:%M") %></div>
+          <div class="badge badge-primary badge-outline text-xs mb-4"><%= horario_jogo(@jogo, "%d/%m/%Y às %H:%M") %></div>
           <% if @jogo.estadio.present? %>
             <div class="text-xs opacity-50 mt-1"><%= @jogo.estadio %></div>
           <% end %>

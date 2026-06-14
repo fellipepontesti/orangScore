@@ -3,11 +3,21 @@ class PalpitesController < ApplicationController
 
   # GET /palpites or /palpites.json
   def index
-    @palpites = Palpite.all
+    @order_options = {
+      "recentes" => "Mais recentes",
+      "antigos" => "Mais antigos",
+      "jogo_data" => "Data do jogo",
+      "pontuacao" => "Maior pontuação"
+    }
+    @usuarios_filter = User.order(:name) if current_user.root?
+
+    @palpites = filtered_palpites.to_a
+    @points_by_palpite_id = points_by_palpite_id(@palpites)
   end
 
   # GET /palpites/1 or /palpites/1.json
   def show
+    @pontos = UserPoint.find_by(user_id: @palpite.user_id, jogo_id: @palpite.jogo_id)&.pontos
   end
 
   # GET /palpites/new
@@ -82,12 +92,61 @@ class PalpitesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_palpite
-      @palpite = current_user.palpites.find_by_uuid_param!(params[:id])
+      @palpite = if current_user.root?
+        Palpite.find_by_uuid_param!(params[:id])
+      else
+        current_user.palpites.find_by_uuid_param!(params[:id])
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def palpite_params
       params.require(:palpite).permit(:jogo_id, :gols_casa, :gols_fora)
+    end
+
+    def filtered_palpites
+      scope = current_user.root? ? Palpite.all : current_user.palpites
+      scope = scope.joins(:jogo)
+
+      if current_user.root? && params[:user_id].present?
+        scope = scope.where(user_id: params[:user_id])
+      end
+
+      if params[:status].present? && Jogo.statuses.key?(params[:status])
+        scope = scope.where(jogos: { status: params[:status] })
+      end
+
+      scope = scope.includes(:user, jogo: [:mandante, :visitante])
+      order_palpites(scope)
+    end
+
+    def order_palpites(scope)
+      case params[:order]
+      when "antigos"
+        scope.order("palpites.created_at ASC")
+      when "jogo_data"
+        scope.order("jogos.data ASC, palpites.created_at DESC")
+      when "pontuacao"
+        scope.joins(<<~SQL.squish)
+          LEFT JOIN user_points palpite_points
+            ON palpite_points.jogo_id = palpites.jogo_id
+           AND palpite_points.user_id = palpites.user_id
+        SQL
+        .order(Arel.sql("COALESCE(palpite_points.pontos, 0) DESC, palpites.created_at DESC"))
+      else
+        scope.order("palpites.created_at DESC")
+      end
+    end
+
+    def points_by_palpite_id(palpites)
+      ids = palpites.map(&:id)
+      return {} if ids.empty?
+
+      UserPoint
+        .joins("INNER JOIN palpites ON palpites.jogo_id = user_points.jogo_id AND palpites.user_id = user_points.user_id")
+        .where(palpites: { id: ids })
+        .pluck("palpites.id", "user_points.pontos")
+        .to_h
     end
 
     def handle_quick_mode_redirect(success_message)

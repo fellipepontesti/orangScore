@@ -30,14 +30,20 @@ module Jogos
       end
 
       if params[:start_date].present?
-        query = query.where('data >= ?', params[:start_date])
+        query = query.where('data >= ?', parsed_day(params[:start_date]).beginning_of_day)
       end
 
       if params[:end_date].present?
-        query = query.where('data <= ?', params[:end_date])
+        query = query.where('data <= ?', parsed_day(params[:end_date]).end_of_day)
       end
 
       query
+    end
+
+    def parsed_day(value)
+      Time.zone.parse(value.to_s)
+    rescue ArgumentError, TypeError
+      Time.zone.today
     end
   end
 end

@@ -22,6 +22,10 @@ module JogosHelper
         .count
   end
 
+  def horario_jogo(jogo, formato = "%d/%m %H:%M")
+    jogo.data&.in_time_zone("America/Sao_Paulo")&.strftime(formato)
+  end
+
   def fase_ativa?(tipo_ativo, fase_key)
     tipo_ativo.to_s == fase_key.to_s
   end
