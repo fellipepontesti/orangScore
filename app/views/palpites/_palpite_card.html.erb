@@ -126,11 +126,7 @@
       palpite_path(palpite),
       class: "btn btn-ghost bg-base-300" %>
 
-    <% if palpite.jogo.finalizado? || palpite.jogo.em_andamento? %>
-      <button class="btn bg-base-300 text-base-content/50 font-bold cursor-not-allowed" disabled>
-        Editar bloqueado
-      </button>
-    <% else %>
+    <% if palpite.jogo.programado? || palpite.jogo.times_a_definir? %>
       <%= link_to "Editar",
         edit_palpite_path(palpite),
         class: "btn btn-warning text-white" %>
