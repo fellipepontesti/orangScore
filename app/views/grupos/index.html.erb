@@ -36,7 +36,6 @@
   <div id="grupos" class="p-4 sm:p-8">
     <% if @grupos.any? %>
       <div class="max-w-5xl mx-auto space-y-6">
-        <!-- Navegação de Grupos -->
         <div class="flex flex-col items-center gap-4 bg-base-100 p-6 rounded-box shadow-lg border border-base-200">
           <div class="flex items-center justify-between w-full">
             <% if @grupos.current_page > 1 %>
@@ -60,7 +59,6 @@
             <% end %>
           </div>
 
-          <!-- Atalhos Rápidos (Letras) -->
           <div class="flex flex-wrap justify-center gap-2 mt-2">
             <%= will_paginate @grupos,
               renderer: GrupoPaginationRenderer,
@@ -74,7 +72,7 @@
           <div class="bg-base-100 shadow-xl rounded-box border border-base-200 overflow-hidden">
             <ul class="list w-full">
               <% grupo.selecoes.ordenadas.each_with_index do |selecao, index| %>
-                <li class="list-row flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-b last:border-b-0 border-base-200 hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= selecao_path(selecao) %>'">
+                <li class="list-row flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-b last:border-b-0 border-base-200 hover:bg-base-200/50 transition cursor-pointer group" onclick="window.location='<%= selecao_path(selecao) %>'">
                   
                   <div class="flex items-center gap-4 w-full sm:w-auto">
                     <div class="font-bold text-lg w-6 flex justify-center shrink-0">
@@ -89,12 +87,17 @@
                     </div>
                     
                     <div class="avatar">
-                      <div class="mask mask-squircle h-12 w-12 bg-base-200">
-                        <%= image_tag "selecoes/#{selecao.logo}" %>
+                      <% # AJUSTADO PARA GARANTIR PREENCHIMENTO E EFEITO DE HOVER IGUAL ÀS OUTRAS TELAS %>
+                      <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden transition duration-300 group-hover:scale-105">
+                        <% if selecao.logo.present? %>
+                          <%= image_tag "selecoes/#{selecao.logo}", class: "object-cover w-full h-full" %>
+                        <% else %>
+                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-sm font-bold">?</div>
+                        <% end %>
                       </div>
                     </div>
                     
-                    <div class="font-bold text-lg">
+                    <div class="font-bold text-lg group-hover:underline">
                       <%= selecao.nome %>
                     </div>
                   </div>

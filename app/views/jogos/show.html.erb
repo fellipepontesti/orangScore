@@ -1,17 +1,10 @@
 <% content_for :title, "Detalhes do Jogo" %>
 
 <div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
-  <!-- Top Navigation & Header -->
-  <div class="flex items-center justify-between border-b border-base-200 pb-4">
-    <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm gap-2" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-      </svg>
-      Painel
-    <% end %>
-
-    <div class="text-right">
-      <span class="badge badge-outline badge-sm uppercase tracking-wider font-semibold opacity-70">
+  <div class="items-center border-b border-base-200 pb-4">
+    <!-- Lado Central: Badge Perfeitamente Centralizada -->
+    <div class="flex justify-center text-center">
+      <span class="badge badge-outline badge-md uppercase tracking-wider font-semibold opacity-70 whitespace-nowrap">
         <%=
           case @jogo.tipo
           when "grupo"
@@ -22,11 +15,12 @@
         %>
       </span>
     </div>
+
+    <!-- Lado Direito: Vazio para equilibrar o Grid e manter o centro perfeito -->
+    <div></div>
   </div>
 
-  <!-- Scoreboard Box (Minimal & Clean) -->
   <div class="bg-base-100 rounded-3xl border border-base-200 p-6 sm:p-8 shadow-sm text-center space-y-6">
-    <!-- Match Info -->
     <div class="text-xs opacity-60 font-medium space-y-1">
       <p><%= @jogo.data.present? ? l(@jogo.data, format: :long) : "Data a definir" %></p>
       <p class="opacity-40"><%= @jogo.estadio.presence || "Estádio a definir" %></p>
@@ -34,18 +28,29 @@
 
     <div class="flex flex-row items-center justify-center gap-1 sm:gap-6 py-4 w-full min-w-0">
       
-      <div class="flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0">
-        <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-right">
-          <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
-        </span>
-        <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-          <% if @jogo.mandante&.logo.present? %>
-            <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover w-full h-full" %>
-          <% else %>
-            <span class="text-xs sm:text-xl font-bold">?</span>
-          <% end %>
+      <% if @jogo.mandante.present? %>
+        <%= link_to selecao_path(@jogo.mandante), class: "flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0 group" do %>
+          <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-right group-hover:underline">
+            <%= @jogo.mandante.nome %>
+          </span>
+          <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner transition duration-300 group-hover:scale-105">
+            <% if @jogo.mandante.logo.present? %>
+              <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+            <% else %>
+              <span class="text-xs sm:text-xl font-bold">?</span>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0 opacity-60">
+          <span class="font-extrabold text-sm sm:text-2xl text-base-content/70 leading-tight truncate text-right">
+            <%= @jogo.nome_provisorio_mandante.presence || "Mandante" %>
+          </span>
+          <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner text-xs sm:text-xl font-bold">
+            ?
+          </div>
         </div>
-      </div>
+      <% end %>
 
       <div class="flex items-center justify-center gap-1 sm:gap-3 shrink-0 px-1 select-none">
         <% if @jogo.programado? || @jogo.times_a_definir? %>
@@ -61,22 +66,32 @@
         <% end %>
       </div>
 
-      <div class="flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0">
-        <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-          <% if @jogo.visitante&.logo.present? %>
-            <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover w-full h-full" %>
-          <% else %>
-            <span class="text-xs sm:text-xl font-bold">?</span>
-          <% end %>
+      <% if @jogo.visitante.present? %>
+        <%= link_to selecao_path(@jogo.visitante), class: "flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0 group" do %>
+          <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner transition duration-300 group-hover:scale-105">
+            <% if @jogo.visitante.logo.present? %>
+              <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+            <% else %>
+              <span class="text-xs sm:text-xl font-bold">?</span>
+            <% end %>
+          </div>
+          <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-left group-hover:underline">
+            <%= @jogo.visitante.nome %>
+          </span>
+        <% end %>
+      <% else %>
+        <div class="flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0 opacity-60">
+          <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner text-xs sm:text-xl font-bold">
+            ?
+          </div>
+          <span class="font-extrabold text-sm sm:text-2xl text-base-content/70 leading-tight truncate text-left">
+            <%= @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+          </span>
         </div>
-        <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-left">
-          <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
-        </span>
-      </div>
+      <% end %>
 
     </div>
 
-    <!-- Status Badges -->
     <div class="flex justify-center">
       <% if @jogo.em_andamento? %>
         <span class="badge badge-success gap-1.5 font-bold animate-pulse">
@@ -95,10 +110,9 @@
     </div>
   </div>
 
-  <!-- Local Odds / Probabilities -->
   <% if @jogo.prob_mandante.present? && !current_user.esconder_odds %>
     <div class="bg-base-100 rounded-2xl border border-base-200 p-5 space-y-3">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Probabilidades do Sistema</h3>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Probabilidades do System</h3>
       <div class="flex items-center justify-between text-sm font-semibold">
         <span class="text-success"><%= @jogo.mandante&.nome || 'Casa' %>: <%= @jogo.prob_mandante %>%</span>
         <span class="text-base-content/70">Empate: <%= @jogo.prob_empate %>%</span>
@@ -112,7 +126,6 @@
     </div>
   <% end %>
 
-  <!-- User Palpite Section (Clickable / Responsive Card) -->
   <div class="bg-base-100 rounded-3xl border border-base-200 p-6 shadow-sm space-y-4">
     <div class="flex items-center justify-between border-b border-base-200 pb-3">
       <h3 class="font-extrabold text-lg flex items-center gap-2">
@@ -129,16 +142,25 @@
 
     <% if @palpite %>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
-        <!-- Palpite Score -->
         <div class="flex items-center gap-4 text-center">
-          <span class="text-sm font-semibold opacity-70"><%= @jogo.mandante&.nome || 'Casa' %></span>
+          <!-- Links nos nomes e imagens dentro da seção de palpites -->
+          <% if @jogo.mandante.present? %>
+            <%= link_to @jogo.mandante.nome, selecao_path(@jogo.mandante), class: "text-sm font-semibold opacity-70 hover:underline hover:text-primary" %>
+          <% else %>
+            <span class="text-sm font-semibold opacity-70">Casa</span>
+          <% end %>
+          
           <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_casa %></span>
           <span class="opacity-40">x</span>
           <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_fora %></span>
-          <span class="text-sm font-semibold opacity-70"><%= @jogo.visitante&.nome || 'Fora' %></span>
+          
+          <% if @jogo.visitante.present? %>
+            <%= link_to @jogo.visitante.nome, selecao_path(@jogo.visitante), class: "text-sm font-semibold opacity-70 hover:underline hover:text-primary" %>
+          <% else %>
+            <span class="text-sm font-semibold opacity-70">Fora</span>
+          <% end %>
         </div>
 
-        <!-- Palpite Result / Points Earned -->
         <div class="text-center sm:text-right">
           <% if @jogo.finalizado? %>
             <% if @user_point %>
@@ -174,7 +196,6 @@
     <% end %>
   </div>
 
-  <!-- Admin Action Controls (Roots only) -->
   <% if current_user.root? %>
     <div class="bg-base-200/50 rounded-2xl border border-base-200 p-4 space-y-3">
       <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Ferramentas de Administrador</h4>

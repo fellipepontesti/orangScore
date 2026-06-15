@@ -163,13 +163,19 @@
               <div class="flex justify-between items-center bg-base-200/50 rounded-box p-3 sm:p-4 mb-4">
                 <div class="flex flex-col items-center flex-1 w-1/3">
                   <div class="avatar mb-2">
-                    <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
-                      <% if jogo.mandante&.logo.present? %>
-                        <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
-                      <% else %>
-                        <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                    <% if jogo.mandante.present? %>
+                      <%= link_to selecao_path(jogo.mandante), onclick: "event.stopPropagation();" do %>
+                        <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-100 flex items-center justify-center overflow-hidden">
+                          <% if jogo.mandante.logo.present? %>
+                            <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                          <% else %>
+                            <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                          <% end %>
+                        </div>
                       <% end %>
-                    </div>
+                    <% else %>
+                      <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center text-lg font-bold">[?]</div>
+                    <% end %>
                   </div>
                   <div class="font-bold text-center text-xs sm:text-sm leading-tight">
                     <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante.presence || "[ A definir ]" %>
@@ -189,13 +195,19 @@
 
                 <div class="flex flex-col items-center flex-1 w-1/3">
                   <div class="avatar mb-2">
-                    <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12">
-                      <% if jogo.visitante&.logo.present? %>
-                        <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
-                      <% else %>
-                        <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                    <% if jogo.visitante.present? %>
+                      <%= link_to selecao_path(jogo.visitante), onclick: "event.stopPropagation();" do %>
+                        <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-100 flex items-center justify-center overflow-hidden">
+                          <% if jogo.visitante.logo.present? %>
+                            <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                          <% else %>
+                            <div class="w-full h-full flex items-center justify-center bg-base-300 text-lg font-bold">?</div>
+                          <% end %>
+                        </div>
                       <% end %>
-                    </div>
+                    <% else %>
+                      <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center text-lg font-bold">[?]</div>
+                    <% end %>
                   </div>
                   <div class="font-bold text-center text-xs sm:text-sm leading-tight">
                     <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante.presence || "[ A definir ]" %>

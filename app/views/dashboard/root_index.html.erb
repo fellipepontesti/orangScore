@@ -63,7 +63,10 @@
                     <div class="avatar mb-2">
                       <div class="mask mask-squircle h-12 w-12 sm:h-16 sm:w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
                         <% if jogo.mandante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                          <% # LOGO MANDANTE ALTERADO PARA LINK CLICÁVEL %>
+                          <%= link_to selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                            <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                          <% end %>
                         <% else %>
                           <div class="w-full h-full flex items-center justify-center bg-base-300 text-xl font-bold">?</div>
                         <% end %>
@@ -71,7 +74,12 @@
                     </div>
                     
                     <span class="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white leading-tight block w-full truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>">
-                      <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>
+                      <% # NOME MANDANTE ALTERADO PARA LINK CLICÁVEL %>
+                      <% if jogo.mandante.present? %>
+                        <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                      <% end %>
                     </span>
 
                     <% if jogo.grupo? && jogo.mandante %>
@@ -107,7 +115,10 @@
                     <div class="avatar mb-2">
                       <div class="mask mask-squircle h-12 w-12 sm:h-16 sm:w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
                         <% if jogo.visitante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                          <% # LOGO VISITANTE ALTERADO PARA LINK CLICÁVEL %>
+                          <%= link_to selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                            <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                          <% end %>
                         <% else %>
                           <div class="w-full h-full flex items-center justify-center bg-base-300 text-xl font-bold">?</div>
                         <% end %>
@@ -115,7 +126,12 @@
                     </div>
                     
                     <span class="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white leading-tight block w-full truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>">
-                      <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>
+                      <% # NOME VISITANTE ALTERADO PARA LINK CLICÁVEL %>
+                      <% if jogo.visitante.present? %>
+                        <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                      <% end %>
                     </span>
 
                     <% if jogo.grupo? && jogo.visitante %>
@@ -217,19 +233,47 @@
               </div>
 
               <div class="flex items-center gap-2">
+                
                 <div class="flex items-center gap-1.5 font-bold text-sm">
                   <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                    <%= image_tag "selecoes/#{jogo.mandante.logo}" if jogo.mandante&.logo.present? %>
+                    <% # LOGO MANDANTE ALTERADO PARA LINK CLICÁVEL %>
+                    <% if jogo.mandante&.logo.present? %>
+                      <%= link_to selecao_path(jogo.mandante), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    <% end %>
                   </div>
-                  <span><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %></span>
+                  <span>
+                    <% # NOME MANDANTE ALTERADO PARA LINK CLICÁVEL %>
+                    <% if jogo.mandante.present? %>
+                      <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), class: "hover:underline" %>
+                    <% else %>
+                      <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                    <% end %>
+                  </span>
                 </div>
+
                 <span class="opacity-30 text-xs font-black">x</span>
+                
                 <div class="flex items-center gap-1.5 font-bold text-sm">
                   <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                    <%= image_tag "selecoes/#{jogo.visitante.logo}" if jogo.visitante&.logo.present? %>
+                    <% # LOGO VISITANTE ALTERADO PARA LINK CLICÁVEL %>
+                    <% if jogo.visitante&.logo.present? %>
+                      <%= link_to selecao_path(jogo.visitante), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    <% end %>
                   </div>
-                  <span><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %></span>
+                  <span>
+                    <% # NOME VISITANTE ALTERADO PARA LINK CLICÁVEL %>
+                    <% if jogo.visitante.present? %>
+                      <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), class: "hover:underline" %>
+                    <% else %>
+                      <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                    <% end %>
+                  </span>
                 </div>
+
               </div>
             </div>
 

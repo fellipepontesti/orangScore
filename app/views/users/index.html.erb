@@ -37,7 +37,6 @@
 
         <div class="space-y-4">
 
-          <!-- 🔍 Nome -->
           <div class="form-control">
             <label class="label">
               <span class="label-text">Nome</span>
@@ -48,7 +47,6 @@
               placeholder: "Digite o nome" %>
           </div>
 
-          <!-- 📧 Email -->
           <div class="form-control">
             <label class="label">
               <span class="label-text">Email</span>
@@ -59,7 +57,6 @@
               placeholder: "Digite o email" %>
           </div>
 
-          <!-- 🌍 Seleção -->
           <div class="form-control">
             <label class="label">
               <span class="label-text">Seleção</span>
@@ -70,7 +67,6 @@
               class: "select select-bordered w-full" %>
           </div>
 
-          <!-- Ordenação -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="form-control">
               <label class="label">
@@ -95,7 +91,6 @@
 
         </div>
 
-        <!-- 🔘 Ações -->
         <div class="modal-action flex justify-between mt-6">
 
           <%= link_to "Limpar",
@@ -140,9 +135,17 @@
             </div>
 
             <div class="avatar shrink-0">
-              <div class="mask mask-squircle h-12 w-12">
-                <%= image_tag "selecoes/#{usuario.logo_selecao}" %>
-              </div>
+              <% if usuario.logo_selecao.present? && usuario.selecao.present? %>
+                <%= link_to selecao_path(usuario.selecao), onclick: "event.stopPropagation();", class: "group block" do %>
+                  <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden transition duration-200 group-hover:scale-110">
+                    <%= image_tag "selecoes/#{usuario.logo_selecao}", class: "object-cover w-full h-full" %>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center text-xs font-bold opacity-40">
+                  ?
+                </div>
+              <% end %>
             </div>
 
             <div class="flex flex-col flex-1 min-w-0">
@@ -190,11 +193,11 @@
 
             <div class="flex justify-end gap-2 shrink-0 col-span-2">
               <%= link_to edit_user_path(usuario),
-                class: "btn btn-sm btn-ghost hover:scale-110 transition",
+                class: "btn btn-sm btn-ghost hover:scale-110 transition flex items-center justify-center",
                 onclick: "event.stopPropagation()" do %>
                 <div class="avatar">
                   <div class="mask mask-squircle h-5 w-5 invert transition">
-                    <%= image_tag "icons/editar.png" %>
+                    <%= image_tag "icons/editar.png", class: "object-contain w-full h-full" %>
                   </div>
                 </div>
               <% end %>
@@ -206,11 +209,11 @@
                     turbo_confirm: "Remover usuário?"
                   }
                 },
-                class: "btn btn-sm btn-ghost bg-transparent hover:scale-110 transition",
+                class: "btn btn-sm btn-ghost bg-transparent hover:scale-110 transition flex items-center justify-center",
                 onclick: "event.stopPropagation()" do %>
                 <div class="avatar">
                   <div class="mask mask-squircle h-5 w-5 invert">
-                    <%= image_tag "icons/delete.png" %>
+                    <%= image_tag "icons/delete.png", class: "object-contain w-full h-full" %>
                   </div>
                 </div>
               <% end %>

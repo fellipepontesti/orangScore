@@ -26,23 +26,23 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <% grupo.selecoes.each do |selecao| %>
+          <% # CARD COMPLETO DA SELEÇÃO DIRECIONANDO PARA A TELA DE DETALHES %>
           <%= link_to selecao_path(selecao),
             class: "flex items-center gap-4 bg-base-200 rounded-box p-4 hover:bg-base-300 transition" do %>
 
             <% if selecao.logo.present? %>
-              <div class="mask mask-squircle h-12 w-12">
-                <%= image_tag "selecoes/#{selecao.logo}" %>
+              <div class="mask mask-squircle h-12 w-12 flex items-center justify-center overflow-hidden bg-base-100 shadow-xs">
+                <%= image_tag "selecoes/#{selecao.logo}", class: "object-cover w-full h-full" %>
               </div>
             <% end %>
 
-            <span class="font-medium"><%= selecao.nome %></span>
+            <span class="font-medium hover:underline"><%= selecao.nome %></span>
 
           <% end %>
         <% end %>
       </div>
     </div>
 
-    <!-- Ações -->
     <div class="flex justify-center gap-4 pt-6">
       <% if current_user.root? %>
         <%= link_to "Editar grupo",

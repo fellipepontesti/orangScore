@@ -29,19 +29,49 @@
                 <td class="font-bold">
                   <% if point.jogo %>
                     <div class="flex items-center gap-2">
-                      <div class="avatar shrink-0">
-                        <div class="mask mask-squircle w-6 h-6">
-                          <%= image_tag "selecoes/#{point.jogo.mandante.logo}" if point.jogo.mandante&.logo.present? %>
+                      
+                      <% if point.jogo.mandante.present? %>
+                        <%= link_to selecao_path(point.jogo.mandante), onclick: "event.stopPropagation();", class: "group flex items-center gap-1.5" do %>
+                          <div class="avatar shrink-0">
+                            <div class="mask mask-squircle w-6 h-6 bg-base-200 flex items-center justify-center overflow-hidden transition duration-200 group-hover:scale-110">
+                              <% if point.jogo.mandante.logo.present? %>
+                                <%= image_tag "selecoes/#{point.jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                              <% else %>
+                                <span class="text-[8px] font-bold opacity-40">?</span>
+                              <% end %>
+                            </div>
+                          </div>
+                          <span class="text-xs group-hover:underline"><%= point.jogo.mandante.nome %></span>
+                        <% end %>
+                      <% else %>
+                        <div class="flex items-center gap-1.5 opacity-60">
+                          <div class="mask mask-squircle w-6 h-6 bg-base-300 flex items-center justify-center text-[8px] font-bold">?</div>
+                          <span class="text-xs"><%= point.jogo.nome_provisorio_mandante.presence || "A definir" %></span>
                         </div>
-                      </div>
-                      <span class="text-xs"><%= point.jogo.mandante&.nome || point.jogo.nome_provisorio_mandante %></span>
-                      <span class="opacity-30">x</span>
-                      <span class="text-xs"><%= point.jogo.visitante&.nome || point.jogo.nome_provisorio_visitante %></span>
-                      <div class="avatar shrink-0">
-                        <div class="mask mask-squircle w-6 h-6">
-                          <%= image_tag "selecoes/#{point.jogo.visitante.logo}" if point.jogo.visitante&.logo.present? %>
+                      <% end %>
+
+                      <span class="opacity-30 mx-0.5">x</span>
+
+                      <% if point.jogo.visitante.present? %>
+                        <%= link_to selecao_path(point.jogo.visitante), onclick: "event.stopPropagation();", class: "group flex items-center gap-1.5" do %>
+                          <span class="text-xs group-hover:underline"><%= point.jogo.visitante.nome %></span>
+                          <div class="avatar shrink-0">
+                            <div class="mask mask-squircle w-6 h-6 bg-base-200 flex items-center justify-center overflow-hidden transition duration-200 group-hover:scale-110">
+                              <% if point.jogo.visitante.logo.present? %>
+                                <%= image_tag "selecoes/#{point.jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                              <% else %>
+                                <span class="text-[8px] font-bold opacity-40">?</span>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <div class="flex items-center gap-1.5 opacity-60">
+                          <span class="text-xs"><%= point.jogo.nome_provisorio_visitante.presence || "A definir" %></span>
+                          <div class="mask mask-squircle w-6 h-6 bg-base-300 flex items-center justify-center text-[8px] font-bold">?</div>
                         </div>
-                      </div>
+                      <% end %>
+
                     </div>
                   <% else %>
                     -

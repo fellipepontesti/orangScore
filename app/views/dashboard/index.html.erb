@@ -109,6 +109,7 @@
   </div>
 
   <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>
+  
   <!-- Jogos de Hoje -->
   <section class="space-y-4">
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -148,17 +149,27 @@
             </div>
 
             <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3 rounded-box bg-base-200/50 p-3">
+              
+              <!-- MANDANTE (JOGOS DE HOJE) -->
               <div class="flex flex-col items-center text-center min-w-0">
                 <div class="avatar mb-2">
-                  <div class="mask mask-squircle h-10 w-10">
+                  <div class="mask mask-squircle h-10 w-10 bg-base-200 flex items-center justify-center overflow-hidden">
                     <% if jogo.mandante&.logo.present? %>
-                      <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                      <%= link_to selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
                     <% else %>
                       <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
                     <% end %>
                   </div>
                 </div>
-                <span class="font-bold text-sm break-words max-w-full"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
+                <span class="font-bold text-sm break-words max-w-full">
+                  <% if jogo.mandante.present? %>
+                    <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                  <% else %>
+                    <%= jogo.nome_provisorio_mandante || "A definir" %>
+                  <% end %>
+                </span>
               </div>
 
               <div class="flex flex-col items-center min-w-[92px]">
@@ -179,17 +190,26 @@
                 <% end %>
               </div>
 
+              <!-- VISITANTE (JOGOS DE HOJE) -->
               <div class="flex flex-col items-center text-center min-w-0">
                 <div class="avatar mb-2">
-                  <div class="mask mask-squircle h-10 w-10">
+                  <div class="mask mask-squircle h-10 w-10 bg-base-200 flex items-center justify-center overflow-hidden">
                     <% if jogo.visitante&.logo.present? %>
-                      <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                      <%= link_to selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
                     <% else %>
                       <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
                     <% end %>
                   </div>
                 </div>
-                <span class="font-bold text-sm break-words max-w-full"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
+                <span class="font-bold text-sm break-words max-w-full">
+                  <% if jogo.visitante.present? %>
+                    <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                  <% else %>
+                    <%= jogo.nome_provisorio_visitante || "A definir" %>
+                  <% end %>
+                </span>
               </div>
             </div>
 
@@ -257,17 +277,27 @@
         <ul class="list bg-base-100 shadow-xl rounded-box border border-base-200 w-full overflow-hidden">
           <% @proximos_jogos.each do |jogo| %>
             <li class="list-row p-3 sm:p-4 border-b last:border-b-0 border-base-200 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 sm:gap-3 items-center hover:bg-base-200/50 transition cursor-pointer" onclick="window.location='<%= jogo_path(jogo) %>'">
+              
+              <!-- MANDANTE (PRÓXIMOS JOGOS) -->
               <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                 <div class="avatar shrink-0">
-                  <div class="mask mask-squircle w-8 h-8">
+                  <div class="mask mask-squircle w-8 h-8 bg-base-200 flex items-center justify-center overflow-hidden">
                     <% if jogo.mandante&.logo.present? %>
-                      <%= image_tag "selecoes/#{jogo.mandante.logo}" %>
+                      <%= link_to selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
                     <% else %>
                       <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
                     <% end %>
                   </div>
                 </div>
-                <span class="font-bold text-sm min-w-0 break-words"><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || "A definir" %></span>
+                <span class="font-bold text-sm min-w-0 break-words">
+                  <% if jogo.mandante.present? %>
+                    <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                  <% else %>
+                    <%= jogo.nome_provisorio_mandante || "A definir" %>
+                  <% end %>
+                </span>
               </div>
 
               <div class="flex flex-col items-center justify-center min-w-[64px]">
@@ -275,12 +305,22 @@
                 <span class="text-lg font-black font-mono opacity-20">VS</span>
               </div>
 
+              <!-- VISITANTE (PRÓXIMOS JOGOS) -->
               <div class="flex items-center gap-2 sm:gap-3 justify-end text-right min-w-0">
-                <span class="font-bold text-sm min-w-0 break-words"><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || "A definir" %></span>
+                <span class="font-bold text-sm min-w-0 break-words">
+                  <% if jogo.visitante.present? %>
+                    <%# CORRIGIDO: mudado @jogo.visitante para jogo.visitante %>
+                    <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                  <% else %>
+                    <%= jogo.nome_provisorio_visitante || "A definir" %>
+                  <% end %>
+                </span>
                 <div class="avatar shrink-0">
-                  <div class="mask mask-squircle w-8 h-8">
+                  <div class="mask mask-squircle w-8 h-8 bg-base-200 flex items-center justify-center overflow-hidden">
                     <% if jogo.visitante&.logo.present? %>
-                      <%= image_tag "selecoes/#{jogo.visitante.logo}" %>
+                      <%= link_to selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
                     <% else %>
                       <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
                     <% end %>
@@ -297,7 +337,7 @@
       <% end %>
     </div>
 
-    <!-- Coluna 2: Ranking da Liga Principal -->
+    <!-- Coluna 2: Ligas Públicas -->
     <div class="flex flex-col gap-4">
       <h2 class="text-2xl font-bold flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -414,7 +454,7 @@
   </div>
 </div>
 
-<!-- Botão Flutuante de Doação (Aberto para todos os usuários) -->
+<!-- Botão Flutuante de Doação -->
 <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 dropdown dropdown-top dropdown-end">
   <div tabindex="0" role="button" class="btn btn-primary btn-circle btn-lg shadow-2xl hover:scale-110 transition-transform animate-pulse hover:animate-none">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -493,14 +533,8 @@
     const cpfInput = document.getElementById('input_modal_cpf');
     const amountInput = document.getElementById('donation-amount');
     
-    // Captura o botão que foi clicado
     const btnModal = event ? event.target : document.querySelector('#modal_doacao_cpf .btn-primary');
-
     const cpfValue = cpfInput.value.replace(/\D/g, '');
-    
-    // --- CORREÇÃO PARA O SEU CONTROLLER ---
-    // Se o controller faz .gsub(".", "").gsub(",", "."), ele quer o formato "0,50" ou "5,00"
-    // Mantemos a vírgula para que o seu controller a transforme em ponto ANTES da multiplicação.
     const amountValue = amountInput.value; 
 
     if (cpfValue.length !== 11) {
@@ -515,7 +549,7 @@
     formData.append('plano', 'doacao');
     formData.append('payment_method', 'pix');
     formData.append('cpf', cpfValue);
-    formData.append('valor', amountValue); // Envia "0,50"
+    formData.append('valor', amountValue);
     formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
 
     fetch('<%= checkout_mercado_pago_pix_direto_path %>', {
@@ -554,7 +588,6 @@
     if (amountInput) {
       amountInput.addEventListener('input', (e) => {
         let value = e.target.value.replace(/\D/g, '');
-        // Garante que o valor seja formatado como moeda BR enquanto digita
         value = (value / 100).toFixed(2) + '';
         value = value.replace(".", ",");
         value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");

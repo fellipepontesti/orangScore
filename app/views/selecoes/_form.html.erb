@@ -33,10 +33,12 @@
 
         <div class="grid grid-cols-4 sm:grid-cols-12 gap-4">
           <% @logos.each do |logo| %>
-            <label class="cursor-pointer flex flex-col items-center gap-2">
+            <label class="cursor-pointer flex flex-col items-center gap-2 group">
               <%= form.radio_button :logo, logo, class: "hidden peer" %>
-              <div class="p-2 rounded-lg border transition peer-checked:border-primary peer-checked:bg-primary">
-                <%= image_tag "selecoes/#{logo}", class: "w-12 h-12 object-contain" %>
+              <div class="avatar">
+                <div class="mask mask-squircle h-12 w-12 bg-base-300 border border-transparent transition duration-200 group-hover:scale-105 flex items-center justify-center overflow-hidden peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary">
+                  <%= image_tag "selecoes/#{logo}", class: "object-cover w-full h-full" %>
+                </div>
               </div>
             </label>
           <% end %>

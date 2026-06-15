@@ -1,34 +1,160 @@
 <div class="min-h-screen flex items-center justify-center bg-base-300 px-4">
-  <div class="card w-full max-w-md bg-base-100 shadow-xl p-16">
-    <div class="card-body">
-      <h1 class="text-2xl font-bold text-center mb-6">
-        Redefinir senha
-      </h1>
+  <div class="w-full max-w-md bg-base-100 shadow-xl rounded-2xl p-12">
+    <h1 class="text-2xl font-bold text-center text-primary mb-6">
+      Redefinir senha
+    </h1>
 
-      <%= form_with model: @user,
-        url: edit_password_path(params[:token]),
-        method: :patch,
-        class: "space-y-4" do |f| %>
+    <%= form_with model: @user,
+      url: edit_password_path(params[:token]),
+      method: :patch,
+      html: {
+        class: "space-y-5",
+        id: "reset-password-form"
+      } do |f| %>
 
-        <div class="form-control">
-          <%= f.label :password, 'Nova senha', class: "label pb-2" %>
+      <div class="form-control w-full">
+        <%= f.label :password, class: "label" do %>
+          <span class="label-text font-medium pb-4">Nova senha</span>
+        <% end %>
+
+        <div class="relative">
           <%= f.password_field :password,
+            id: "password",
+            placeholder: "Digite sua nova senha",
+            class: "input input-ghost bg-base-300 w-full pr-10",
             required: true,
-            class: "input input-bordered input-ghost bg-base-200 w-full" %>
+            autocomplete: "new-password" %>
+          <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePasswordVisibility('password')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 opacity-50 hover:opacity-100" id="eye-icon-password">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.31 5 12 5s8.601 3.049 9.964 6.678c.07.232.07.467 0 .701C20.601 15.951 16.69 19 12 19s-8.601-3.049-9.964-6.678z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
         </div>
 
-        <div class="form-control">
-          <%= f.label :password_confirmation, 'Confirmar senha', class: "label pb-2" %>
+        <div class="text-xs mt-3">
+          <p class="opacity-70 mb-1">A senha deve conter:</p>
+          <ul class="space-y-1">
+            <li id="req-min" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Pelo menos 8 caracteres</li>
+            <li id="req-upper" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Uma letra maiúscula</li>
+            <li id="req-lower" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Uma letra minúscula</li>
+            <li id="req-num" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Um número</li>
+            <li id="req-sym" class="flex items-center gap-2 text-error transition-colors"><span class="badge badge-xs"></span> Um símbolo</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-control w-full">
+        <%= f.label :password_confirmation, class: "label" do %>
+          <span class="label-text font-medium pb-4">Confirmar nova senha</span>
+        <% end %>
+
+        <div class="relative">
           <%= f.password_field :password_confirmation,
+            id: "password_confirmation",
+            placeholder: "Confirme sua nova senha",
+            class: "input bg-base-300 input-ghost w-full pr-10",
             required: true,
-            class: "input input-bordered input-ghost bg-base-200 w-full" %>
+            autocomplete: "new-password" %>
+          <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" onclick="togglePasswordVisibility('password_confirmation')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 opacity-50 hover:opacity-100" id="eye-icon-password_confirmation">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.31 5 12 5s8.601 3.049 9.964 6.678c.07.232.07.467 0 .701C20.601 15.951 16.69 19 12 19s-8.601-3.049-9.964-6.678z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
         </div>
+      </div>
 
-        <div class="form-control mt-6">
-          <%= f.submit 'Redefinir senha',
-            class: "btn btn-primary w-full" %>
-        </div>
-      <% end %>
-    </div>
+      <div class="form-control mt-6">
+        <%= f.submit 'Redefinir senha',
+          id: "submit-button",
+          class: "btn btn-primary w-full" %>
+      </div>
+    <% end %>
   </div>
 </div>
+
+<script>
+  function togglePasswordVisibility(id) {
+    const input = document.getElementById(id);
+    const icon = document.getElementById(`eye-icon-${id}`);
+    if (!input || !icon) return;
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.add('text-primary');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('text-primary');
+    }
+  }
+
+  function validatePasswordRequirements() {
+    const passwordInput = document.getElementById('password');
+    if (!passwordInput) return;
+
+    const val = passwordInput.value;
+    
+    const rules = {
+      'req-min': val.length >= 8,
+      'req-upper': /[A-Z]/.test(val),
+      'req-lower': /[a-z]/.test(val),
+      'req-num': /[0-9]/.test(val),
+      'req-sym': /[^A-Za-z0-9]/.test(val)
+    };
+
+    Object.keys(rules).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (rules[id]) {
+          el.classList.replace('text-error', 'text-success');
+          el.classList.add('font-bold');
+        } else {
+          el.classList.replace('text-success', 'text-error');
+          el.classList.remove('font-bold');
+        }
+      }
+    });
+
+    return Object.values(rules).every(Boolean);
+  }
+
+  function initializeResetPasswordForm() {
+    const form = document.getElementById('reset-password-form');
+    if (!form) return;
+
+    const passwordInput = document.getElementById('password');
+    const confirmationInput = document.getElementById('password_confirmation');
+
+    if (passwordInput) {
+      passwordInput.addEventListener('input', validatePasswordRequirements);
+    }
+
+    form.addEventListener('submit', function(e) {
+      if (!passwordInput || !confirmationInput) return;
+
+      passwordInput.setCustomValidity('');
+      confirmationInput.setCustomValidity('');
+
+      const passesRequirements = validatePasswordRequirements();
+
+      if (!passesRequirements) {
+        e.preventDefault();
+        passwordInput.setCustomValidity('A senha não atende aos requisitos');
+        passwordInput.reportValidity();
+        return;
+      }
+
+      if (passwordInput.value !== confirmationInput.value) {
+        e.preventDefault();
+        confirmationInput.setCustomValidity('As senhas não coincidem');
+        confirmationInput.reportValidity();
+        return;
+      }
+    });
+  }
+
+  // Compatibilidade com Turbo e carregamento tradicional
+  document.addEventListener('turbo:load', initializeResetPasswordForm);
+  document.addEventListener('DOMContentLoaded', initializeResetPasswordForm);
+</script>
