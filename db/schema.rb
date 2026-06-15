@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_12_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_15_014852) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -120,6 +120,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_12_120000) do
     t.integer "liga_id"
     t.boolean "answered"
     t.uuid "uuid", null: false
+    t.string "link"
   end
 
   create_table "pagamentos", force: :cascade do |t|

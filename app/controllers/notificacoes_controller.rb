@@ -107,6 +107,6 @@ class NotificacoesController < ApplicationController
     end
 
     def notificacao_params
-      params.require(:notificacao).permit(:texto)
+      params.require(:notificacao).permit(:texto, :titulo, :conteudo, :link)
     end
 end

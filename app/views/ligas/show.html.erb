@@ -316,7 +316,7 @@
   <div class="mt-12 flex flex-wrap justify-center gap-4">
     <% if (@meu_vinculo&.role == "owner" && (@liga.owner.premium? || @liga.owner.plus?)) || @meu_vinculo&.role == "admin" %>
       <% invite_url = liga_convite_url(@liga.invite_token, ref: current_user.id) %>
-      <% invite_text = "" %>
+      <% invite_text = "Participe da minha liga #{@liga.nome}! #{invite_url}" %>
       <% can_share_social = current_user.assinatura&.plus? || current_user.assinatura&.premium? %>
 
       <% if can_share_social %>
