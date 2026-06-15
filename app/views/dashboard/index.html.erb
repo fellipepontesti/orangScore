@@ -132,7 +132,13 @@
           <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-4 overflow-hidden">
             <div class="flex items-center justify-between gap-3 mb-4">
               <div class="min-w-0">
-                <p class="text-[10px] uppercase font-black opacity-50">Hoje às <%= horario_jogo(jogo, "%H:%M") %></p>
+                <p class="text-[10px] uppercase font-black opacity-50">
+                  <% if jogo.data.to_date == Time.zone.today %>
+                    Hoje às <%= horario_jogo(jogo, "%H:%M") %>
+                  <% else %>
+                    Início: <%= horario_jogo(jogo, "%d/%m %H:%M") %>
+                  <% end %>
+                </p>
                 <p class="text-xs opacity-60 truncate"><%= jogo.estadio.presence || "Estádio não definido" %></p>
               </div>
 

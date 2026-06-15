@@ -28,7 +28,11 @@ class DashboardController < ApplicationController
     periodo_hoje = hoje.beginning_of_day..hoje.end_of_day
     @jogos_de_hoje = Jogo
       .includes(:mandante, :visitante, :palpites)
-      .where(status: [:em_andamento, :programado], definir: false, data: periodo_hoje)
+      .where(status: :em_andamento)
+      .or(
+        Jogo.includes(:mandante, :visitante, :palpites)
+            .where(status: :programado, definir: false, data: periodo_hoje)
+      )
       .order(Arel.sql("CASE jogos.status WHEN #{Jogo.statuses[:em_andamento]} THEN 0 ELSE 1 END"), :data)
     @palpites_por_jogo_id = current_user.palpites.where(jogo_id: @jogos_de_hoje.map(&:id)).index_by(&:jogo_id)
     @proximos_jogos = Jogo.where("data >= ?", Time.current).order(data: :asc).limit(5)
