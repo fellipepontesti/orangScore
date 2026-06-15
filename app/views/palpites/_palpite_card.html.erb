@@ -131,11 +131,5 @@
         edit_palpite_path(palpite),
         class: "btn btn-warning text-white" %>
     <% end %>
-
-    <%= button_to "Excluir",
-      palpite_path(palpite),
-      method: :delete,
-      class: "btn btn-error text-white cursor-pointer",
-      data: { turbo_confirm: "Tem certeza que deseja excluir este palpite?" } %>
   </div>
 </div>
