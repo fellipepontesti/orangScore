@@ -32,50 +32,48 @@
       <p class="opacity-40"><%= @jogo.estadio.presence || "Estádio a definir" %></p>
     </div>
 
-    <!-- The Scoreboard -->
-    <div class="flex items-center justify-center gap-6 sm:gap-10 py-4">
-      <!-- Mandante -->
-      <div class="flex flex-col items-center flex-1 text-right sm:flex-row sm:justify-end gap-3">
-        <span class="font-extrabold text-lg sm:text-2xl text-base-content leading-tight">
+    <div class="flex flex-row items-center justify-center gap-1 sm:gap-6 py-4 w-full min-w-0">
+      
+      <div class="flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0">
+        <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-right">
           <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante.presence || "Mandante" %>
         </span>
-        <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden shadow-inner">
+        <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
           <% if @jogo.mandante&.logo.present? %>
-            <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover" %>
+            <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover w-full h-full" %>
           <% else %>
-            <span class="text-xl font-bold">?</span>
+            <span class="text-xs sm:text-xl font-bold">?</span>
           <% end %>
         </div>
       </div>
 
-      <!-- Placar / VS -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center justify-center gap-1 sm:gap-3 shrink-0 px-1 select-none">
         <% if @jogo.programado? || @jogo.times_a_definir? %>
-          <span class="text-2xl font-black opacity-30 px-4">VS</span>
+          <span class="text-sm sm:text-2xl font-black opacity-30 px-3 py-1 bg-base-200 rounded-xl">VS</span>
         <% else %>
-          <span class="text-4xl font-black px-4 bg-base-200 rounded-2xl py-2 shadow-inner min-w-[3.5rem]">
+          <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
             <%= @jogo.gols_mandante %>
           </span>
-          <span class="text-xl opacity-40 font-bold">:</span>
-          <span class="text-4xl font-black px-4 bg-base-200 rounded-2xl py-2 shadow-inner min-w-[3.5rem]">
+          <span class="text-sm sm:text-xl opacity-40 font-bold">:</span>
+          <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
             <%= @jogo.gols_visitante %>
           </span>
         <% end %>
       </div>
 
-      <!-- Visitante -->
-      <div class="flex flex-col items-center flex-1 text-left sm:flex-row-reverse sm:justify-end gap-3">
-        <span class="font-extrabold text-lg sm:text-2xl text-base-content leading-tight">
-          <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
-        </span>
-        <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden shadow-inner">
+      <div class="flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0">
+        <div class="mask mask-squircle h-8 w-8 sm:h-12 sm:w-12 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
           <% if @jogo.visitante&.logo.present? %>
-            <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover" %>
+            <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover w-full h-full" %>
           <% else %>
-            <span class="text-xl font-bold">?</span>
+            <span class="text-xs sm:text-xl font-bold">?</span>
           <% end %>
         </div>
+        <span class="font-extrabold text-sm sm:text-2xl text-base-content leading-tight truncate text-left">
+          <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+        </span>
       </div>
+
     </div>
 
     <!-- Status Badges -->
