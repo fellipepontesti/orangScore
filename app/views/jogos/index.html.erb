@@ -10,7 +10,6 @@
 
   <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>
 
-  <!-- Navegação de Fases -->
   <div class="mb-4">
     <p class="text-xs font-black uppercase tracking-widest text-base-content/40 text-center mb-3">Fase do Campeonato</p>
     <div class="bg-base-200/60 rounded-2xl p-3 border border-base-300/40 shadow-inner">
@@ -106,7 +105,38 @@
                 </div>
 
                 <div class="uppercase text-[10px] sm:text-xs font-bold">
-                  <div class="flex items-center gap-2 justify-end">
+                  <div class="flex items-center gap-2 justify-end flex-wrap">
+                    
+                    <% if jogo.finalizado? %>
+                      <%# Busca os pontos que o current_user ganhou especificamente NESTE jogo %>
+                      <% pontos_do_usuario = jogo.user_points.find { |up| up.user_id == current_user.id } %>
+                      
+                      <% if pontos_do_usuario.present? %>
+                        <% case pontos_do_usuario.pontos %>
+                        <% when 10 %>
+                          <span class="px-2.5 py-1 text-[10px] font-black rounded-full bg-success tracking-wide" title="Placar Exato">
+                            +10 PTS
+                          </span>
+                        <% when 7 %>
+                          <span class="px-2.5 py-1 text-[10px] font-black rounded-full bg-success tracking-wide" title="Acertou Resultado">
+                            +7 PTS
+                          </span>
+                        <% when 5 %>
+                          <span class="px-2.5 py-1 text-[10px] font-black rounded-full bg-success tracking-wide" title="Acertou Vencedor">
+                            +5 PTS
+                          </span>
+                        <% when 2 %>
+                          <span class="px-2.5 py-1 text-[10px] font-black rounded-full bg-success tracking-wide" title="Participação">
+                            +2 PTS
+                          </span>
+                        <% else %>
+                          <span class="px-2.5 py-1 text-[10px] font-black rounded-full bg-base-200 text-neutral-content/40 border border-base-300 tracking-wide">
+                            0 PTS
+                          </span>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+
                     <div class="inline-grid *:[grid-area:1/1]">
                       <% if jogo.programado? %>
                         <div class="status status-info animate-ping"></div>
@@ -122,6 +152,7 @@
                         <div class="status status-primary"></div>
                       <% end %>
                     </div>
+                    
                     <span>
                       <%= jogo.status.humanize %>
                     </span>
