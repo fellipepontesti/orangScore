@@ -1,5 +1,7 @@
 module Jogos
   class StatusNotifier
+    include Rails.application.routes.url_helpers
+    
     def initialize(jogo:)
       @jogo = jogo
     end
@@ -12,7 +14,8 @@ module Jogos
           user: user,
           tipo: :system,
           status: :unread,
-          texto: notification_text
+          texto: notification_text,
+          link: game_link
         )
       end
     end
@@ -42,6 +45,13 @@ module Jogos
       else
         "O status do jogo #{game_title} mudou para #{jogo.status.humanize}."
       end
+    end
+
+    def game_link
+      jogo_path(jogo) 
+    rescue => e
+      Rails.logger.error("Falha ao gerar link na notificação: #{e.message}")
+      nil
     end
 
     def game_title

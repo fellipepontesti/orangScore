@@ -30,7 +30,8 @@ class NotificacoesController < ApplicationController
       if @notificacao.valid?
         created_count = Notificacoes::Broadcast.new(
           texto: @notificacao.texto,
-          sender: current_user
+          sender: current_user,
+          link: @notificacao.link,
         ).call
 
         format.html { redirect_to notificacoes_path, notice: "#{created_count} notificações enviadas com sucesso." }

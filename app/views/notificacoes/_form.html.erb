@@ -25,6 +25,16 @@
     </div>
   </div>
 
+  <div class="form-control mt-4">
+    <%= form.label :link, "Link de Redirecionamento (Opcional)", class: "label font-semibold" %>
+    <%= form.text_field :link,
+      placeholder: "Ex: /jogos/seu-uuid ou https://orangscore.com/ligas/1",
+      class: "input input-bordered w-full text-base #{'input-error' if notificacao.errors[:link].any?}" %>
+    <div class="label">
+      <span class="label-text-alt opacity-70">Se preenchido, um botão "Acessar Link" aparecerá dentro do aviso para o usuário.</span>
+    </div>
+  </div>
+
   <div class="mt-6 flex flex-col sm:flex-row gap-3">
     <%= form.submit "Enviar para todos",
       class: "btn btn-primary" %>

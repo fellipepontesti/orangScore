@@ -2,9 +2,10 @@ module Notificacoes
   class Broadcast
     attr_reader :texto, :sender
 
-    def initialize(texto:, sender:)
+    def initialize(texto:, sender:, link:)
       @texto = texto.to_s.strip
       @sender = sender
+      @link = link
     end
 
     def call
@@ -19,7 +20,8 @@ module Notificacoes
             sender: sender,
             texto: texto,
             tipo: :system,
-            status: :unread
+            status: :unread,
+            link: @link
           )
 
           created_count += 1
