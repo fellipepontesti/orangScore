@@ -6,8 +6,15 @@ class PalpitesController < ApplicationController
     @order_options = {
       "recentes" => "Mais recentes",
       "antigos" => "Mais antigos",
-      "jogo_data" => "Data do jogo",
       "pontuacao" => "Maior pontuação"
+    }
+    @points_options = {
+      "" => "Todas as pontuações",
+      "sem_pontos" => "Sem pontuação",
+      "10" => "10 pontos - Placar Exato",
+      "7" => "7 pontos - Vencedor/Empate + Gols de um time",
+      "5" => "5 pontos - Apenas Vencedor/Empate",
+      "2" => "2 pontos - Participação"
     }
     @usuarios_filter = User.order(:name) if current_user.root?
 
@@ -17,7 +24,9 @@ class PalpitesController < ApplicationController
 
   # GET /palpites/1 or /palpites/1.json
   def show
-    @pontos = UserPoint.find_by(user_id: @palpite.user_id, jogo_id: @palpite.jogo_id)&.pontos
+    @pontos = UserPoint.where(user_id: @palpite.user_id, jogo_id: @palpite.jogo_id)
+                       .where.not(motivo: "Campeão do Torneio")
+                       .first&.pontos
   end
 
   # GET /palpites/new
@@ -108,6 +117,12 @@ class PalpitesController < ApplicationController
       scope = current_user.root? ? Palpite.all : current_user.palpites
       scope = scope.joins(:jogo)
 
+      scope = scope.joins(<<~SQL.squish)
+        LEFT JOIN user_points ON user_points.jogo_id = palpites.jogo_id 
+                             AND user_points.user_id = palpites.user_id 
+                             AND user_points.motivo != 'Campeão do Torneio'
+      SQL
+
       if current_user.root? && params[:user_id].present?
         scope = scope.where(user_id: params[:user_id])
       end
@@ -116,23 +131,26 @@ class PalpitesController < ApplicationController
         scope = scope.where(jogos: { status: params[:status] })
       end
 
+      if params[:pontos].present?
+        if params[:pontos] == "sem_pontos"
+          scope = scope.where(user_points: { pontos: nil })
+        else
+          scope = scope.where(user_points: { pontos: params[:pontos].to_i })
+        end
+      end
+
       scope = scope.includes(:user, jogo: [:mandante, :visitante])
       order_palpites(scope)
     end
 
     def order_palpites(scope)
       case params[:order]
+      when "recentes"
+        scope.order("jogos.data DESC, palpites.created_at DESC")
       when "antigos"
-        scope.order("palpites.created_at ASC")
-      when "jogo_data"
-        scope.order("jogos.data ASC, palpites.created_at DESC")
+        scope.order("jogos.data ASC, palpites.created_at ASC")
       when "pontuacao"
-        scope.joins(<<~SQL.squish)
-          LEFT JOIN user_points palpite_points
-            ON palpite_points.jogo_id = palpites.jogo_id
-           AND palpite_points.user_id = palpites.user_id
-        SQL
-        .order(Arel.sql("COALESCE(palpite_points.pontos, 0) DESC, jogos.data ASC"))
+        scope.order(Arel.sql("COALESCE(user_points.pontos, 0) DESC, jogos.data ASC"))
       else
         # 1. Jogos em andamento são prioridade máxima
         # 2. Próximos jogos/Programados vêm em segundo (Peso 2)
@@ -157,6 +175,7 @@ class PalpitesController < ApplicationController
       UserPoint
         .joins("INNER JOIN palpites ON palpites.jogo_id = user_points.jogo_id AND palpites.user_id = user_points.user_id")
         .where(palpites: { id: ids })
+        .where.not(user_points: { motivo: "Campeão do Torneio" })
         .pluck("palpites.id", "user_points.pontos")
         .to_h
     end

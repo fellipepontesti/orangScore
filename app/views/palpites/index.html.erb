@@ -17,7 +17,8 @@
   </div>
 
   <div class="w-full px-4 sm:px-8 pb-4">
-    <%= form_with url: palpites_path, method: :get, class: "rounded-box bg-base-100 border border-base-200 shadow-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-3", data: { turbo_frame: "_top" } do %>
+    <% grid_cols = current_user.root? ? "md:grid-cols-5" : "md:grid-cols-4" %>
+    <%= form_with url: palpites_path, method: :get, class: "rounded-box bg-base-100 border border-base-200 shadow-lg p-4 grid grid-cols-1 #{grid_cols} gap-3", data: { turbo_frame: "_top" } do %>
       <% if current_user.root? %>
         <div class="form-control">
           <label class="label py-1">
@@ -37,6 +38,15 @@
         <%= select_tag :status,
           options_for_select(Jogo.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
           include_blank: "Todos os status",
+          class: "select select-bordered w-full" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label py-1">
+          <span class="label-text font-bold">Pontuação</span>
+        </label>
+        <%= select_tag :pontos,
+          options_for_select(@points_options.map { |value, label| [label, value] }, params[:pontos]),
           class: "select select-bordered w-full" %>
       </div>
 
