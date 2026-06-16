@@ -2,7 +2,8 @@ class JogosController < ApplicationController
   before_action :authenticate_user!
   before_action :set_jogo, only: %i[ show edit update destroy start finalize finish ]
   before_action :load_selecoes, only: %i[new create edit update finalize]
-  before_action :authorize_root!, except: %i[index show]
+  before_action :authorize_root_or_semi_root!, only: %i[start update finish]
+  before_action :authorize_root!, except: %i[index show start update finish]
 
   def index
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?

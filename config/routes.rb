@@ -8,6 +8,12 @@ Rails.application.routes.draw do
     root to: "dashboard#index", as: :authenticated_root
   end
 
+  get "/dashboard/convites", to: "dashboard#convites_pendentes", as: :dashboard_convites_pendentes
+  patch "/dashboard/convites/:liga_membro_id/aceitar", to: "dashboard#aceitar_convite", as: :dashboard_aceitar_convite
+  delete "/dashboard/convites/:liga_membro_id/negar", to: "dashboard#negar_convite", as: :dashboard_negar_convite
+  get "/dashboard/usuarios/novo", to: "dashboard#new_user", as: :dashboard_new_user
+  post "/dashboard/usuarios", to: "dashboard#create_user", as: :dashboard_create_user
+
   unauthenticated do
     devise_scope :user do
       root to: "devise/sessions#new"
@@ -38,6 +44,7 @@ Rails.application.routes.draw do
   get "/perfil", to: "users#perfil", as: :perfil
   get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
   patch "/perfil", to: "users#update_perfil"
+  patch "/perfil/alterar_senha", to: "users#update_password", as: :update_password
   patch "/toggle_odds", to: "users#toggle_odds", as: :toggle_odds
 
   post "/checkout/stripe", to: "checkout#stripe"

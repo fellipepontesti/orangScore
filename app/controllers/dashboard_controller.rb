@@ -2,8 +2,18 @@ class DashboardController < ApplicationController
   include JogosHelper
 
   before_action :authenticate_user!
+  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user]
 
   def index 
+    if current_user.semi_root?
+      @jogos_em_andamento = Jogo.em_andamento.order(data: :asc)
+      @jogos_de_hoje = Jogo.programado
+                            .where(definir: false)
+                            .where(data: Time.current.beginning_of_day..Time.current.end_of_day)
+                            .order(data: :asc)
+      return render :semi_root_index
+    end
+
     if current_user.root?
       @total_usuarios = User.count
       @total_palpites = Palpite.count
@@ -11,7 +21,7 @@ class DashboardController < ApplicationController
       @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
       @total_jogos = Jogo.count
       @total_ligas = Liga.count
-      @ultimos_usuarios = User.order(created_at: :desc).limit(5)
+      @ultimos_usuarios = User.includes(:palpites).order(created_at: :desc).limit(5)
       @jogos_em_andamento = Jogo.em_andamento.order(data: :asc).limit(10)
       @jogos_programados = Jogo.programado
                                 .where(definir: false)
@@ -59,5 +69,61 @@ class DashboardController < ApplicationController
 
     @ranking_global = todos_usuarios.first(5)
     @user_global_rank = todos_usuarios.index(current_user) ? todos_usuarios.index(current_user) + 1 : "-"
+  end
+
+  def convites_pendentes
+    @convites = LigaMembro.invited.includes(:user, liga: :owner).order(created_at: :desc)
+  end
+
+  def aceitar_convite
+    liga_membro = LigaMembro.find_by_uuid_param!(params[:liga_membro_id])
+    
+    ActiveRecord::Base.transaction do
+      liga_membro.update!(status: :accepted)
+      liga_membro.liga.increment!(:membros)
+      liga_membro.user.count_referral_for_liga!(liga_membro.liga)
+    end
+
+    redirect_to dashboard_convites_pendentes_path, notice: "Solicitação do usuário #{liga_membro.user.name} para entrar na liga '#{liga_membro.liga.nome}' aceita com sucesso!"
+  end
+
+  def negar_convite
+    liga_membro = LigaMembro.find_by_uuid_param!(params[:liga_membro_id])
+    user_name = liga_membro.user.name
+    liga_nome = liga_membro.liga.nome
+    liga_membro.destroy!
+
+    redirect_to dashboard_convites_pendentes_path, notice: "Solicitação do usuário #{user_name} para entrar na liga '#{liga_nome}' rejeitada com sucesso."
+  end
+
+  def new_user
+    @usuario = User.new(tipo: :root)
+  end
+
+  def create_user
+    @usuario = User.new(user_create_params)
+    
+    temp_password = SecureRandom.alphanumeric(12) + "aA1!"
+    @usuario.password = temp_password
+    @usuario.password_confirmation = temp_password
+    @usuario.selecao_id = Selecao.find_by(nome: 'A definir')&.id || Selecao.first&.id
+    @usuario.tipo = :semi_root
+    @usuario.terms_of_service = '1'
+    @usuario.esconder_odds = false
+
+    @usuario.skip_confirmation!
+
+    if @usuario.save
+      redirect_to authenticated_root_path, notice: "Usuário Operador (Semi-Root) criado com sucesso! E-mail: #{@usuario.email} | Senha temporária: #{temp_password}"
+    else
+      flash.now[:alert] = "Erro ao criar usuário: #{@usuario.errors.full_messages.to_sentence}"
+      render :new_user, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def user_create_params
+    params.require(:user).permit(:name, :email)
   end
 end

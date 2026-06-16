@@ -1,0 +1,106 @@
+<% content_for :title, "Convites de Liga Pendentes" %>
+
+<div class="space-y-8 max-w-7xl mx-auto py-8 px-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-4xl font-bold text-white tracking-tight">Convites de Liga Pendentes</h1>
+      <p class="text-base-content/70">Aprove ou negue as solicitações de entrada pendentes em ligas de terceiros.</p>
+    </div>
+    <div>
+      <%= link_to authenticated_root_path, class: "btn btn-outline gap-2" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+        </svg>
+        Voltar ao Painel
+      <% end %>
+    </div>
+  </div>
+
+  <% if @convites.any? %>
+    <div class="bg-base-100 shadow-xl rounded-3xl border border-base-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full text-left">
+          <thead>
+            <tr class="bg-base-200/50 text-slate-400 font-bold uppercase text-xs tracking-wider border-b border-base-200">
+              <th class="py-4 pl-6">Quem quer entrar</th>
+              <th class="py-4">Liga</th>
+              <th class="py-4">Dono da Liga</th>
+              <th class="py-4">Data do Pedido</th>
+              <th class="py-4 pr-6 text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-base-200">
+            <% @convites.each do |convite| %>
+              <tr class="hover:bg-base-200/30 transition duration-150">
+                <td class="py-4 pl-6">
+                  <div class="flex items-center gap-3">
+                    <div class="avatar shrink-0">
+                      <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden">
+                        <% if convite.user.logo_selecao.present? %>
+                          <%= image_tag "selecoes/#{convite.user.logo_selecao}", class: "object-cover w-full h-full" %>
+                        <% else %>
+                          <span class="text-xs font-bold opacity-40">?</span>
+                        <% end %>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="font-bold text-white leading-tight"><%= convite.user.name %></p>
+                      <p class="text-xs text-slate-400 mt-0.5"><%= convite.user.email %></p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4">
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-slate-200"><%= convite.liga.nome %></span>
+                    <% if convite.liga.publica %>
+                      <span class="badge badge-success badge-sm mt-1 text-[10px] font-bold">Pública</span>
+                    <% else %>
+                      <span class="badge badge-warning badge-sm mt-1 text-[10px] font-bold">Privada</span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="py-4">
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-slate-200"><%= convite.liga.owner.name %></span>
+                    <span class="text-xs text-slate-400 mt-0.5"><%= convite.liga.owner.email %></span>
+                  </div>
+                </td>
+                <td class="py-4 text-slate-300 text-sm">
+                  <p class="font-semibold"><%= convite.created_at.strftime("%d/%m/%Y") %></p>
+                  <p class="text-xs text-slate-400 mt-0.5"><%= convite.created_at.strftime("%H:%M") %></p>
+                </td>
+                <td class="py-4 pr-6">
+                  <div class="flex justify-center items-center gap-2">
+                    <%= button_to dashboard_aceitar_convite_path(liga_membro_id: convite.uuid),
+                                  method: :patch,
+                                  class: "btn btn-sm btn-success text-white font-bold px-4 rounded-xl hover:scale-105 transition",
+                                  data: { confirm: "Tem certeza que deseja aceitar o usuário #{convite.user.name} na liga '#{convite.liga.nome}'?" } do %>
+                      Aceitar
+                    <% end %>
+
+                    <%= button_to dashboard_negar_convite_path(liga_membro_id: convite.uuid),
+                                  method: :delete,
+                                  class: "btn btn-sm btn-outline btn-error font-bold px-4 rounded-xl hover:scale-105 transition",
+                                  data: { confirm: "Tem certeza que deseja rejeitar o pedido do usuário #{convite.user.name} para a liga '#{convite.liga.nome}'?" } do %>
+                      Rejeitar
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% else %>
+    <div class="flex flex-col items-center justify-center p-16 bg-base-100 rounded-3xl border border-base-200 text-center shadow-xl">
+      <div class="w-24 h-24 bg-success/15 rounded-full flex items-center justify-center mb-6 text-success">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2">Tudo em ordem!</h3>
+      <p class="text-slate-400 max-w-md">Não há convites de liga pendentes de aprovação no momento.</p>
+    </div>
+  <% end %>
+</div>

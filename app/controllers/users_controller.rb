@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -98,6 +98,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def update_password
+    @usuario = current_user
+    if @usuario.update_with_password(password_params)
+      bypass_sign_in(@usuario)
+      redirect_to perfil_path, notice: "Senha alterada com sucesso."
+    else
+      redirect_to perfil_path, alert: "Erro ao alterar senha: #{@usuario.errors.full_messages.to_sentence}"
+    end
+  end
+
   private 
 
   def set_user
@@ -110,5 +120,9 @@ class UsersController < ApplicationController
 
   def perfil_params
     params.require(:user).permit(:name, :selecao_id)
+  end
+
+  def password_params
+    params.require(:user).permit(:current_password, :password, :password_confirmation)
   end
 end

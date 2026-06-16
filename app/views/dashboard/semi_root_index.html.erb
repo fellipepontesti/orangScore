@@ -1,0 +1,239 @@
+<div class="space-y-8 max-w-7xl mx-auto py-8 px-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-3">
+        <h1 class="text-4xl font-bold text-white">Olá, <%= current_user.name %></h1>
+        <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-linear-to-b from-indigo-500 to-indigo-800 text-white border border-indigo-300">
+          <span class="text-[10px] font-black tracking-widest uppercase">OPERADOR</span>
+        </div>
+      </div>
+      <p class="text-base-content/70">Painel operacional para controle e atualizações das partidas do OrangScore.</p>
+    </div>
+  </div>
+
+  <%= render "shared/quick_bet_banner", next_jogo: nil, pendentes: 0 %>
+
+  <% if @jogos_em_andamento.any? %>
+    <div class="space-y-6 bg-base-200/30 p-6 rounded-3xl border border-base-200 shadow-inner">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Jogos em Andamento</h2>
+        </div>
+        <span class="badge badge-primary px-4 py-3 text-xs font-extrabold tracking-wider"><%= @jogos_em_andamento.size %> ATIVOS</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <% @jogos_em_andamento.each do |jogo| %>
+          <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden hover:shadow-2xl transition duration-300">
+            
+            <div class="bg-base-200/40 dark:bg-base-300/20 px-4 py-3 flex justify-between items-center border-b border-base-200/60">
+              <div class="flex flex-col">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-primary">
+                  <%= jogo.grupo&.nome || jogo.tipo.humanize %>
+                </span>
+                <span class="text-[10px] opacity-60 font-semibold mt-0.5">
+                  <%= jogo.data.strftime('%d/%m %H:%M') %> <%= jogo.estadio.present? ? "| #{jogo.estadio.split('(').first.strip}" : '' %>
+                </span>
+              </div>
+            </div>
+
+            <div class="card-body p-5 md:p-6">
+              <%= form_with model: jogo, url: jogo_path(jogo), method: :patch, local: true, class: 'flex flex-col gap-4' do |f| %>
+                <%= hidden_field_tag :redirect_to_dashboard, 'true' %>
+                <%= f.hidden_field :status, id: "status_#{jogo.uuid}", value: jogo.status %>
+
+                <div class="grid grid-cols-11 items-center gap-2 sm:gap-4">
+                  
+                  <div class="flex flex-col items-center col-span-5 text-center group min-w-0">
+                    <div class="avatar mb-2">
+                      <div class="mask mask-squircle h-12 w-12 sm:h-16 sm:w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
+                        <% if jogo.mandante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                        <% else %>
+                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xl font-bold">?</div>
+                        <% end %>
+                      </div>
+                    </div>
+                    
+                    <span class="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white leading-tight block w-full truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>">
+                      <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>
+                    </span>
+
+                    <div class="flex items-center gap-1 mt-3.5 bg-base-200/50 p-1 rounded-full border border-base-300/40">
+                      <button type="button" class="btn btn-circle btn-ghost btn-xs text-error font-extrabold text-base" onclick="decrementGoal('<%= jogo.uuid %>', 'mandante')">
+                        −
+                      </button>
+                      <%= f.number_field :gols_mandante, 
+                          id: "gols_mandante_#{jogo.uuid}", 
+                          min: 0, 
+                          class: 'input input-ghost input-xs w-8 sm:w-10 text-center font-black text-sm sm:text-base p-0 focus:outline-hidden focus:bg-transparent border-0', 
+                          value: jogo.gols_mandante || 0,
+                          readonly: true %>
+                      <button type="button" class="btn btn-circle btn-ghost btn-xs text-success font-extrabold text-base" onclick="incrementGoal('<%= jogo.uuid %>', 'mandante')">
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col items-center justify-center col-span-1">
+                    <span class="text-[9px] sm:text-[10px] font-black tracking-widest text-slate-400">VS</span>
+                    <div class="w-px h-10 sm:h-12 bg-base-200 my-1 sm:my-2"></div>
+                  </div>
+
+                  <div class="flex flex-col items-center col-span-5 text-center group min-w-0">
+                    <div class="avatar mb-2">
+                      <div class="mask mask-squircle h-12 w-12 sm:h-16 sm:w-16 bg-base-200 shadow-md group-hover:scale-105 transition duration-300 flex items-center justify-center overflow-hidden">
+                        <% if jogo.visitante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                        <% else %>
+                          <div class="w-full h-full flex items-center justify-center bg-base-300 text-xl font-bold">?</div>
+                        <% end %>
+                      </div>
+                    </div>
+                    
+                    <span class="font-extrabold text-xs sm:text-sm text-slate-800 dark:text-white leading-tight block w-full truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>">
+                      <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>
+                    </span>
+
+                    <div class="flex items-center gap-1 mt-3.5 bg-base-200/50 p-1 rounded-full border border-base-300/40">
+                      <button type="button" class="btn btn-circle btn-ghost btn-xs text-error font-extrabold text-base" onclick="decrementGoal('<%= jogo.uuid %>', 'visitante')">
+                        −
+                      </button>
+                      <%= f.number_field :gols_visitante, 
+                          id: "gols_visitante_#{jogo.uuid}", 
+                          min: 0, 
+                          class: 'input input-ghost input-xs w-8 sm:w-10 text-center font-black text-sm sm:text-base p-0 focus:outline-hidden focus:bg-transparent border-0', 
+                          value: jogo.gols_visitante || 0,
+                          readonly: true %>
+                      <button type="button" class="btn btn-circle btn-ghost btn-xs text-success font-extrabold text-base" onclick="incrementGoal('<%= jogo.uuid %>', 'visitante')">
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="flex gap-2.5 mt-2 pt-4 border-t border-base-200/60">
+                  <button type="submit" class="btn btn-sm btn-primary flex-1 font-bold">
+                    Atualizar Placar
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline btn-warning flex-1 font-bold" onclick="finalizeGame('<%= jogo.uuid %>', '<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>', '<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>')">
+                    Finalizar Jogo
+                  </button>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @jogos_de_hoje.any? %>
+    <div class="space-y-6 bg-base-200/20 p-6 rounded-3xl border border-base-200 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Jogos de Hoje</h2>
+          <p class="opacity-70 text-sm">Partidas programadas para hoje — inicie diretamente daqui.</p>
+        </div>
+        <span class="badge badge-outline badge-warning px-4 py-3 text-xs font-extrabold tracking-wider"><%= @jogos_de_hoje.size %> HOJE</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @jogos_de_hoje.each do |jogo| %>
+          <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="text-xs font-semibold shrink-0 text-center border-r border-base-200 pr-4 min-w-[55px]">
+                <p class="opacity-50">Horário</p>
+                <p class="text-warning font-black text-sm mt-0.5"><%= jogo.data.strftime('%H:%M') %></p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                
+                <div class="flex items-center gap-1.5 font-bold text-sm">
+                  <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                    <% if jogo.mandante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                    <% end %>
+                  </div>
+                  <span><%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %></span>
+                </div>
+
+                <span class="opacity-30 text-xs font-black">x</span>
+                
+                <div class="flex items-center gap-1.5 font-bold text-sm">
+                  <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                    <% if jogo.visitante&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                    <% end %>
+                  </div>
+                  <span><%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %></span>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="shrink-0 w-full sm:w-auto">
+              <%= button_to start_jogo_path(jogo),
+                  method: :patch,
+                  class: 'btn btn-sm btn-success text-white font-bold w-full sm:w-auto px-4 py-2 hover:scale-105 transition',
+                  data: { confirm: "Confirmar início de #{jogo.mandante&.nome || 'Mandante'} x #{jogo.visitante&.nome || 'Visitante'}? Todos os usuários cadastrados serão notificados." } do %>
+                Iniciar Jogo
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @jogos_em_andamento.empty? && @jogos_de_hoje.empty? %>
+    <div class="flex flex-col items-center justify-center p-16 bg-base-100 rounded-3xl border border-base-200 text-center shadow-xl">
+      <div class="w-24 h-24 bg-base-300 rounded-full flex items-center justify-center mb-6 opacity-60">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5 21h14a2.25 2.25 0 0 0 2-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5 9h14a2.25 2.25 0 0 1 2 2.25v7.5" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-2">Nenhum jogo operacional</h3>
+      <p class="text-slate-400 max-w-md">Não há jogos em andamento e nem partidas programadas para o dia de hoje.</p>
+    </div>
+  <% end %>
+
+  <script>
+    function incrementGoal(uuid, teamSide) {
+      const input = document.getElementById(`gols_${teamSide}_${uuid}`);
+      if (input) {
+        input.value = parseInt(input.value || 0) + 1;
+      }
+    }
+
+    function decrementGoal(uuid, teamSide) {
+      const input = document.getElementById(`gols_${teamSide}_${uuid}`);
+      if (input && parseInt(input.value || 0) > 0) {
+        input.value = parseInt(input.value || 0) - 1;
+      }
+    }
+
+    function finalizeGame(uuid, mandanteNome, visitanteNome) {
+      const gM = document.getElementById(`gols_mandante_${uuid}`).value;
+      const gV = document.getElementById(`gols_visitante_${uuid}`).value;
+      
+      let resMessage = "";
+      if (parseInt(gM) > parseInt(gV)) {
+        resMessage = `Vitória do ${mandanteNome} por ${gM} x ${gV}`;
+      } else if (parseInt(gM) < parseInt(gV)) {
+        resMessage = `Vitória do ${visitanteNome} por ${gV} x ${gM}`;
+      } else {
+        resMessage = `Empate por ${gM} x ${gV}`;
+      }
+
+      if (confirm(`Deseja mesmo finalizar este jogo? \nResultado: ${resMessage}\nIsso atualizará permanentemente a classificação do grupo e calculará a pontuação de todos os palpites.`)) {
+        const statusField = document.getElementById(`status_${uuid}`);
+        if (statusField) {
+          statusField.value = 'finalizado';
+          statusField.closest('form').submit();
+        }
+      }
+    }
+  </script>
+</div>

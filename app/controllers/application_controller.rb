@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :check_terms_acceptance, if: -> { user_signed_in? && !devise_controller? }
   before_action :store_referral_id
+  before_action :restrict_semi_root_access, if: -> { user_signed_in? }
   
   protected
 
@@ -29,8 +30,7 @@ class ApplicationController < ActionController::Base
   private
 
   def check_terms_acceptance
-    # Se for root (tipo 1), não precisa travar (opcional, mas você pediu tipo diferente de 1)
-    return if current_user.root?
+    return if current_user.root? || current_user.semi_root?
     
     # Se já aceitou, segue o jogo
     return if current_user.terms_accepted_at.present?
@@ -44,6 +44,33 @@ class ApplicationController < ActionController::Base
     return if current_user&.root?
 
     redirect_to root_path, alert: 'Acesso não autorizado.'
+  end
+
+  def authorize_root_or_semi_root!
+    return if current_user&.root? || current_user&.semi_root?
+
+    redirect_to root_path, alert: 'Acesso não autorizado.'
+  end
+
+  def restrict_semi_root_access
+    return unless current_user.semi_root?
+
+    allowed_routes = [
+      { controller: "dashboard", action: "index" },
+      { controller: "jogos", action: "start" },
+      { controller: "jogos", action: "update" },
+      { controller: "jogos", action: "finish" },
+      { controller: "users", action: "update_password" },
+      { controller: "devise/sessions", action: "destroy" }
+    ]
+
+    is_allowed = allowed_routes.any? do |route|
+      params[:controller] == route[:controller] && params[:action] == route[:action]
+    end
+
+    unless is_allowed
+      redirect_to authenticated_root_path, alert: "Acesso restrito para usuários operacionais."
+    end
   end
 
   def store_referral_id

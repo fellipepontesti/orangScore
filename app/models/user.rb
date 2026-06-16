@@ -77,7 +77,7 @@ class User < ApplicationRecord
   },
   if: :password_required?
 
-  enum :tipo, { normal_user: 0, root: 1 }
+  enum :tipo, { normal_user: 0, root: 1, semi_root: 2 }
 
   def generate_password_recovery!
     token = SecureRandom.urlsafe_base64(32)
@@ -166,7 +166,8 @@ class User < ApplicationRecord
 
   def criar_assinatura_padrao
     create_assinatura!(
-      plano: :basic
+      plano: :basic,
+      ativa: true
     )
   end
 

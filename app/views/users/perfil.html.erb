@@ -7,7 +7,10 @@
       <p class="text-base-content/60 mt-2">Confira suas informações no OrangScore.</p>
     </div>
 
-    <%= link_to "Editar perfil", edit_perfil_path, class: "btn btn-primary" %>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "Editar perfil", edit_perfil_path, class: "btn btn-primary" %>
+      <button type="button" class="btn btn-outline" onclick="modal_alterar_senha.showModal()">Alterar senha</button>
+    </div>
   </div>
 
   <div class="bg-base-100 shadow-lg rounded-box p-8">
@@ -59,4 +62,56 @@
       </div>
     </div>
   </div>
+
+  <%# MODAL ALTERAR SENHA %>
+  <dialog id="modal_alterar_senha" class="modal">
+    <div class="modal-box max-w-md bg-base-100 border border-base-300 shadow-2xl">
+      <h3 class="font-bold text-2xl mb-6 text-center text-white">
+        Alterar Senha
+      </h3>
+
+      <%= form_with model: @usuario, url: update_password_path, method: :patch, local: true do |f| %>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-medium text-slate-300">Senha atual</span>
+          </label>
+          <%= f.password_field :current_password,
+            class: "input input-bordered w-full bg-base-200 text-white",
+            required: true %>
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-medium text-slate-300">Nova senha</span>
+          </label>
+          <%= f.password_field :password,
+            class: "input input-bordered w-full bg-base-200 text-white",
+            required: true %>
+          <label class="label">
+            <span class="label-text-alt text-slate-400">Min. 8 caracteres, incluindo maiúscula, minúscula, número e símbolo.</span>
+          </label>
+        </div>
+
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text font-medium text-slate-300">Confirmação da nova senha</span>
+          </label>
+          <%= f.password_field :password_confirmation,
+            class: "input input-bordered w-full bg-base-200 text-white",
+            required: true %>
+        </div>
+
+        <div class="modal-action flex justify-between gap-2">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="modal_alterar_senha.close()">
+            Cancelar
+          </button>
+
+          <%= f.submit "Atualizar Senha", class: "btn btn-primary font-bold" %>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
 </div>
