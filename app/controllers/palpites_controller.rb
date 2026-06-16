@@ -132,9 +132,21 @@ class PalpitesController < ApplicationController
             ON palpite_points.jogo_id = palpites.jogo_id
            AND palpite_points.user_id = palpites.user_id
         SQL
-        .order(Arel.sql("COALESCE(palpite_points.pontos, 0) DESC, palpites.created_at DESC"))
+        .order(Arel.sql("COALESCE(palpite_points.pontos, 0) DESC, jogos.data ASC"))
       else
-        scope.order("palpites.created_at DESC")
+        # 1. Jogos em andamento são prioridade máxima
+        # 2. Próximos jogos/Programados vêm em segundo (Peso 2)
+        # 3. Jogos já finalizados ou outros vão para o fim (Peso 3)
+        
+        status_priority = <<~SQL.squish
+          CASE 
+            WHEN jogos.status = #{Jogo.statuses[:em_andamento]} THEN 1
+            WHEN jogos.status = #{Jogo.statuses[:programado]} THEN 2
+            ELSE 3
+          END ASC
+        SQL
+
+        scope.order(Arel.sql(status_priority)).order("jogos.data ASC, palpites.created_at DESC")
       end
     end
 
