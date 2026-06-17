@@ -457,17 +457,28 @@
     <h3 class="font-bold text-lg mb-4 text-center">Sincronizar Elenco via API</h3>
     <%= form_with url: sync_squads_selecoes_path, method: :post, local: true do |f| %>
       <div class="space-y-4">
-        <div class="form-control">
-          <label class="label"><span class="label-text font-bold">Seleção no Sistema</span></label>
-          <%= f.select :selecao_id, 
-            options_from_collection_for_select(Selecao.order(:nome), :id, :nome), 
-            { prompt: "Selecione a seleção local..." }, 
-            class: "select select-bordered w-full", id: "sync_selecao_id", required: true %>
-        </div>
         
-        <div class="form-control">
-          <label class="label"><span class="label-text font-bold">Nome da Seleção na API (em Inglês)</span></label>
-          <%= f.text_field :api_name, class: "input input-bordered w-full", id: "sync_api_name", placeholder: "Ex: Brazil, Canada, Ghana, France...", required: true %>
+        <div class="form-control bg-base-200 p-4 rounded-xl border border-base-300">
+          <label class="label cursor-pointer flex justify-between items-center">
+            <span class="label-text font-bold">Sincronizar TODAS as seleções de uma vez</span>
+            <%= f.check_box :sync_all, { class: "checkbox checkbox-primary", id: "sync_all_checkbox" }, "true", "false" %>
+          </label>
+          <span class="text-[11px] opacity-60 mt-1">Recomendado para economizar requisições diárias na API. Buscará os elencos de todos os países mapeados.</span>
+        </div>
+
+        <div id="individual_fields" class="space-y-4 transition-all duration-300">
+          <div class="form-control">
+            <label class="label"><span class="label-text font-bold">Seleção no Sistema</span></label>
+            <%= f.select :selecao_id, 
+              options_from_collection_for_select(Selecao.order(:nome), :id, :nome), 
+              { prompt: "Selecione a seleção local..." }, 
+              class: "select select-bordered w-full", id: "sync_selecao_id", required: true %>
+          </div>
+          
+          <div class="form-control">
+            <label class="label"><span class="label-text font-bold">Nome da Seleção na API (em Inglês)</span></label>
+            <%= f.text_field :api_name, class: "input input-bordered w-full", id: "sync_api_name", placeholder: "Ex: Brazil, Canada, Ghana, France...", required: true %>
+          </div>
         </div>
 
         <div class="form-control">
@@ -490,10 +501,18 @@
       const teamMapping = <%= mapping_json.html_safe %>;
       const select = document.getElementById("sync_selecao_id");
       const input = document.getElementById("sync_api_name");
+      const checkbox = document.getElementById("sync_all_checkbox");
+      const individualFields = document.getElementById("individual_fields");
       
       if (select && input) {
         select.removeEventListener("change", handleSelectChange);
         select.addEventListener("change", handleSelectChange);
+      }
+
+      if (checkbox && individualFields && select && input) {
+        checkbox.removeEventListener("change", handleCheckboxChange);
+        checkbox.addEventListener("change", handleCheckboxChange);
+        handleCheckboxChange(); // Dispara estado inicial
       }
 
       function handleSelectChange() {
@@ -503,6 +522,20 @@
           input.value = apiName;
         } else {
           input.value = "";
+        }
+      }
+
+      function handleCheckboxChange() {
+        if (checkbox.checked) {
+          individualFields.style.opacity = "0.4";
+          individualFields.style.pointerEvents = "none";
+          select.removeAttribute("required");
+          input.removeAttribute("required");
+        } else {
+          individualFields.style.opacity = "1";
+          individualFields.style.pointerEvents = "auto";
+          select.setAttribute("required", "required");
+          input.setAttribute("required", "required");
         }
       }
     }

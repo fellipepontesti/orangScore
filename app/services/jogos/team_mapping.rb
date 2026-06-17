@@ -131,5 +131,109 @@ module Jogos
         I18n.transliterate(name).downcase == normalized_lookup
       end&.last
     end
+
+    ADDITIONAL_COUNTRY_TRANSLATIONS = {
+      'England' => 'Inglaterra',
+      'Italy' => 'Itália',
+      'Spain' => 'Espanha',
+      'Germany' => 'Alemanha',
+      'France' => 'França',
+      'Portugal' => 'Portugal',
+      'Netherlands' => 'Holanda',
+      'Belgium' => 'Bélgica',
+      'Brazil' => 'Brasil',
+      'Argentina' => 'Argentina',
+      'Uruguay' => 'Uruguai',
+      'Colombia' => 'Colômbia',
+      'Chile' => 'Chile',
+      'Paraguay' => 'Paraguai',
+      'Peru' => 'Peru',
+      'Ecuador' => 'Equador',
+      'Venezuela' => 'Venezuela',
+      'Mexico' => 'México',
+      'United States' => 'Estados Unidos',
+      'USA' => 'Estados Unidos',
+      'Canada' => 'Canadá',
+      'Japan' => 'Japão',
+      'South Korea' => 'Coreia do Sul',
+      'China' => 'China',
+      'Saudi Arabia' => 'Arábia Saudita',
+      'Qatar' => 'Catar',
+      'United Arab Emirates' => 'Emirados Árabes Unidos',
+      'UAE' => 'Emirados Árabes Unidos',
+      'Turkey' => 'Turquia',
+      'Greece' => 'Grécia',
+      'Russia' => 'Rússia',
+      'Ukraine' => 'Ucrânia',
+      'Croatia' => 'Croácia',
+      'Switzerland' => 'Suíça',
+      'Austria' => 'Áustria',
+      'Sweden' => 'Suécia',
+      'Norway' => 'Noruega',
+      'Denmark' => 'Dinamarca',
+      'Poland' => 'Polônia',
+      'Scotland' => 'Escócia',
+      'Wales' => 'País de Gales',
+      'Northern Ireland' => 'Irlanda do Norte',
+      'Ireland' => 'Irlanda',
+      'Morocco' => 'Marrocos',
+      'Egypt' => 'Egito',
+      'South Africa' => 'África do Sul',
+      'Ghana' => 'Gana',
+      'Nigeria' => 'Nigéria',
+      'Senegal' => 'Senegal',
+      'Tunisia' => 'Tunísia',
+      'Algeria' => 'Argélia',
+      'Ivory Coast' => 'Costa do Marfim',
+      'Cameroon' => 'Camarões',
+      'Australia' => 'Austrália',
+      'New Zealand' => 'Nova Zelândia',
+      'Czech Republic' => 'República Tcheca',
+      'Czechia' => 'República Tcheca',
+      'Slovakia' => 'Eslováquia',
+      'Slovenia' => 'Eslovênia',
+      'Hungary' => 'Hungria',
+      'Romania' => 'Romênia',
+      'Bulgaria' => 'Bulgária',
+      'Serbia' => 'Sérvia',
+      'Bosnia and Herzegovina' => 'Bósnia e Herzegovina',
+      'Montenegro' => 'Montenegro',
+      'Albania' => 'Albânia',
+      'North Macedonia' => 'Macedônia do Norte',
+      'Cyprus' => 'Chipre',
+      'Israel' => 'Israel',
+      'Finland' => 'Finlândia',
+      'Iceland' => 'Islândia',
+      'Singapore' => 'Singapura',
+      'India' => 'Índia',
+      'Thailand' => 'Tailândia',
+      'Malaysia' => 'Malásia',
+      'Indonesia' => 'Indonésia',
+      'Vietnam' => 'Vietnã',
+      'Iran' => 'Irã',
+      'Iraq' => 'Iraque',
+      'Uzbekistan' => 'Uzbequistão'
+    }.freeze
+
+    def self.translate_country(country_en)
+      return nil if country_en.nil? || country_en.to_s.strip.empty?
+      
+      name = country_en.to_s.strip
+      
+      # 1. Tenta correspondência direta no hash complementar
+      translated = ADDITIONAL_COUNTRY_TRANSLATIONS[name]
+      return translated if translated
+      
+      # 2. Tenta busca case-insensitive no hash complementar
+      translated = ADDITIONAL_COUNTRY_TRANSLATIONS.find { |en, _pt| en.downcase == name.downcase }&.last
+      return translated if translated
+      
+      # 3. Tenta inverter o WORLD_CUP_TEAM_SEARCH
+      matched_pt = WORLD_CUP_TEAM_SEARCH.find { |_pt, en| en.downcase == name.downcase }&.first
+      return matched_pt if matched_pt
+      
+      # 4. Caso não encontre nada, retorna o nome original
+      name
+    end
   end
 end

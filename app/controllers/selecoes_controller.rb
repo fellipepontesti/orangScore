@@ -66,29 +66,32 @@ class SelecoesController < ApplicationController
 
 
   def sync_squads
-    selecao = Selecao.find_by(id: params[:selecao_id])
-    api_name = params[:api_name].to_s.strip
     year = params[:year].presence || '2026'
 
+    if params[:sync_all] == 'true'
+      SyncSquadsJob.perform_later(year: year)
+      redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todas as seleções foi iniciada em segundo plano. Os elencos estarão atualizados em breve!"
+      return
+    end
+
+    selecao = Selecao.find_by(id: params[:selecao_id])
+    api_name = params[:api_name].to_s.strip
+
     unless selecao
-      redirect_to selecoes_path, alert: "Seleção não encontrada no sistema."
+      redirect_back fallback_location: authenticated_root_path, alert: "Seleção não encontrada no sistema."
       return
     end
 
     if api_name.blank?
-      redirect_to selecoes_path, alert: "Nome da seleção para busca na API não informado."
+      redirect_back fallback_location: authenticated_root_path, alert: "Nome da seleção para busca na API não informado."
       return
     end
 
-    result = Jogos::SyncSquads.new(selecao: selecao, api_name: api_name, year: year).call
+    SyncSquadsJob.perform_later(selecao_id: selecao.id, api_name: api_name, year: year)
 
-    if result[:success]
-      redirect_to selecao_path(selecao), notice: "Elenco da seleção \"#{selecao.nome}\" sincronizado com sucesso! (#{result[:count]} jogadores importados)"
-    else
-      redirect_to selecoes_path, alert: "Erro ao sincronizar elenco da seleção \"#{selecao.nome}\": #{result[:error]}"
-    end
+    redirect_to selecao_path(selecao), notice: "A sincronização do elenco de \"#{selecao.nome}\" foi iniciada em segundo plano. A escalação estará atualizada em instantes!"
   rescue => e
-    redirect_to selecoes_path, alert: "Erro ao executar sincronização: #{e.message}"
+    redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
   end
 
   private
