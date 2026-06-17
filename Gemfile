@@ -67,6 +67,5 @@ gem "devise", "~> 4.9"
 gem 'will_paginate', '~> 3.1'
 gem "resend"
 gem 'rack-attack'
-gem "stripe"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"

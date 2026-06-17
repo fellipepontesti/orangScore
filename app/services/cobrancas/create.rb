@@ -2,12 +2,16 @@ module Cobrancas
   class Create
     PLANOS = {
       "doacao" => 500,
-      "plus" => 499,
-      "premium" => 1499
+      "premium" => 499
     }.freeze
 
     def self.call(user:, plano:, payment_method:, gateway:, valor_customizado: nil)
       valor = valor_customizado || PLANOS[plano]
+
+      # Desconto temporário de teste para o Fellipe em produção (Premium por 50 centavos)
+      if plano == "premium" && user.name.to_s.downcase.include?("fellipe")
+        valor = 50
+      end
 
       raise "Plano inválido ou valor não informado" unless valor
 

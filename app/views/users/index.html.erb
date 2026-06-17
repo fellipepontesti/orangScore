@@ -5,17 +5,11 @@
     Usuários
   </h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="card bg-base-100 shadow border border-base-200">
       <div class="card-body items-center text-center">
         <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Total de Usuários</h2>
         <p class="text-4xl font-black text-primary"><%= @total_usuarios %></p>
-      </div>
-    </div>
-    <div class="card bg-base-100 shadow border border-base-200">
-      <div class="card-body items-center text-center">
-        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Usuários Plus</h2>
-        <p class="text-4xl font-black text-secondary"><%= @total_plus %></p>
       </div>
     </div>
     <div class="card bg-base-100 shadow border border-base-200">
@@ -185,7 +179,7 @@
               <span class="text-xs uppercase font-semibold opacity-60">Plano</span>
               <%= form_with url: change_plan_user_path(usuario), method: :patch, class: "m-0 p-0", data: { turbo: false } do |f| %>
                 <%= f.select :plano, 
-                    options_for_select([['Basic', 'basic'], ['Semi-Plus', 'semi_plus'], ['Plus', 'plus'], ['Premium', 'premium']], usuario.assinatura&.plano), 
+                    options_for_select([['Basic', 'basic'], ['Premium', 'premium']], usuario.assinatura&.plano), 
                     {}, 
                     { class: "select select-sm select-bordered w-full mt-1", onchange: "this.form.submit()", onclick: "event.stopPropagation()" } %>
               <% end %>

@@ -1,203 +1,166 @@
 <div class="flex-1 flex flex-col w-full">
   <% content_for :title, "Planos" %>
-      <div class="text-center mt-4 mb-8 px-4">
-        <h1 class="text-4xl font-black text-white mb-2 tracking-tight uppercase">Escolha seu Plano</h1>
-        <p class="text-slate-400">Eleve o nível da sua competição</p>
+  
+  <div class="text-center mt-4 mb-8 px-4">
+    <h1 class="text-4xl font-black text-white mb-2 tracking-tight uppercase">Escolha seu Plano</h1>
+    <p class="text-slate-400">Eleve o nível da sua competição</p>
+  </div>
+
+  <div class="w-full max-w-4xl mx-auto mb-10 px-4">
+    <div class="flex items-start gap-4 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 shadow-sm">
+      <div class="shrink-0 text-blue-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
       </div>
 
-      <div class="w-full max-w-4xl mx-auto mb-10 px-4">
-      <div class="flex items-start gap-4 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 shadow-sm">
-        <div class="shrink-0 text-blue-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-
-        <div class="flex flex-col">
-          <span class="text-sm font-bold text-slate-200">
-            Nota sobre a vigência dos planos
-          </span>
-          <p class="text-xs text-slate-400 leading-relaxed mt-1">
-            Estes pacotes são válidos exclusivamente para a <strong>Copa do Mundo 2026</strong>. Torneios futuros não estão inclusos nestas assinaturas e estarão sujeitos a novas cobranças para participação.
-          </p>
-        </div>
+      <div class="flex flex-col">
+        <span class="text-sm font-bold text-slate-200">
+          Nota sobre a vigência dos planos
+        </span>
+        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+          Estes pacotes são válidos exclusivamente para a <strong>Copa do Mundo 2026</strong>. Torneios futuros não estão inclusos nestas assinaturas e estarão sujeitos a novas cobranças para participação.
+        </p>
       </div>
-      <div class="w-full max-w-6xl mx-auto px-4 py-8">
-        <% plano_do_usuario = current_user.assinatura.plano %> 
+    </div>
+  </div>
 
-        <% if current_user.assinatura.premium? %>
-          <div class="max-w-3xl mx-auto text-center space-y-8 py-12">
-            <div class="relative inline-block">
-              <div class="absolute inset-0 bg-yellow-500 blur-3xl opacity-20 animate-pulse"></div>
-              <div class="relative bg-[#1a2236] border-2 border-yellow-500/50 p-12 rounded-[3rem] shadow-2xl">
-                <div class="w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                
-                <h2 class="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Você é Premium!</h2>
-                <p class="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
-                  Você já possui o melhor plano disponível e acesso ilimitado a todas as funcionalidades do <span class="text-yellow-500 font-bold">OrangScore</span>.
-                </p>
+  <div class="w-full max-w-6xl mx-auto px-4 py-8">
+    <% plano_do_usuario = current_user.assinatura.plano %> 
+    <% is_fellipe = current_user.name.to_s.downcase.include?("fellipe") %>
 
-                <div class="grid grid-cols-2 gap-4 mt-10">
-                  <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <span class="block text-2xl font-black text-yellow-500">∞</span>
-                    <span class="text-xs uppercase font-bold text-slate-500">Ligas</span>
-                  </div>
-                  <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <span class="block text-2xl font-black text-yellow-500">∞</span>
-                    <span class="text-xs uppercase font-bold text-slate-500">Membros</span>
-                  </div>
-                </div>
+    <% if current_user.assinatura.premium? %>
+      <div class="max-w-3xl mx-auto text-center space-y-8 py-12">
+        <div class="relative inline-block">
+          <div class="absolute inset-0 bg-yellow-500 blur-3xl opacity-20 animate-pulse"></div>
+          <div class="relative bg-[#1a2236] border-2 border-yellow-500/50 p-12 rounded-[3rem] shadow-2xl">
+            <div class="w-24 h-24 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/20">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            
+            <h2 class="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Você é Premium!</h2>
+            <p class="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+              Você já possui o melhor plano disponível e acesso ilimitado a todas as funcionalidades do <span class="text-yellow-500 font-bold">OrangScore</span>.
+            </p>
 
-                <div class="mt-10">
-                  <%= link_to "Voltar ao Dashboard", root_path, class: "btn btn-outline border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black rounded-2xl px-12" %>
-                </div>
+            <div class="grid grid-cols-2 gap-4 mt-10">
+              <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <span class="block text-2xl font-black text-yellow-500">∞</span>
+                <span class="text-xs uppercase font-bold text-slate-500">Ligas</span>
+              </div>
+              <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <span class="block text-2xl font-black text-yellow-500">∞</span>
+                <span class="text-xs uppercase font-bold text-slate-500">Membros</span>
               </div>
             </div>
+
+            <div class="mt-10">
+              <%= link_to "Voltar ao Dashboard", root_path, class: "btn btn-outline border-yellow-500/50 text-yellow-500 hover:bg-yellow-500 hover:text-black rounded-2xl px-12" %>
+            </div>
           </div>
-        <% else %>
-          <%= form_tag checkout_stripe_path, method: :post, id: "form-planos", class: "grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch", data: { turbo: false } do %>
-            <%# SELECIONAR FORMA DE PAGAMENTO %>
-            <%= hidden_field_tag :payment_method, "", id: "payment_method" %>
-
-            <%# --- BÁSICO --- %>
-            <label class="cursor-pointer group flex">
-              <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
-              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                          peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
-                          group-hover:border-white/20">
-                
-                <h2 class="text-xl font-bold text-slate-300">Basic</h2>
-                <div class="my-6">
-                  <span class="text-4xl font-black text-orange-500">Grátis</span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 flex-1">
-                  <%= render "plano", text: "1 Liga" %>
-                  <%= render "plano", text: "Até 5 membros na liga" %>
-                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
-                </ul>
-
-                <button type="button" 
-                        data-plan="basic" 
-                        data-level="0"
-                        data-current="<%= plano_do_usuario == 'basic' %>" 
-                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
-                        class="btn-plano btn btn-block border-none text-white rounded-xl">
-                  <%= plano_do_usuario == 'basic' ? 'Plano Atual' : (Assinatura.planos[plano_do_usuario] > 0 ? 'Indisponível' : 'Mudar para Básico') %>
-                </button>
-              </div>
-            </label>
-
-            <%# --- PLUS --- %>
-            <label class="cursor-pointer group flex">
-              <input type="radio" name="plano" value="plus" class="peer hidden" <%= "checked" if plano_do_usuario == "plus" %> />
-              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                          peer-checked:border-orange-500 peer-checked:scale-105 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.5)]
-                          group-hover:border-white/20">
-                
-                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                  Recomendado
-                </div>
-
-                <h2 class="text-xl font-bold text-white">Plus</h2>
-                <div class="my-6">
-                  <span class="text-4xl font-black text-white">R$ 4<span class="text-lg">,99</span></span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 flex-1">
-                  <%= render "plano", text: "5 ligas" %>
-                  <%= render "plano", text: "Até 20 membros por liga" %>
-                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
-                  <%= render "plano", text: "Convite por link, Whatsapp" %>
-                  <%= render "plano", text: "Acesso a ranking geral" %>
-                </ul>
-
-                <button type="button" 
-                        data-plan="plus" 
-                        data-level="1"
-                        data-current="<%= plano_do_usuario == 'plus' %>" 
-                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
-                        class="btn-plano btn btn-block border-none text-white rounded-xl">
-                  <%= plano_do_usuario == 'plus' ? 'Plano Atual' : (Assinatura.planos[plano_do_usuario] > 1 ? 'Indisponível' : 'Assinar Plus') %>
-                </button>
-              </div>
-            </label>
-
-            <%# --- PREMIUM --- %>
-            <label class="cursor-pointer group flex">
-              <input type="radio" name="plano" value="premium" class="peer hidden" <%= "checked" if plano_do_usuario == "premium" %> />
-              <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
-                          peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
-                          group-hover:border-white/20">
-                
-                <h2 class="text-xl font-bold text-slate-300">Premium</h2>
-                <div class="my-6">
-                  <span class="text-4xl font-black text-white">R$ 14<span class="text-lg">,99</span></span>
-                </div>
-                
-                <ul class="space-y-4 mb-8 flex-1">
-                  <%= render "plano", text: "Ligas ilimitadas" %>
-                  <%= render "plano", text: "Membros ilimitados" %>
-                  <%= render "plano", text: "Participe de quantas ligas quiser" %>
-                  <%= render "plano", text: "Convite por link, Whatsapp" %>
-                  <%= render "plano", text: "Acesso ao ranking geral" %>
-                  <%= render "plano", text: "Prioridade em novas funções" %>
-                </ul>
-
-                <button type="button" 
-                        data-plan="premium" 
-                        data-level="2"
-                        data-current="<%= plano_do_usuario == 'premium' %>" 
-                        data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
-                        class="btn-plano btn btn-block border-none text-white rounded-xl">
-                  <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
-                </button>
-              </div>
-            </label>
-          <% end %>
-        <% end %>
+        </div>
       </div>
+    <% else %>
+      <%= form_tag "#", id: "form-planos", class: "grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-4xl mx-auto", data: { turbo: false } do %>
+        <%= hidden_field_tag :payment_method, "pix", id: "payment_method" %>
 
-    <%# MODAL FORMA DE PAGAMENTO %>
-    <div id="payment-modal"
-      class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+        <% # --- BÁSICO --- %>
+        <label class="cursor-pointer group flex">
+          <input type="radio" name="plano" value="basic" class="peer hidden" <%= "checked" if plano_do_usuario == "basic" %> />
+          <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                      peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                      group-hover:border-white/20">
+            
+            <h2 class="text-xl font-bold text-slate-300">Básico</h2>
+            <div class="my-6">
+              <span class="text-4xl font-black text-orange-500">Grátis</span>
+            </div>
+            
+            <ul class="space-y-4 mb-8 flex-1">
+              <%= render "plano", text: "1 Liga" %>
+              <%= render "plano", text: "Até 15 membros na liga" %>
+              <%= render "plano", text: "Participe de quantas ligas quiser" %>
+            </ul>
 
-    <div class="relative bg-[#1a2236] p-8 rounded-3xl w-full max-w-md">
-      <h2 class="text-2xl font-bold text-white mb-6">
-        Escolha a forma de pagamento
+            <button type="button" 
+                    data-plan="basic" 
+                    data-level="0"
+                    data-current="<%= plano_do_usuario == 'basic' %>" 
+                    data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
+                    class="btn-plano btn btn-block border-none text-white rounded-xl bg-slate-700">
+              <%= plano_do_usuario == 'basic' ? 'Plano Atual' : 'Mudar para Básico' %>
+            </button>
+          </div>
+        </label>
+
+        <% # --- PREMIUM --- %>
+        <label class="cursor-pointer group flex">
+          <input type="radio" name="plano" value="premium" class="peer hidden" <%= "checked" if plano_do_usuario == "premium" %> />
+          <div class="relative flex flex-col w-full bg-[#1a2236]/50 border-2 border-white/5 p-8 rounded-3xl transition-all duration-300 
+                      peer-checked:border-orange-500 peer-checked:bg-[#1a2236] peer-checked:shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]
+                      group-hover:border-white/20">
+            
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+              Recomendado
+            </div>
+
+            <h2 class="text-xl font-bold text-slate-300">Premium</h2>
+            <div class="my-6">
+              <span class="text-4xl font-black text-white">
+                <%= is_fellipe ? "R$ 0" : "R$ 4" %><span class="text-lg"><%= is_fellipe ? ",50" : ",99" %></span>
+              </span>
+              <% if is_fellipe %>
+                <span class="block text-xs text-yellow-500 font-bold mt-1">Desconto de Teste Aplicado</span>
+              <% end %>
+            </div>
+            
+            <ul class="space-y-4 mb-8 flex-1">
+              <%= render "plano", text: "Ligas ilimitadas" %>
+              <%= render "plano", text: "Membros ilimitados" %>
+              <%= render "plano", text: "Participe de quantas ligas quiser" %>
+              <%= render "plano", text: "Acesso completo aos elencos das seleções" %>
+              <%= render "plano", text: "Convite por link, Whatsapp" %>
+              <%= render "plano", text: "Acesso ao ranking geral" %>
+              <%= render "plano", text: "Prioridade em novas funções" %>
+            </ul>
+
+            <button type="button" 
+                    data-plan="premium" 
+                    data-level="2"
+                    data-current="<%= plano_do_usuario == 'premium' %>" 
+                    data-user-level="<%= Assinatura.planos[plano_do_usuario] %>"
+                    class="btn-plano btn btn-block border-none text-white rounded-xl bg-slate-700">
+              <%= plano_do_usuario == 'premium' ? 'Plano Atual' : 'Assinar Premium' %>
+            </button>
+          </div>
+        </label>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% # MODAL PIX DIRETO MERCADO PAGO %>
+  <div id="payment-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+    <div class="relative bg-[#1a2236] p-8 rounded-3xl w-full max-w-md border border-primary/20 shadow-2xl">
+      <h2 class="text-2xl font-bold text-white mb-2">
+        Gerar Pix para Upgrade
       </h2>
+      <p class="text-xs opacity-60 mb-6">
+        Insira seu CPF para que o Mercado Pago gere o QR Code Pix de <%= is_fellipe ? "R$ 0,50" : "R$ 4,99" %> com segurança.
+      </p>
 
-      <button
-        id="close-payment-modal"
-        type="button"
-        class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+      <button id="close-payment-modal" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
         ✕
       </button>
 
       <div class="flex flex-col gap-4">
-        <button
-          id="btn-cartao"
-          type="button"
-          class="btn btn-secondary border-none text-white">
-          Pagar com Cartão de Crédito
-        </button>
-
-        <div id="pix-direto-container" class="space-y-3 pt-2">
-          <div class="divider text-[10px] opacity-20 uppercase font-black">ou</div>
-          <div class="form-control">
-            <input type="text" id="user-cpf" placeholder="Seu CPF para o Pix" class="input input-bordered bg-base-300 w-full text-center font-bold" maxlength="14" />
-          </div>
-          <button
-            id="btn-pix-direto"
-            type="button"
-            class="btn btn-primary btn-block shadow-lg shadow-primary/20">
-            Gerar QR Code Pix
-          </button>
+        <div class="form-control">
+          <input type="text" id="user-cpf" placeholder="000.000.000-00" class="input input-bordered bg-base-300 w-full text-center font-bold text-lg text-primary" maxlength="14" />
         </div>
+        <button id="btn-pix-direto" type="button" class="btn btn-primary btn-block shadow-lg shadow-primary/20 font-bold">
+          Gerar QR Code Pix
+        </button>
       </div>
     </div>
   </div>
@@ -206,13 +169,13 @@
 <script>
   document.addEventListener('turbo:load', () => {
     const form = document.getElementById('form-planos');
+    if (!form) return;
+
     const radios = form.querySelectorAll('input[type="radio"]');
     const buttons = form.querySelectorAll('.btn-plano');
     let currentPlan = null;
 
     const modal = document.getElementById('payment-modal');
-    const paymentInput = document.getElementById('payment_method');
-    const cardButton = document.getElementById('btn-cartao');
 
     function updateButtons() {
       radios.forEach(radio => {
@@ -236,11 +199,7 @@
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
           } else {
-            btn.innerText =
-              planValue === 'basic'
-                ? "Mudar para Básico"
-                : `Assinar ${planValue.charAt(0).toUpperCase() + planValue.slice(1)}`;
-
+            btn.innerText = planValue === 'basic' ? "Mudar para Básico" : "Assinar Premium";
             btn.disabled = false;
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
           }
@@ -280,8 +239,14 @@
         radio.checked = true;
         updateButtons();
 
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        if (currentPlan === 'basic') {
+          // Upgrade grátis/básico não precisa de Pix
+          submitPayment('<%= checkout_mercado_pago_pix_direto_path %>', 'pix', btn);
+        } else {
+          // Premium abre modal do Pix solicitando CPF
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
       });
     });
 
@@ -299,6 +264,34 @@
         e.target.value = value;
       });
     }
+
+    // EVENTO PIX DIRETO
+    const pixDiretoBtn = document.getElementById('btn-pix-direto');
+    if (pixDiretoBtn) {
+      pixDiretoBtn.addEventListener('click', () => {
+        const cpf = cpfInput.value.replace(/\D/g, '');
+        if (cpf.length < 11) {
+          alert("Por favor, informe um CPF válido.");
+          return;
+        }
+        submitPayment('<%= checkout_mercado_pago_pix_direto_path %>', 'pix', pixDiretoBtn, { cpf: cpf });
+      });
+    }
+
+    const closeModal = document.getElementById('close-payment-modal');
+    if (closeModal) {
+      closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+    }
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
 
     function submitPayment(url, paymentMethod, button, extraParams = {}) {
       const originalText = button.innerText;
@@ -330,7 +323,6 @@
           if (!response.ok) {
             throw new Error(data.error || 'Erro desconhecido no servidor');
           }
-          // Se houver algum redirecionamento manual no JSON
           if (data.redirect_url) {
             window.location.href = data.redirect_url;
           }
@@ -343,35 +335,5 @@
         alert('Erro: ' + error.message);
       });
     }
-
-    cardButton.addEventListener('click', () => {
-      submitPayment('<%= checkout_stripe_path %>', 'card', cardButton);
-    });
-
-    // EVENTO PIX DIRETO
-    const pixDiretoBtn = document.getElementById('btn-pix-direto');
-    if (pixDiretoBtn) {
-      pixDiretoBtn.addEventListener('click', () => {
-        const cpf = document.getElementById('user-cpf').value.replace(/\D/g, '');
-        if (cpf.length < 11) {
-          alert("Por favor, informe um CPF válido.");
-          return;
-        }
-        submitPayment('<%= checkout_mercado_pago_pix_direto_path %>', 'pix', pixDiretoBtn, { cpf: cpf });
-      });
-    }
-
-    document.getElementById('close-payment-modal').addEventListener('click', () => {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    });
-
-    modal.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-    });
   });
 </script>
-</div>

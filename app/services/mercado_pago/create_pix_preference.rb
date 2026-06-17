@@ -65,13 +65,22 @@ module MercadoPago
           failure: failure_url,
           pending: pending_url
         },
-        auto_return: "all",
-        notification_url: notification_url
+        auto_return: "all"
       }
+
+      if valid_notification_url?
+        preference_payload[:notification_url] = notification_url
+      end
+
+      preference_payload
     end
 
     def payer_email
-      cobranca.user.email
+      if Config.production?
+        cobranca.user.email
+      else
+        Config.test_payer_email.presence || cobranca.user.email
+      end
     end
 
     def valid_notification_url?

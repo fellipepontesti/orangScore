@@ -9,7 +9,6 @@ class UsersController < ApplicationController
     @direcoes_ordenacao = Users::List::DIRECTION_OPTIONS
     
     @total_usuarios = User.count
-    @total_plus = User.joins(:assinatura).where(assinaturas: { plano: :plus, ativa: true }).count
     @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
   end
 

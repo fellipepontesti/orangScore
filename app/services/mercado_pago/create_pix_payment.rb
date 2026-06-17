@@ -35,7 +35,7 @@ module MercadoPago
       first_name = name_parts.first
       last_name = name_parts.size > 1 ? name_parts.last : "Silva"
 
-      {
+      payment_payload = {
         transaction_amount: (cobranca.valor.to_f / 100).round(2),
         description: cobranca.plano == "doacao" ? "Doação para OrangScore" : "Plano #{cobranca.plano.capitalize} - OrangScore",
         payment_method_id: "pix",
@@ -48,13 +48,33 @@ module MercadoPago
             type: "CPF",
             number: cpf.presence || "19100000000" # Se não vier CPF, usa o mock (apenas para teste)
           }
-        },
-        notification_url: notification_url
+        }
       }
+
+      if valid_notification_url?
+        payment_payload[:notification_url] = notification_url
+      end
+
+      payment_payload
     end
 
     def payer_email
-      cobranca.user.email
+      if Config.production?
+        cobranca.user.email
+      else
+        Config.test_payer_email.presence || cobranca.user.email
+      end
+    end
+
+    def valid_notification_url?
+      uri = URI.parse(notification_url.to_s)
+
+      uri.is_a?(URI::HTTP) &&
+        uri.host.present? &&
+        uri.host.exclude?("localhost") &&
+        uri.host != "127.0.0.1"
+    rescue URI::InvalidURIError
+      false
     end
 
     def idempotency_key
