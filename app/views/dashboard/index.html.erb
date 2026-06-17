@@ -395,23 +395,14 @@
           <%= f.text_field :valor, value: "5,00", id: "donation-amount", class: "input input-bordered input-sm w-full pl-8 font-bold text-primary focus:border-primary", placeholder: "0,00" %>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="w-full">
           <button type="button" 
                   onclick="modal_doacao_cpf.showModal()"
-                  class="btn btn-primary btn-sm flex-nowrap whitespace-nowrap px-2 gap-2">
+                  class="btn btn-primary btn-sm w-full gap-2 justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span class="font-bold">Via Pix</span>
-          </button>
-          
-          <button type="submit" 
-                  formaction="<%= checkout_stripe_path %>"
-                  class="btn btn-secondary btn-sm flex-nowrap whitespace-nowrap px-2 gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-            <span class="font-bold">Via Cartão</span>
+            <span class="font-bold">Apoiar via Pix</span>
           </button>
         </div>
       <% end %>
