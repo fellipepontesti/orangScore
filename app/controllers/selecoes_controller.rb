@@ -3,7 +3,7 @@ class SelecoesController < ApplicationController
   before_action :authorize_root!, except: %i[index show]
   before_action :load_grupos, only: %i[new create edit update]
   before_action :logos_disponiveis, only: %i[new create edit update]
-  before_action :set_selecao, only: %i[ show edit update destroy sync_api ]
+  before_action :set_selecao, only: %i[ show edit update destroy ]
 
   def index
     @selecoes = Selecoes::List.new(params).call
@@ -63,16 +63,32 @@ class SelecoesController < ApplicationController
     end
   end
 
-  def sync_api
-    result = ApiFootballTeams::Sync.new.sync_team(@selecao.nome)
+
+
+  def sync_squads
+    selecao = Selecao.find_by(id: params[:selecao_id])
+    api_name = params[:api_name].to_s.strip
+    year = params[:year].presence || '2026'
+
+    unless selecao
+      redirect_to selecoes_path, alert: "Seleção não encontrada no sistema."
+      return
+    end
+
+    if api_name.blank?
+      redirect_to selecoes_path, alert: "Nome da seleção para busca na API não informado."
+      return
+    end
+
+    result = Jogos::SyncSquads.new(selecao: selecao, api_name: api_name, year: year).call
+
     if result[:success]
-      status_label = result[:new_record] ? "criada" : "atualizada"
-      redirect_to selecoes_path, notice: "Seleção \"#{@selecao.nome}\" sincronizada com sucesso! Associação #{status_label} com a API Football (API ID: #{result[:api_team].api_id})."
+      redirect_to selecao_path(selecao), notice: "Elenco da seleção \"#{selecao.nome}\" sincronizado com sucesso! (#{result[:count]} jogadores importados)"
     else
-      redirect_to selecoes_path, alert: "Falha ao sincronizar \"#{@selecao.nome}\": #{result[:error]}"
+      redirect_to selecoes_path, alert: "Erro ao sincronizar elenco da seleção \"#{selecao.nome}\": #{result[:error]}"
     end
   rescue => e
-    redirect_to selecoes_path, alert: "Erro ao sincronizar \"#{@selecao.nome}\": #{e.message}"
+    redirect_to selecoes_path, alert: "Erro ao executar sincronização: #{e.message}"
   end
 
   private

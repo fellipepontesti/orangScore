@@ -10,23 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_15_014852) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_17_050401) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
-
-  create_table "api_football_teams", force: :cascade do |t|
-    t.integer "api_id", null: false
-    t.string "name", null: false
-    t.string "country"
-    t.string "code"
-    t.string "logo"
-    t.integer "founded"
-    t.string "city"
-    t.bigint "selecao_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "assinaturas", force: :cascade do |t|
     t.bigint "usuario_id", null: false
@@ -63,6 +50,23 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_15_014852) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.uuid "uuid", null: false
+  end
+
+  create_table "jogadores", force: :cascade do |t|
+    t.bigint "selecao_id", null: false
+    t.string "nome", null: false
+    t.integer "numero"
+    t.string "posicao"
+    t.date "data_nascimento"
+    t.integer "idade_torneio"
+    t.string "clube"
+    t.string "clube_pais"
+    t.boolean "capitao", default: false, null: false
+    t.integer "gols", default: 0, null: false
+    t.uuid "uuid", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["selecao_id"], name: "index_jogadores_on_selecao_id"
   end
 
   create_table "jogos", force: :cascade do |t|
@@ -211,4 +215,5 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_15_014852) do
     t.string "last_sign_in_ip"
   end
 
+  add_foreign_key "jogadores", "selecoes"
 end

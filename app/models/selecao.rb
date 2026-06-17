@@ -2,6 +2,7 @@ class Selecao < ApplicationRecord
   include HasPublicUuid
   belongs_to :grupo
   has_many :users, foreign_key: "selecao_id"
+  has_many :jogadores, class_name: 'Jogador', dependent: :destroy
   
   has_many :jogos_como_mandante,
            class_name: 'Jogo',

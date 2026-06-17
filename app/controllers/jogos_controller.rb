@@ -102,9 +102,8 @@ class JogosController < ApplicationController
     end
   end
 
-  def sync
-    @sync_report = Jogos::SyncFromFootballApi.new.call
-  end
+
+
 
   def sync_odds
     result = Jogos::FetchOdds.sync_all

@@ -91,7 +91,6 @@ Rails.application.routes.draw do
   
   resources :jogos do
     collection do
-      get :sync
       post :sync_odds
     end
 
@@ -104,15 +103,9 @@ Rails.application.routes.draw do
 
   resources :grupos
 
-  resources :api_football_teams, only: %i[index update] do
-    collection do
-      post :sync
-    end
-  end
-
   resources :selecoes do
-    member do
-      post :sync_api
+    collection do
+      post :sync_squads
     end
   end
 
