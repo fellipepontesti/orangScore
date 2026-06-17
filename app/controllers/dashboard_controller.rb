@@ -2,7 +2,7 @@ class DashboardController < ApplicationController
   include JogosHelper
 
   before_action :authenticate_user!
-  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user]
+  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user, :artilharia]
 
   def index 
     if current_user.semi_root?
@@ -118,6 +118,12 @@ class DashboardController < ApplicationController
       flash.now[:alert] = "Erro ao criar usuário: #{@usuario.errors.full_messages.to_sentence}"
       render :new_user, status: :unprocessable_entity
     end
+  end
+
+  def artilharia
+    @artilheiros = Jogador.includes(:selecao)
+                          .where("gols > 0 OR assistencias > 0")
+                          .order(gols: :desc, assistencias: :desc, nome: :asc)
   end
 
   private

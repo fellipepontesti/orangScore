@@ -78,7 +78,8 @@ module Jogos
             clube: p.dig('club', 'name'),
             clube_pais: Jogos::TeamMapping.translate_country(p.dig('club', 'country')),
             capitao: p['captain'] || false,
-            gols: p['goals'] || 0
+            gols: p['goals'] || 0,
+            assistencias: p['assists'] || p['assistencias'] || p['goals_assists'] || 0
           )
           players_imported += 1
         end
@@ -127,7 +128,8 @@ module Jogos
                 clube: p.dig('club', 'name'),
                 clube_pais: Jogos::TeamMapping.translate_country(p.dig('club', 'country')),
                 capitao: p['captain'] || false,
-                gols: p['goals'] || 0
+                gols: p['goals'] || 0,
+                assistencias: p['assists'] || p['assistencias'] || p['goals_assists'] || 0
               )
               players_imported += 1
             end

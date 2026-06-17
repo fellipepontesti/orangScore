@@ -1,0 +1,209 @@
+<div class="space-y-8 max-w-7xl mx-auto py-8">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <h1 class="text-4xl font-bold">⚽ Artilharia da Copa 2026</h1>
+        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-b from-primary via-primary/80 to-primary/60 text-white border border-primary/30">
+          <span class="text-xs font-black tracking-wide">ÁREA DO ADMINISTRADOR</span>
+        </div>
+      </div>
+      <p class="opacity-70 text-lg">Classificação de artilheiros e garçons da Copa do Mundo</p>
+    </div>
+    
+    <%= link_to authenticated_root_path, class: "btn btn-outline border-base-200 text-white hover:bg-base-200 gap-2 font-bold" do %>
+      ← Voltar ao Dashboard
+    <% end %>
+  </div>
+
+  <% if @artilheiros.any? %>
+    <!-- Pódio dos Top 3 Goleadores -->
+    <% 
+      top_1 = @artilheiros[0]
+      top_2 = @artilheiros[1]
+      top_3 = @artilheiros[2]
+    %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-8 pb-4 max-w-4xl mx-auto">
+      
+      <!-- 2º Lugar -->
+      <div class="order-2 md:order-1 flex flex-col items-center">
+        <% if top_2 %>
+          <div class="avatar mb-3 relative group">
+            <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">2º</div>
+            <div class="mask mask-squircle h-20 w-20 bg-slate-400/20 border-2 border-slate-300 overflow-hidden flex items-center justify-center p-1">
+              <% if top_2.selecao&.logo.present? %>
+                <%= image_tag "selecoes/#{top_2.selecao.logo}", class: "object-contain w-full h-full" %>
+              <% else %>
+                <span class="text-2xl font-bold">?</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="text-center mb-4 min-w-0 px-2 w-full">
+            <h3 class="font-extrabold text-base truncate" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
+            <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_2.selecao&.nome %></p>
+            <div class="flex items-center justify-center gap-2 mt-1.5">
+              <span class="badge badge-neutral gap-1 text-xs font-bold"><strong class="text-primary"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
+              <% if top_2.assistencias > 0 %>
+                <span class="badge badge-outline gap-1 text-xs font-bold"><strong class="text-accent"><%= top_2.assistencias %></strong> <%= top_2.assistencias == 1 ? 'assist.' : 'assist.' %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-24 rounded-t-3xl border-t border-x border-slate-300/20 flex items-center justify-center shadow-inner">
+          <span class="text-3xl font-black opacity-30 text-slate-300">🥈</span>
+        </div>
+      </div>
+
+      <!-- 1º Lugar -->
+      <div class="order-1 md:order-2 flex flex-col items-center">
+        <% if top_1 %>
+          <div class="avatar mb-4 relative scale-110 group">
+            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md animate-bounce">1º</div>
+            <div class="mask mask-squircle h-24 w-24 bg-amber-500/10 border-4 border-amber-400 overflow-hidden flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
+              <% if top_1.selecao&.logo.present? %>
+                <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+              <% else %>
+                <span class="text-3xl font-bold text-amber-400">?</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="text-center mb-4 min-w-0 px-2 w-full scale-105">
+            <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
+              <%= top_1.nome %>
+              <% if top_1.capitao %>
+                <span class="text-amber-400 text-xs" title="Capitão">👑</span>
+              <% end %>
+            </h3>
+            <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5"><%= top_1.selecao&.nome %></p>
+            <div class="flex items-center justify-center gap-2 mt-2">
+              <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
+              <% if top_1.assistencias > 0 %>
+                <span class="badge badge-accent gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.assistencias %></strong> <%= top_1.assistencias == 1 ? 'assist.' : 'assist.' %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-primary/30 to-primary/10 w-full h-36 rounded-t-3xl border-t border-x border-amber-400/20 flex items-center justify-center shadow-lg relative overflow-hidden">
+          <div class="absolute inset-0 bg-radial-to-t from-primary/20 via-transparent to-transparent"></div>
+          <span class="text-4xl font-black text-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]">🏆</span>
+        </div>
+      </div>
+
+      <!-- 3º Lugar -->
+      <div class="order-3 flex flex-col items-center">
+        <% if top_3 %>
+          <div class="avatar mb-3 relative group">
+            <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">3º</div>
+            <div class="mask mask-squircle h-20 w-20 bg-amber-700/20 border-2 border-amber-700 overflow-hidden flex items-center justify-center p-1">
+              <% if top_3.selecao&.logo.present? %>
+                <%= image_tag "selecoes/#{top_3.selecao.logo}", class: "object-contain w-full h-full" %>
+              <% else %>
+                <span class="text-2xl font-bold">?</span>
+              <% end %>
+            </div>
+          </div>
+          <div class="text-center mb-4 min-w-0 px-2 w-full">
+            <h3 class="font-extrabold text-base truncate" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
+            <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_3.selecao&.nome %></p>
+            <div class="flex items-center justify-center gap-2 mt-1.5">
+              <span class="badge badge-neutral gap-1 text-xs font-bold"><strong class="text-primary"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
+              <% if top_3.assistencias > 0 %>
+                <span class="badge badge-outline gap-1 text-xs font-bold"><strong class="text-accent"><%= top_3.assistencias %></strong> <%= top_3.assistencias == 1 ? 'assist.' : 'assist.' %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-20 rounded-t-3xl border-t border-x border-amber-700/20 flex items-center justify-center shadow-inner">
+          <span class="text-3xl font-black opacity-30 text-amber-700">🥉</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tabela Geral -->
+    <div class="bg-base-100 shadow-2xl rounded-3xl border border-base-200 overflow-hidden mt-8">
+      <div class="px-6 py-5 border-b border-base-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-bold">Todos os Goleadores</h2>
+          <p class="text-xs opacity-50 mt-0.5">Listagem completa dos jogadores que balançaram as redes ou deram assistências</p>
+        </div>
+        <span class="badge badge-primary font-bold px-3 py-2 text-xs"><%= @artilheiros.size %> JOGADORES</span>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <table class="table table-zebra w-full text-left">
+          <thead>
+            <tr class="bg-base-200 text-xs font-bold uppercase tracking-wider opacity-70">
+              <th class="w-16 text-center">Pos</th>
+              <th>Jogador</th>
+              <th>Seleção</th>
+              <th>Clube</th>
+              <th class="text-center font-bold text-primary">Gols ⚽</th>
+              <th class="text-center font-bold text-accent">Assistências 👟</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @artilheiros.each_with_index do |jogador, index| %>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  <%= index + 1 %>º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5">
+                      <%= jogador.nome %>
+                      <% if jogador.capitao %>
+                        <span class="text-amber-400 text-xs" title="Capitão">👑</span>
+                      <% end %>
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      <%= jogador.posicao_pt %>
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden">
+                      <% if jogador.selecao&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
+                      <% else %>
+                        <span class="text-[10px] font-bold">?</span>
+                      <% end %>
+                    </div>
+                    <span class="font-extrabold text-sm text-slate-800 dark:text-white truncate">
+                      <%= jogador.selecao&.nome %>
+                    </span>
+                  </div>
+                </td>
+                <td class="text-sm opacity-75">
+                  <%= jogador.clube.present? ? jogador.clube : '-' %>
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary"><%= jogador.gols %></span>
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-accent"><%= jogador.assistencias %></span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  <% else %>
+    <!-- Sem Gols Registrados -->
+    <div class="card bg-base-100 shadow-xl border border-base-200 p-8 text-center max-w-xl mx-auto mt-12">
+      <div class="w-20 h-20 bg-base-200 flex items-center justify-center rounded-full mx-auto mb-4">
+        <span class="text-4xl">⚽</span>
+      </div>
+      <h2 class="text-2xl font-bold mb-2">Nenhum gol registrado ainda</h2>
+      <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols ou assistências na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
+      <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-xl font-bold" do %>
+        Ir para o Painel Administrativo
+      <% end %>
+    </div>
+  <% end %>
+</div>

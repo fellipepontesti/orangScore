@@ -7,6 +7,7 @@ one:
   logo_selecao: "sem-escudo.png"
   tipo: 1
   confirmed_at: 2026-06-11 17:00:00
+  terms_accepted_at: 2026-06-11 17:00:00
   uuid: "00000000-0000-0000-0000-000000000091"
   esconder_odds: false
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
@@ -18,6 +19,7 @@ two:
   logo_selecao: "sem-escudo.png"
   tipo: 0
   confirmed_at: 2026-06-11 17:00:00
+  terms_accepted_at: 2026-06-11 17:00:00
   uuid: "00000000-0000-0000-0000-000000000092"
   esconder_odds: false
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>

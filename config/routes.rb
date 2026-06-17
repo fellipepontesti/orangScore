@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   end
 
   get "/dashboard/convites", to: "dashboard#convites_pendentes", as: :dashboard_convites_pendentes
+  get "/dashboard/artilharia", to: "dashboard#artilharia", as: :dashboard_artilharia
   patch "/dashboard/convites/:liga_membro_id/aceitar", to: "dashboard#aceitar_convite", as: :dashboard_aceitar_convite
   delete "/dashboard/convites/:liga_membro_id/negar", to: "dashboard#negar_convite", as: :dashboard_negar_convite
   get "/dashboard/usuarios/novo", to: "dashboard#new_user", as: :dashboard_new_user
