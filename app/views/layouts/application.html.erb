@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= asset_path('icons/oslogo.png') %>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= asset_path('icons/oslogo.png') %>">
+    <title>OrangScore</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+
+  <body data-theme="orangScore" class="min-h-screen flex antialiased" style="font-family: 'Outfit', sans-serif;">
+
+    <div class="drawer lg:drawer-open w-full min-h-screen">
+
+      <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
+
+      <div class="drawer-content flex flex-col w-full min-w-0">
+
+        <div class="navbar bg-base-100 shadow-sm sticky top-0 z-20">
+          <% if current_user %>
+            <div class="flex-none lg:hidden">
+              <label for="my-drawer-4" class="btn btn-ghost drawer-button">
+                ☰
+              </label>
+            </div>
+          <% end %>
+          <div class="flex-1">
+            <a href="/" class="p-4 rounded-2xl text-xl font-bold text-primary hover:text-black hover:bg-primary">
+              OrangScore
+            </a>
+          </div>
+
+          <% if current_user %>
+            <% unread_count = current_user.notificacoes.where(status: :unread).count %>
+
+            <div class="flex gap-2">
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost hover:bg-primary relative flex items-center gap-2 overflow-visible">
+                  <span>
+                    <div class="flex items-center gap-2">
+                      <% if current_user.root? %>
+                        <div class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gradient-to-b from-purple-500 via-purple-700 to-purple-900 text-white border border-purple-300">
+                          <span class="text-[10px] md:text-xs font-black tracking-wide">ADMIN</span>
+                        </div>
+                      <% elsif current_user.assinatura&.premium? %>
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full border border-yellow-500 text-yellow-500 bg-yellow-500/10 shadow-sm animate-pulse" title="Usuário Premium">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+                          </svg>
+                        </div>
+                      <% end %>
+
+                      <span class="hidden md:inline"><%= current_user.name %></span>
+                    </div>
+                  </span>
+                  <div class="bg-base-300 text-neutral-content w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                    <span class="font-semibold"><%= current_user.name.first.upcase %></span>
+                  </div>
+
+                  <% if unread_count > 0 %>
+                    <span class="absolute -top-2 -right-2 bg-error text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center z-10">
+                      <%= unread_count > 9 ? "9+" : unread_count %>
+                    </span>
+                  <% end %>
+                </div>
+
+                <ul
+                  tabindex="-1"
+                  class="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 p-2 shadow-lg w-52 z-[999]"
+                >
+                  <li class="menu-title">
+                    <span class="text-xs opacity-70">
+                      <%= current_user.name %>
+                    </span>
+                  </li>
+
+                  <li>
+                    <%= link_to "Perfil", perfil_path %>
+                  </li>
+
+                  <div class="divider my-1"></div>
+
+                  <li>
+                    <%= link_to notificacoes_path, class: "flex justify-between items-center" do %>
+                      <span>Notificações</span>
+
+                      <% if unread_count > 0 %>
+                        <span class="badge badge-error text-white text-xs">
+                          <%= unread_count > 9 ? "9+" : unread_count %>
+                        </span>
+                      <% end %>
+                    <% end %>
+                  </li>
+
+                  <div class="divider my-1"></div>
+
+                  <li>
+                    <%= link_to "Sair",
+                      destroy_user_session_path,
+                      class: "text-error",
+                      data: { turbo_method: :delete } %>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <main class="flex-1 p-4 md:p-6 bg-base-300 overflow-x-hidden">
+          <% if notice.present? %>
+            <div
+              role="alert"
+              class="alert alert-success relative flex items-center justify-center gap-2 mb-6"
+              data-alert
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.746 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/>
+              </svg>
+              <span class="font-bold text-center flex-1 pr-6 text-sm md:text-base">
+                <%= notice %>
+              </span>
+              <button type="button" aria-label="Fechar alerta" class="absolute right-5 text-lg font-bold" onclick="this.closest('[data-alert]').remove()">×</button>
+            </div>
+          <% end %>
+
+          <% if alert.present? %>
+            <div
+              role="alert"
+              class="alert alert-error relative flex items-center justify-center gap-2 mb-6"
+              data-alert
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.746 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"/>
+              </svg>
+              <span class="font-bold text-center flex-1 pr-6 text-sm md:text-base">
+                <%= alert %>
+              </span>
+              <button type="button" aria-label="Fechar alerta" class="absolute right-5 text-lg font-bold" onclick="this.closest('[data-alert]').remove()">×</button>
+            </div>
+          <% end %>
+          <%= yield %>
+        </main>
+        
+        <footer class="bg-base-100 border-t border-base-200 py-10 px-6">
+          <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                    <%= image_tag "icons/oslogo.png", class: "w-full h-full object-cover" %>
+                  </div>
+                  <span class="text-xl font-bold">OrangScore</span>
+                </div>
+                <p class="text-sm opacity-60 leading-relaxed">
+                  A plataforma definitiva para organizar seus bolões da Copa 2026. Diversão, competição e segurança em um só lugar.
+                </p>
+              </div>
+
+              <div>
+                <h4 class="font-bold mb-4 uppercase text-xs tracking-widest opacity-40 text-primary">Informações Legais</h4>
+                <ul class="space-y-3 text-sm">
+                  <li><%= link_to "Termos de Uso", termos_path, class: "hover:text-primary transition-colors" %></li>
+                  <li><%= link_to "Política de Privacidade", privacidade_path, class: "hover:text-primary transition-colors" %></li>
+                  <li><%= link_to "Regras de Pontuação", "#", onclick: "rules_modal.showModal(); return false;", class: "hover:text-primary transition-colors" %></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 class="font-bold mb-4 uppercase text-xs tracking-widest opacity-40 text-primary">Suporte e Contato</h4>
+                <ul class="space-y-3 text-sm">
+                  <li class="flex items-center gap-2 opacity-60 text-xs md:text-sm truncate">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    fellipepontesti@gmail.com
+                  </li>
+                  <li class="flex items-center gap-2 opacity-60 text-xs md:text-sm">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                     Maceió, Alagoas
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="divider opacity-5 mt-10"></div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] uppercase tracking-tighter opacity-40 font-bold text-center md:text-left">
+              <span>© 2026 ORANGSCORE - DESENVOLVIDO POR FELLIPE PONTES TI</span>
+              <span>ESTA PLATAFORMA SEGUE AS DIRETRIZES DA LGPD E CDC</span>
+            </div>
+          </div>
+        </footer>
+
+      </div>
+
+      <% if current_user %>
+        <div class="drawer-side z-40 lg:overflow-visible">
+          <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
+
+          <div class="flex min-h-full flex-col w-64 lg:w-20 lg:hover:w-64 transition-[width] duration-300 ease-in-out bg-base-100 group shadow-2xl overflow-x-hidden overflow-y-auto">
+            <ul class="menu w-full grow p-4 gap-3 flex-nowrap mt-4 flex flex-col">
+              <li>
+                <a href="/" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(root_path) %>">
+                  <%= image_tag "icons/home.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Página inicial</span>
+                </a>
+              </li>
+              <li>
+                <a href="/ligas" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(ligas_path) %>">
+                  <%= image_tag "icons/ligas.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Ligas</span>
+                </a>
+              </li>
+              <li>
+                <a href="/jogos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(jogos_path) %>">
+                  <%= image_tag "icons/ball.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Jogos</span>
+                </a>
+              </li>
+              <li>
+                <a href="<%= palpites_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(palpites_path) %>">
+                  <%= image_tag "icons/alvo.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold"><%= current_user.root? ? "Todos os Palpites" : "Meus Palpites" %></span>
+                </a>
+              </li>
+              <li>
+                <a href="/selecoes" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(selecoes_path) %>">
+                  <%= image_tag "icons/escudo.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Seleções</span>
+                </a>
+              </li>
+              <li>
+                <a href="/grupos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(grupos_path) %>">
+                  <%= image_tag "icons/tabela.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Grupos</span>
+                </a>
+              </li>
+              <li>
+                <a href="<%= pontuacao_users_path %>" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(pontuacao_users_path) %>">
+                  <%= image_tag "icons/missao.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Meus Pontos</span>
+                </a>
+              </li>
+              <li class="mt-auto">
+                <button onclick="rules_modal.showModal()" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl w-full text-left">
+                  <%= image_tag "icons/duvida.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Como pontuar</span>
+                </button>
+              </li>
+              <li>
+                <a href="/planos" class="flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl <%= 'active' if current_page?(planos_path) %>">
+                  <%= image_tag "icons/premium.png", class: "w-6 h-6 invert shrink-0 transition-transform group-hover:scale-110" %>
+                  <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Planos</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <dialog id="rules_modal" class="modal">
+      <div class="modal-box max-w-2xl border border-primary/20 shadow-2xl p-6">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-12 h-12 bg-primary flex items-center justify-center rounded-2xl shadow-lg shadow-primary/20">
+            <span class="text-2xl font-black text-white">?</span>
+          </div>
+          <div>
+            <h3 class="font-black text-2xl">Sistema de Pontuação</h3>
+            <p class="text-sm opacity-70 italic">Entenda como você escala no ranking global</p>
+          </div>
+        </div>
+
+        <div class="card bg-base-200 p-4 border border-warning/20 mb-5 shadow-lg">
+          <div class="flex justify-between items-center mb-2">
+            <span class="font-bold text-sm flex items-center gap-2">🏆 Campeão do Torneio</span>
+            <span class="badge badge-warning text-white font-bold">+25 pts</span>
+          </div>
+          <p class="text-xs opacity-70">Acerte a seleção campeã da Copa e receba uma grande bonificação no ranking.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Placar Exato</span>
+              <span class="badge badge-primary font-black">+10 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Quando você acerta exatamente o número de gols de ambos os times.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Vencedor/Empate</span>
+              <span class="badge badge-info font-black">+7 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Você acertou o vencedor (ou empate) e também acertou os gols de um dos times.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Apenas Vencedor</span>
+              <span class="badge badge-secondary font-black">+5 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Você acertou apenas quem venceu ou se a partida terminou empatada.</p>
+          </div>
+
+          <div class="card bg-base-200 p-4 border border-base-300">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-bold text-sm">Participação</span>
+              <span class="badge badge-ghost font-black">+2 pts</span>
+            </div>
+            <p class="text-xs opacity-60">Errou tudo, toma um prêmio por ter participado!</p>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn btn-primary rounded-xl px-8">Entendido!</button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+  </body>
+</html>
