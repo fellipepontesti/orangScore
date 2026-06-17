@@ -5,9 +5,11 @@ one:
   jogo: one
   gols_casa: 1
   gols_fora: 1
+  uuid: "00000000-0000-0000-0000-000000000071"
 
 two:
   user: two
   jogo: two
   gols_casa: 1
   gols_fora: 1
+  uuid: "00000000-0000-0000-0000-000000000072"

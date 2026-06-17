@@ -97,3 +97,34 @@ body {
 .pagination.join > *:not(:first-child) {
   margin-left: -1px;
 }
+
+/* Animação de gradiente contínuo e suave (shimmer de cores das seleções) */
+@keyframes bg-shimmer-loop {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-shimmer {
+  background-size: 200% auto !important;
+  animation: bg-shimmer-loop 8s ease infinite !important;
+}
+
+/* Animação de brilho pulsante e leve escala nas letras */
+@keyframes text-glow-shimmer {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(255,255,255,0.2));
+  }
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.7));
+  }
+}
+
+.animate-text-glow {
+  display: inline-block;
+  animation: text-glow-shimmer 3s ease-in-out infinite;
+}
+
+

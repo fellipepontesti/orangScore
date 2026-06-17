@@ -3,7 +3,15 @@
 one:
   owner: one
   nome: MyString
+  uuid: "00000000-0000-0000-0000-000000000061"
+  membros: 1
+  publica: true
+  entrada_livre: true
 
 two:
   owner: two
   nome: MyString
+  uuid: "00000000-0000-0000-0000-000000000062"
+  membros: 1
+  publica: true
+  entrada_livre: true

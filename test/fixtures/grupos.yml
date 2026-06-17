@@ -3,7 +3,9 @@
 one:
   nome: MyString
   rodadas: 1
+  uuid: "00000000-0000-0000-0000-000000000031"
 
 two:
   nome: MyString
   rodadas: 1
+  uuid: "00000000-0000-0000-0000-000000000032"

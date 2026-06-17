@@ -1,9 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
 one:
   name: "Usuario Um"
   email: "usuario1@example.com"
@@ -11,6 +7,9 @@ one:
   logo_selecao: "sem-escudo.png"
   tipo: 1
   confirmed_at: 2026-06-11 17:00:00
+  uuid: "00000000-0000-0000-0000-000000000091"
+  esconder_odds: false
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
 
 two:
   name: "Usuario Dois"
@@ -19,3 +18,6 @@ two:
   logo_selecao: "sem-escudo.png"
   tipo: 0
   confirmed_at: 2026-06-11 17:00:00
+  uuid: "00000000-0000-0000-0000-000000000092"
+  esconder_odds: false
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>

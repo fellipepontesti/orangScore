@@ -1,49 +1,294 @@
 <% content_for :title, "Ranking Global" %>
 
-<div class="w-full max-w-4xl mx-auto px-4 py-8">
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-    <h1 class="text-4xl font-bold flex items-center gap-3 text-secondary">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-      </svg>
-      Ranking Global
-    </h1>
+<div class="w-full max-w-4xl mx-auto px-4 py-8 pb-32 space-y-10">
+  
+  <!-- Cabeçalho Principal -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-base-200/50 pb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/20 shadow-lg shadow-secondary/5 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7 text-secondary animate-pulse">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-2.25a1.125 1.125 0 0 0-1.125 1.125v3.375m9 0h-9m-9 0a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3m-9 0v-3.375a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-2.25a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 3 4.125v2.25A3.375 3.375 0 0 0 6.375 9.75h1.5A3.375 3.375 0 0 0 11.25 13.125v3.375m9 0h-9" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">Ranking Global</h1>
+        <p class="text-xs opacity-60 font-medium">Os melhores palpiteros da Copa 2026</p>
+      </div>
+    </div>
     
-    <%= link_to "Voltar ao Dashboard", authenticated_root_path, class: "btn btn-outline btn-sm" %>
+    <%= link_to "Voltar ao Dashboard", authenticated_root_path, class: "btn btn-outline btn-sm hover:bg-secondary hover:border-secondary transition-all rounded-xl shadow-md" %>
   </div>
 
-  <div class="bg-base-100 shadow-xl rounded-box border border-base-200 overflow-hidden">
-    <ul class="list w-full">
-      <% @usuarios_ranking.each_with_index do |user, index| %>
-        <% rank = index + 1 + (@usuarios_ranking.current_page - 1) * @usuarios_ranking.per_page %>
-        <li class="list-row p-4 border-b last:border-b-0 border-base-200 flex items-center justify-between hover:bg-base-200/50 transition <%= 'bg-secondary/5' if user.id == current_user.id %>">
-          <div class="flex items-center gap-4">
-            <div class="w-12 text-center font-black text-2xl <%= rank <= 3 ? 'text-secondary' : 'opacity-40' %>">
-              <%= rank %>º
+  <!-- Cards de Estatísticas Rápidas -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-primary/30 transition-all duration-300">
+      <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500 text-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-24 h-24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 10.089 18H8.25c-.621 0-1.125-.504-1.125-1.125v-1.5c0-1.03-.253-2.007-.7-2.868M17.85 5.855A3.378 3.378 0 0 0 19.5 4.5a3.375 3.375 0 0 0-3.375-3.375 3.375 3.375 0 0 0-3 3.06m3.003 12.185A4.833 4.833 0 0 1 12 18.75c-1.39 0-2.651-.59-3.535-1.528m9.038-.076a4.834 4.834 0 0 0 1.258-2.585M9 13.5a3.75 3.75 0 1 1 0-7.5 3.75 3.75 0 0 1 0 7.5Zm-.75 6H8.25A2.25 2.25 0 0 1 6 17.25v-.83a7.75 7.75 0 0 1 2-5.272" /></svg>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-7 9a7 7 0 1 1 14 0H3Z" /></svg>
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40">Competidores</span>
+        <h3 class="text-2xl font-black text-white mt-0.5"><%= @usuarios_ranking.size %></h3>
+      </div>
+    </div>
+
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-warning/30 transition-all duration-300">
+      <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500 text-warning">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-24 h-24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-2.25a1.125 1.125 0 0 0-1.125 1.125v3.375m9 0h-9m-9 0a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3m-9 0v-3.375a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-2.25a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 3 4.125v2.25A3.375 3.375 0 0 0 6.375 9.75h1.5A3.375 3.375 0 0 0 11.25 13.125v3.375m9 0h-9" /></svg>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-xl shrink-0">
+        🏆
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40">Pontos do Líder</span>
+        <h3 class="text-2xl font-black text-white mt-0.5">
+          <%= @usuarios_ranking.first&.try(:total_pontos_ranking) || 0 %>
+        </h3>
+      </div>
+    </div>
+
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-secondary/30 transition-all duration-300">
+      <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform duration-500 text-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-24 h-24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-xl shrink-0">
+        🏅
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40">Sua Posição</span>
+        <h3 class="text-2xl font-black text-white mt-0.5">
+          <%= @current_user_rank ? "#{@current_user_rank}º" : "—" %>
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- PÓDIO TRIDIMENSIONAL DO TOP 3 -->
+  <% if @usuarios_ranking.any? %>
+    <div class="flex flex-col md:flex-row items-end justify-center gap-6 max-w-3xl mx-auto px-2 pt-6 pb-2">
+      
+      <!-- 2º COLOCADO (Prata) - Fica à esquerda no desktop -->
+      <% if @usuarios_ranking.size >= 2 %>
+        <% user2 = @usuarios_ranking[1] %>
+        <div class="order-2 md:order-1 flex flex-col items-center w-full md:w-56">
+          <div class="w-16 h-16 rounded-full bg-slate-800 border-4 border-slate-300 shadow-[0_0_20px_rgba(203,213,225,0.2)] flex items-center justify-center relative mb-3 shrink-0">
+            <span class="text-2xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">🥈</span>
+            <% if user2.id == current_user.id %>
+              <span class="absolute -top-1 -right-1 bg-secondary text-white text-[8px] font-black tracking-wider px-1.5 py-0.5 rounded-full uppercase">Você</span>
+            <% end %>
+          </div>
+          <div class="bg-base-100/90 border border-slate-200/20 rounded-2xl p-4 w-full text-center shadow-lg transition duration-300 hover:scale-105 flex flex-col justify-between h-36 relative overflow-hidden <%= 'ring-2 ring-slate-400 bg-secondary/5' if user2.id == current_user.id %>">
+            <div class="absolute top-0 left-0 w-full h-1 bg-slate-300"></div>
+            <div class="min-w-0">
+              <p class="font-extrabold text-sm truncate text-slate-100"><%= user2.name %></p>
+              <p class="text-[9px] uppercase font-black tracking-wider text-slate-400 opacity-60 mt-1"><%= user2.try(:total_palpites) || 0 %> palpites</p>
             </div>
-            <div class="flex flex-col">
-              <span class="font-bold text-lg"><%= user.name %></span>
-              <% if user.id == current_user.id %>
-                <span class="badge badge-secondary badge-sm mt-1">Você</span>
-              <% end %>
+            <div class="mt-2 shrink-0">
+              <span class="text-3xl font-black text-slate-200"><%= user2.try(:total_pontos_ranking) || 0 %></span>
+              <span class="text-[8px] font-bold opacity-50 block uppercase text-slate-300">Pontos</span>
             </div>
           </div>
-          <div class="flex items-center gap-6 text-right">
-            <div class="flex flex-col items-end">
-              <span class="text-[10px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
-              <span class="font-bold text-lg text-slate-400"><%= user.try(:total_palpites) || 0 %></span>
+        </div>
+      <% end %>
+
+      <!-- 1º COLOCADO (Ouro) - Fica no centro e mais alto -->
+      <% user1 = @usuarios_ranking[0] %>
+      <div class="order-1 md:order-2 flex flex-col items-center w-full md:w-64 md:-translate-y-4">
+        <div class="w-20 h-20 rounded-full bg-slate-800 border-4 border-amber-400 shadow-[0_0_30px_rgba(251,191,36,0.3)] flex items-center justify-center relative mb-4 shrink-0">
+          <span class="text-3xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">🥇</span>
+          <span class="absolute -top-3.5 bg-amber-400 text-slate-950 font-black text-[8px] tracking-wider px-2 py-0.5 rounded-full uppercase shadow-md animate-pulse">Líder</span>
+          <% if user1.id == current_user.id %>
+            <span class="absolute -top-1 -right-1 bg-secondary text-white text-[8px] font-black tracking-wider px-1.5 py-0.5 rounded-full uppercase z-10">Você</span>
+          <% end %>
+        </div>
+        <div class="bg-base-100/90 border border-amber-400/20 rounded-2xl p-5 w-full text-center shadow-2xl transition duration-300 hover:scale-105 flex flex-col justify-between h-40 relative overflow-hidden <%= 'ring-2 ring-amber-400 bg-secondary/5' if user1.id == current_user.id %>">
+          <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 shadow-[0_1px_10px_rgba(251,191,36,0.5)]"></div>
+          <div class="min-w-0">
+            <p class="font-black text-base truncate text-white"><%= user1.name %></p>
+            <p class="text-[9px] uppercase font-black tracking-wider text-amber-400 mt-1"><%= user1.try(:total_palpites) || 0 %> palpites</p>
+          </div>
+          <div class="mt-2 shrink-0">
+            <span class="text-4xl font-black text-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.3)]"><%= user1.try(:total_pontos_ranking) || 0 %></span>
+            <span class="text-[9px] font-bold opacity-80 block uppercase text-amber-300/80">Pontos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3º COLOCADO (Bronze) - Fica à direita no desktop -->
+      <% if @usuarios_ranking.size >= 3 %>
+        <% user3 = @usuarios_ranking[2] %>
+        <div class="order-3 flex flex-col items-center w-full md:w-56">
+          <div class="w-16 h-16 rounded-full bg-slate-800 border-4 border-amber-700 shadow-[0_0_20px_rgba(180,83,9,0.2)] flex items-center justify-center relative mb-3 shrink-0">
+            <span class="text-2xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">🥉</span>
+            <% if user3.id == current_user.id %>
+              <span class="absolute -top-1 -right-1 bg-secondary text-white text-[8px] font-black tracking-wider px-1.5 py-0.5 rounded-full uppercase">Você</span>
+            <% end %>
+          </div>
+          <div class="bg-base-100/90 border border-slate-200/20 rounded-2xl p-4 w-full text-center shadow-lg transition duration-300 hover:scale-105 flex flex-col justify-between h-36 relative overflow-hidden <%= 'ring-2 ring-amber-700 bg-secondary/5' if user3.id == current_user.id %>">
+            <div class="absolute top-0 left-0 w-full h-1 bg-amber-700"></div>
+            <div class="min-w-0">
+              <p class="font-extrabold text-sm truncate text-slate-100"><%= user3.name %></p>
+              <p class="text-[9px] uppercase font-black tracking-wider text-slate-400 opacity-60 mt-1"><%= user3.try(:total_palpites) || 0 %> palpites</p>
             </div>
-            <div class="flex flex-col items-end w-24">
-              <span class="text-[10px] uppercase font-black opacity-30 tracking-tighter text-secondary">Pontuação</span>
-              <span class="text-3xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || 0 %></span>
+            <div class="mt-2 shrink-0">
+              <span class="text-3xl font-black text-amber-700"><%= user3.try(:total_pontos_ranking) || 0 %></span>
+              <span class="text-[8px] font-bold opacity-50 block uppercase text-amber-800">Pontos</span>
             </div>
           </div>
-        </li>
+        </div>
+      <% end %>
+
+    </div>
+  <% end %>
+
+  <!-- Restante do Ranking (A partir da 4ª posição) -->
+  <div class="bg-base-100 shadow-2xl rounded-2xl border border-base-200 overflow-hidden">
+    <div class="px-6 py-4 bg-base-200/50 border-b border-base-200 flex items-center justify-between text-xs font-black uppercase tracking-wider opacity-60">
+      <span>Competidores</span>
+      <div class="flex items-center gap-12">
+        <span class="w-16 text-right">Palpites</span>
+        <span class="w-20 text-right">Pontos</span>
+      </div>
+    </div>
+    
+    <ul class="list w-full divide-y divide-base-200">
+      <!-- Exibe a lista a partir da 4ª posição -->
+      <% remaining_users = @usuarios_ranking[3..-1] || [] %>
+      <% if remaining_users.any? %>
+        <% remaining_users.each_with_index do |user, index| %>
+          <% rank = index + 4 %>
+          <% is_current = (user.id == current_user.id) %>
+          <li <%= "id=current-user-rank-row" if is_current %>
+              class="p-4 flex items-center justify-between transition-all duration-300 <%= is_current ? 'bg-secondary/10 border-l-4 border-l-secondary relative overflow-hidden font-semibold shadow-inner' : 'hover:bg-base-200/50' %>">
+            
+            <div class="flex items-center gap-4">
+              <div class="w-12 text-center font-bold text-lg opacity-40 shrink-0">
+                <%= rank %>º
+              </div>
+              
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm md:text-base <%= 'text-secondary font-black' if is_current %> text-white"><%= user.name %></span>
+                  <% if is_current %>
+                    <span class="badge badge-secondary badge-sm text-[10px] uppercase font-black tracking-wider py-1.5 px-2">Você</span>
+                  <% end %>
+                  <% if user.premium? %>
+                    <span class="text-amber-400 shrink-0" title="Usuário Premium">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.537 1.651l3.6 3.1-.114 4.712c-.02.839.865 1.482 1.58 1.053L10 15.741l4.122 2.522c.715.43 1.6-.214 1.58-1.053l-.114-4.712 3.6-3.1c.634-.544.296-1.584-.537-1.65l-4.752-.382-1.83-4.4Z" clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-12 text-right">
+              <span class="w-16 font-bold text-sm md:text-base text-base-content/60"><%= user.try(:total_palpites) || 0 %></span>
+              <span class="w-20 text-xl md:text-2xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || 0 %></span>
+            </div>
+          </li>
+        <% end %>
+      <% else %>
+        <!-- Caso haja 3 competidores ou menos no total, a lista abaixo do pódio fica vazia -->
+        <% if @usuarios_ranking.size <= 3 %>
+          <li class="p-8 text-center text-xs opacity-40 italic">
+            O ranking completo está resumido no pódio acima.
+          </li>
+        <% end %>
       <% end %>
     </ul>
   </div>
-
-  <div class="mt-8 flex justify-center">
-    <%= will_paginate @usuarios_ranking, renderer: TailwindLinkRenderer, previous_label: "Anterior", next_label: "Próxima" %>
-  </div>
 </div>
+
+<% if @current_user_rank && @current_user_ranking_data %>
+  <!-- Barra Flutuante Fixa para o Usuário Logado -->
+  <div id="current-user-floating-bar" 
+       class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-4xl bg-gradient-to-r from-secondary/95 via-orange-600/95 to-primary/95 text-white shadow-[0_10px_30px_rgba(249,115,22,0.3)] rounded-2xl p-4 md:p-5 flex items-center justify-between cursor-pointer border border-orange-400/30 backdrop-blur-md transition-all duration-500 ease-out opacity-0 translate-y-10 pointer-events-none z-30 group hover:shadow-[0_15px_35px_rgba(249,115,22,0.4)] hover:scale-[1.01]"
+       title="Clique para ir até a sua posição!">
+    
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-black text-xl border border-white/30 text-white shrink-0">
+        <%= @current_user_rank %>º
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-sm md:text-base tracking-wide"><%= @current_user_ranking_data.name %></span>
+          <span class="badge badge-sm bg-white/20 text-white border-none font-bold">Você</span>
+        </div>
+        <span class="text-[11px] opacity-90 font-medium flex items-center gap-1">
+          🎯 Ir para minha posição
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 animate-bounce inline-block">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v4.59L7.3 9.38a.75.75 0 1 0-1.1 1.02l3.25 3.5a.75.75 0 0 0 1.1 0l3.25-3.5a.75.75 0 1 0-1.1-1.02l-1.95 2.1V6.75Z" clip-rule="evenodd" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-8 text-right shrink-0">
+      <div class="flex flex-col items-end">
+        <span class="text-[9px] uppercase font-black tracking-widest text-white/70">Palpites</span>
+        <span class="font-extrabold text-base md:text-lg"><%= @current_user_ranking_data.try(:total_palpites) || 0 %></span>
+      </div>
+      <div class="flex flex-col items-end w-20 md:w-24">
+        <span class="text-[9px] uppercase font-black tracking-widest text-white/70">Pontuação</span>
+        <span class="text-2xl md:text-3xl font-black"><%= @current_user_ranking_data.try(:total_pontos_ranking) || 0 %></span>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  (function() {
+    function initRanking() {
+      const targetRow = document.getElementById('current-user-rank-row');
+      const floatingBar = document.getElementById('current-user-floating-bar');
+      
+      if (!targetRow || !floatingBar) return;
+      
+      // Desconectar o observer anterior se houver
+      if (window.rankingObserver) {
+        window.rankingObserver.disconnect();
+      }
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // O usuário está visível na tela: esconde a barra flutuante
+            floatingBar.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
+            floatingBar.classList.remove('opacity-100', 'translate-y-0');
+          } else {
+            // O usuário não está visível na tela: mostra a barra flutuante
+            floatingBar.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+            floatingBar.classList.add('opacity-100', 'translate-y-0');
+          }
+        });
+      }, {
+        root: null, // viewport padrão
+        threshold: 0.1 // 10% do elemento visível
+      });
+      
+      observer.observe(targetRow);
+      window.rankingObserver = observer;
+      
+      // Scroll suave ao clicar na barra
+      floatingBar.onclick = function() {
+        targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Efeito de brilho/pulso na linha
+        targetRow.classList.add('ring-4', 'ring-secondary/50', 'scale-[1.01]', 'duration-300');
+        setTimeout(() => {
+          targetRow.classList.remove('ring-4', 'ring-secondary/50', 'scale-[1.01]');
+        }, 1500);
+      };
+    }
+
+    // Registrar eventos para o Turbo Drive e carga inicial da página
+    document.addEventListener('turbo:load', initRanking);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initRanking();
+    }
+  })();
+</script>

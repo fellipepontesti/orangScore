@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking]
+  before_action :authorize_premium_or_root!, only: [:ranking]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -19,14 +20,17 @@ class UsersController < ApplicationController
   def ranking
     # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
     @usuarios_ranking = User
-                      .joins("LEFT JOIN user_points ON user_points.user_id = users.id")
-                      .joins("LEFT JOIN palpites ON palpites.user_id = users.id")
-                      .group("users.id")
+                      .joins("LEFT JOIN (SELECT user_id, SUM(pontos) as total_points FROM user_points GROUP BY user_id) points_summary ON points_summary.user_id = users.id")
+                      .joins("LEFT JOIN (SELECT user_id, COUNT(id) as total_palpites FROM palpites GROUP BY user_id) palpites_summary ON palpites_summary.user_id = users.id")
                       .select("users.*, 
-                               COALESCE(SUM(user_points.pontos), 0) as total_pontos_ranking, 
-                               COUNT(DISTINCT palpites.id) as total_palpites")
+                               COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
+                               COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
                       .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
-                      .paginate(page: params[:page], per_page: 50)
+                      .to_a
+
+    @current_user_ranking_index = @usuarios_ranking.index { |u| u.id == current_user.id }
+    @current_user_rank = @current_user_ranking_index ? @current_user_ranking_index + 1 : nil
+    @current_user_ranking_data = @usuarios_ranking[@current_user_ranking_index] if @current_user_ranking_index
   end
 
   def perfil
@@ -123,5 +127,11 @@ class UsersController < ApplicationController
 
   def password_params
     params.require(:user).permit(:current_password, :password, :password_confirmation)
+  end
+
+  def authorize_premium_or_root!
+    unless current_user.root? || current_user.premium?
+      redirect_to planos_path, alert: "O Ranking Global é uma funcionalidade exclusiva para assinantes Premium. Faça seu upgrade e confira sua posição!"
+    end
   end
 end

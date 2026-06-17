@@ -8,6 +8,8 @@ one:
   data: 2025-12-13 16:38:14
   tipo: grupo
   grupo: one
+  uuid: "00000000-0000-0000-0000-000000000041"
+  definir: false
 
 two:
   mandante: two
@@ -17,3 +19,5 @@ two:
   data: 2025-12-13 16:38:14
   tipo: grupo
   grupo: one
+  uuid: "00000000-0000-0000-0000-000000000042"
+  definir: false
