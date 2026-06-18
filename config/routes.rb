@@ -15,6 +15,11 @@ Rails.application.routes.draw do
   get "/dashboard/usuarios/novo", to: "dashboard#new_user", as: :dashboard_new_user
   post "/dashboard/usuarios", to: "dashboard#create_user", as: :dashboard_create_user
 
+  # Numeração de Jogadores para Root
+  get "/dashboard/jogadores/numeracao", to: "dashboard#editar_numeracao_selecoes", as: :dashboard_editar_numeracao_selecoes
+  get "/dashboard/jogadores/numeracao/:selecao_id", to: "dashboard#editar_numeracao_jogadores", as: :dashboard_editar_numeracao_jogadores
+  patch "/dashboard/jogadores/numeracao/:selecao_id", to: "dashboard#salvar_numeracao_jogadores", as: :dashboard_salvar_numeracao_jogadores
+
   unauthenticated do
     devise_scope :user do
       root to: "devise/sessions#new"

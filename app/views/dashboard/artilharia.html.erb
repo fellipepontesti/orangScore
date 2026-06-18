@@ -28,10 +28,12 @@
       <div class="order-2 md:order-1 flex flex-col items-center">
         <% if top_2 %>
           <div class="avatar mb-3 relative group">
-            <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">2º</div>
+            <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
             <div class="mask mask-squircle h-20 w-20 bg-slate-400/20 border-2 border-slate-300 overflow-hidden flex items-center justify-center p-1">
               <% if top_2.selecao&.logo.present? %>
-                <%= image_tag "selecoes/#{top_2.selecao.logo}", class: "object-contain w-full h-full" %>
+                <%= link_to selecao_path(top_2.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                  <%= image_tag "selecoes/#{top_2.selecao.logo}", class: "object-contain w-full h-full" %>
+                <% end %>
               <% else %>
                 <span class="text-2xl font-bold">?</span>
               <% end %>
@@ -39,7 +41,13 @@
           </div>
           <div class="text-center mb-4 min-w-0 px-2 w-full">
             <h3 class="font-extrabold text-base truncate text-white" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
-            <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_2.selecao&.nome %></p>
+            <% if top_2.selecao.present? %>
+              <%= link_to selecao_path(top_2.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+                <%= top_2.selecao.nome %>
+              <% end %>
+            <% else %>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
+            <% end %>
             <div class="flex items-center justify-center gap-2 mt-1.5">
               <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
             </div>
@@ -55,10 +63,12 @@
       <div class="order-1 md:order-2 flex flex-col items-center">
         <% if top_1 %>
           <div class="avatar mb-4 relative scale-110 group">
-            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">1º</div>
+            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
             <div class="mask mask-squircle h-24 w-24 bg-amber-500/10 border-4 border-amber-400 overflow-hidden flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
               <% if top_1.selecao&.logo.present? %>
-                <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+                <%= link_to selecao_path(top_1.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                  <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+                <% end %>
               <% else %>
                 <span class="text-3xl font-bold text-amber-400">?</span>
               <% end %>
@@ -68,7 +78,13 @@
             <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
               <%= top_1.nome %>
             </h3>
-            <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5"><%= top_1.selecao&.nome %></p>
+            <% if top_1.selecao.present? %>
+              <%= link_to selecao_path(top_1.selecao), class: "text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5 hover:text-amber-400 hover:underline transition inline-block" do %>
+                <%= top_1.selecao.nome %>
+              <% end %>
+            <% else %>
+              <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5">-</p>
+            <% end %>
             <div class="flex items-center justify-center gap-2 mt-2">
               <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
             </div>
@@ -85,10 +101,12 @@
       <div class="order-3 flex flex-col items-center">
         <% if top_3 %>
           <div class="avatar mb-3 relative group">
-            <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">3º</div>
+            <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
             <div class="mask mask-squircle h-20 w-20 bg-amber-700/20 border-2 border-amber-700 overflow-hidden flex items-center justify-center p-1">
               <% if top_3.selecao&.logo.present? %>
-                <%= image_tag "selecoes/#{top_3.selecao.logo}", class: "object-contain w-full h-full" %>
+                <%= link_to selecao_path(top_3.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                  <%= image_tag "selecoes/#{top_3.selecao.logo}", class: "object-contain w-full h-full" %>
+                <% end %>
               <% else %>
                 <span class="text-2xl font-bold">?</span>
               <% end %>
@@ -96,7 +114,13 @@
           </div>
           <div class="text-center mb-4 min-w-0 px-2 w-full">
             <h3 class="font-extrabold text-base truncate text-white" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
-            <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_3.selecao&.nome %></p>
+            <% if top_3.selecao.present? %>
+              <%= link_to selecao_path(top_3.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+                <%= top_3.selecao.nome %>
+              <% end %>
+            <% else %>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
+            <% end %>
             <div class="flex items-center justify-center gap-2 mt-1.5">
               <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
             </div>
@@ -148,18 +172,27 @@
                   </div>
                 </td>
                 <td>
-                  <div class="flex items-center gap-2">
-                    <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden">
-                      <% if jogador.selecao&.logo.present? %>
-                        <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
-                      <% else %>
+                  <% if jogador.selecao.present? %>
+                    <%= link_to selecao_path(jogador.selecao), class: "flex items-center gap-2 group/selecao" do %>
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                        <% if jogador.selecao.logo.present? %>
+                          <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
+                        <% else %>
+                          <span class="text-[10px] font-bold">?</span>
+                        <% end %>
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        <%= jogador.selecao.nome %>
+                      </span>
+                    <% end %>
+                  <% else %>
+                    <div class="flex items-center gap-2 opacity-40">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden">
                         <span class="text-[10px] font-bold">?</span>
-                      <% end %>
+                      </div>
+                      <span class="font-extrabold text-sm truncate">-</span>
                     </div>
-                    <span class="font-extrabold text-sm text-slate-100 truncate">
-                      <%= jogador.selecao&.nome %>
-                    </span>
-                  </div>
+                  <% end %>
                 </td>
                 <td class="text-sm opacity-75">
                   <%= jogador.clube.present? ? jogador.clube : '-' %>
