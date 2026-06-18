@@ -14,6 +14,14 @@
  *= require_self
  */
 
+*, ::before, ::after {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-mono, .font-mono * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+
 body {
   font-family: 'Outfit', sans-serif !important;
   -webkit-font-smoothing: antialiased;

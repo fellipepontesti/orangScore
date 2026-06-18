@@ -5,7 +5,7 @@ class LigasController < ApplicationController
   before_action :validar_admin_da_liga!, only: %i[ accept_member invite_member remove_member ]
 
   def index
-    @ligas = ligas_visiveis
+    @ligas = ligas_visiveis.ordenadas_por_pontos
 
     if params[:nome].present?
       @ligas = @ligas.where('ligas.nome ILIKE ?', "%#{params[:nome]}%")
@@ -30,7 +30,7 @@ class LigasController < ApplicationController
   end
 
   def publicas
-    @ligas = Liga.where(publica: true).order(membros: :desc).paginate(page: params[:page], per_page: 20)
+    @ligas = Liga.where(publica: true).ordenadas_por_pontos.paginate(page: params[:page], per_page: 20)
   end
 
   def join

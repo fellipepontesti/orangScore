@@ -7,7 +7,7 @@
           <span class="text-xs font-black tracking-wide">ÁREA DO ADMINISTRADOR</span>
         </div>
       </div>
-      <p class="opacity-70 text-lg">Classificação de artilheiros e garçons da Copa do Mundo</p>
+      <p class="opacity-70 text-lg">Classificação de artilheiros da Copa do Mundo</p>
     </div>
     
     <%= link_to authenticated_root_path, class: "btn btn-outline border-base-200 text-white hover:bg-base-200 gap-2 font-bold" do %>
@@ -38,13 +38,10 @@
             </div>
           </div>
           <div class="text-center mb-4 min-w-0 px-2 w-full">
-            <h3 class="font-extrabold text-base truncate" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
+            <h3 class="font-extrabold text-base truncate text-white" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
             <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_2.selecao&.nome %></p>
             <div class="flex items-center justify-center gap-2 mt-1.5">
-              <span class="badge badge-neutral gap-1 text-xs font-bold"><strong class="text-primary"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
-              <% if top_2.assistencias > 0 %>
-                <span class="badge badge-outline gap-1 text-xs font-bold"><strong class="text-accent"><%= top_2.assistencias %></strong> <%= top_2.assistencias == 1 ? 'assist.' : 'assist.' %></span>
-              <% end %>
+              <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
             </div>
           </div>
         <% end %>
@@ -58,7 +55,7 @@
       <div class="order-1 md:order-2 flex flex-col items-center">
         <% if top_1 %>
           <div class="avatar mb-4 relative scale-110 group">
-            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md animate-bounce">1º</div>
+            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md">1º</div>
             <div class="mask mask-squircle h-24 w-24 bg-amber-500/10 border-4 border-amber-400 overflow-hidden flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
               <% if top_1.selecao&.logo.present? %>
                 <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
@@ -70,16 +67,10 @@
           <div class="text-center mb-4 min-w-0 px-2 w-full scale-105">
             <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
               <%= top_1.nome %>
-              <% if top_1.capitao %>
-                <span class="text-amber-400 text-xs" title="Capitão">👑</span>
-              <% end %>
             </h3>
             <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5"><%= top_1.selecao&.nome %></p>
             <div class="flex items-center justify-center gap-2 mt-2">
               <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
-              <% if top_1.assistencias > 0 %>
-                <span class="badge badge-accent gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.assistencias %></strong> <%= top_1.assistencias == 1 ? 'assist.' : 'assist.' %></span>
-              <% end %>
             </div>
           </div>
         <% end %>
@@ -104,13 +95,10 @@
             </div>
           </div>
           <div class="text-center mb-4 min-w-0 px-2 w-full">
-            <h3 class="font-extrabold text-base truncate" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
+            <h3 class="font-extrabold text-base truncate text-white" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
             <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= top_3.selecao&.nome %></p>
             <div class="flex items-center justify-center gap-2 mt-1.5">
-              <span class="badge badge-neutral gap-1 text-xs font-bold"><strong class="text-primary"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
-              <% if top_3.assistencias > 0 %>
-                <span class="badge badge-outline gap-1 text-xs font-bold"><strong class="text-accent"><%= top_3.assistencias %></strong> <%= top_3.assistencias == 1 ? 'assist.' : 'assist.' %></span>
-              <% end %>
+              <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
             </div>
           </div>
         <% end %>
@@ -127,7 +115,7 @@
       <div class="px-6 py-5 border-b border-base-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-xl font-bold">Todos os Goleadores</h2>
-          <p class="text-xs opacity-50 mt-0.5">Listagem completa dos jogadores que balançaram as redes ou deram assistências</p>
+          <p class="text-xs opacity-50 mt-0.5">Listagem completa dos jogadores que balançaram as redes na Copa</p>
         </div>
         <span class="badge badge-primary font-bold px-3 py-2 text-xs"><%= @artilheiros.size %> JOGADORES</span>
       </div>
@@ -141,7 +129,6 @@
               <th>Seleção</th>
               <th>Clube</th>
               <th class="text-center font-bold text-primary">Gols ⚽</th>
-              <th class="text-center font-bold text-accent">Assistências 👟</th>
             </tr>
           </thead>
           <tbody>
@@ -152,11 +139,8 @@
                 </td>
                 <td>
                   <div class="flex items-center gap-3">
-                    <div class="font-bold text-base flex items-center gap-1.5">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
                       <%= jogador.nome %>
-                      <% if jogador.capitao %>
-                        <span class="text-amber-400 text-xs" title="Capitão">👑</span>
-                      <% end %>
                     </div>
                     <span class="badge badge-ghost badge-sm font-semibold opacity-60">
                       <%= jogador.posicao_pt %>
@@ -172,7 +156,7 @@
                         <span class="text-[10px] font-bold">?</span>
                       <% end %>
                     </div>
-                    <span class="font-extrabold text-sm text-slate-800 dark:text-white truncate">
+                    <span class="font-extrabold text-sm text-slate-100 truncate">
                       <%= jogador.selecao&.nome %>
                     </span>
                   </div>
@@ -182,9 +166,6 @@
                 </td>
                 <td class="text-center">
                   <span class="text-lg font-black text-primary"><%= jogador.gols %></span>
-                </td>
-                <td class="text-center">
-                  <span class="text-lg font-black text-accent"><%= jogador.assistencias %></span>
                 </td>
               </tr>
             <% end %>
@@ -200,7 +181,7 @@
         <span class="text-4xl">⚽</span>
       </div>
       <h2 class="text-2xl font-bold mb-2">Nenhum gol registrado ainda</h2>
-      <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols ou assistências na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
+      <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
       <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-xl font-bold" do %>
         Ir para o Painel Administrativo
       <% end %>

@@ -13,8 +13,10 @@
       <div class="font-bold text-base sm:text-lg text-white break-words pr-2">
         <%= liga.nome %>
       </div>
-      <div class="text-xs uppercase font-semibold opacity-60 mt-0.5">
-        <%= liga.liga_membros.count %> membros
+      <div class="text-xs uppercase font-semibold opacity-60 mt-0.5 flex items-center gap-1.5">
+        <span><%= liga.liga_membros.count %> membros</span>
+        <span class="opacity-40">•</span>
+        <span class="text-primary font-bold text-xs"><%= liga.total_pontos_liga %> pts</span>
       </div>
     </div>
   </div>

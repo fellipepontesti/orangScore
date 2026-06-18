@@ -122,8 +122,8 @@ class DashboardController < ApplicationController
 
   def artilharia
     @artilheiros = Jogador.includes(:selecao)
-                          .where("gols > 0 OR assistencias > 0")
-                          .order(gols: :desc, assistencias: :desc, nome: :asc)
+                          .where("gols > 0")
+                          .order(gols: :desc, nome: :asc)
   end
 
   private

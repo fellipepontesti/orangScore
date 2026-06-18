@@ -20,6 +20,7 @@
             
             <div class="flex flex-wrap items-center gap-2 mt-4">
               <div class="badge badge-primary whitespace-normal py-1" style="height: auto; min-height: 1.5rem;"><%= liga.total_participantes %> participantes</div>
+              <div class="badge badge-neutral whitespace-normal py-1 text-white font-semibold" style="height: auto; min-height: 1.5rem;"><%= liga.total_pontos_liga %> pts</div>
               <% if liga.entrada_livre %>
                 <div class="badge badge-secondary badge-outline whitespace-normal py-1" style="height: auto; min-height: 1.5rem;">Entrada Livre</div>
               <% else %>
