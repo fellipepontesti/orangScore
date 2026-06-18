@@ -17,15 +17,6 @@ module Ligas
         return liga
       end
 
-      if liga.pontuacao_zerada? && !@current_user.premium?
-        liga.errors.add(
-          :pontuacao_zerada,
-          'é uma funcionalidade exclusiva do plano Premium. Faça upgrade para ativá-la!'
-        )
-
-        return liga
-      end
-
       liga.owner_id = @current_user.id
       liga.membros = 1
 

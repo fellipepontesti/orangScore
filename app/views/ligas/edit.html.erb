@@ -1,6 +1,30 @@
 <% content_for :title, "Editar liga" %>
 
-<div class="w-full">
-  <h1 class="font-bold text-center text-4xl p-4 pb-8 pt-8">Editar liga</h1>
+<div class="space-y-8 max-w-3xl mx-auto py-8 px-4">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <%= link_to "Ligas", ligas_path, class: "hover:underline" %>
+        <span>/</span>
+        <%= link_to @liga.nome, liga_path(@liga), class: "hover:underline" %>
+        <span>/</span>
+        <span>Editar</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+        Editar Liga
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base">
+        Modifique as configurações gerais da sua liga.
+      </p>
+    </div>
+    
+    <%= link_to liga_path(@liga), class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
+    <% end %>
+  </div>
+
   <%= render "form", liga: @liga %>
 </div>

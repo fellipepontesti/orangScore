@@ -12,14 +12,14 @@
         </div>
       </div>
       <div class="space-y-1">
-        <div class="flex items-center gap-2 text-sm text-primary font-mono font-bold uppercase tracking-wider">
+        <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
           <%= link_to "Seleções Pendentes", dashboard_editar_numeracao_selecoes_path, class: "hover:underline" %>
           <span>/</span>
           <span>Editar Numeração</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2 flex-wrap">
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent flex items-center gap-2 flex-wrap pb-1">
           Numeração: <%= @selecao.nome %>
-          <span class="badge badge-warning font-black text-xs uppercase py-2.5">Grupo <%= @selecao.grupo&.nome&.last || "—" %></span>
+          <span class="badge badge-warning font-black text-xs uppercase py-2.5 text-black">Grupo <%= @selecao.grupo&.nome&.last || "—" %></span>
         </h1>
       </div>
     </div>
