@@ -97,4 +97,46 @@ class LigaTest < ActiveSupport::TestCase
     liga_com_pontos = Liga.com_total_pontos.find(liga.id)
     assert_equal 10, liga_com_pontos.total_pontos_liga
   end
+
+  test "Ligas::Create impede criacao de liga zerada se o usuario nao for premium" do
+    user = users(:two)
+    user.ligas.destroy_all
+    
+    if user.assinatura
+      user.assinatura.update!(plano: :basic, ativa: true)
+    else
+      Assinatura.create!(usuario: user, plano: :basic, ativa: true)
+    end
+    user.reload
+    
+    service = Ligas::Create.new(
+      current_user: user,
+      params: { nome: "Liga Zerada Teste Comum", pontuacao_zerada: true, publica: true, entrada_livre: true }
+    )
+    liga = service.call
+    
+    assert_not liga.persisted?
+    assert_includes liga.errors[:pontuacao_zerada], "é uma funcionalidade exclusiva do plano Premium. Faça upgrade para ativá-la!"
+  end
+
+  test "Ligas::Create permite criacao de liga zerada se o usuario for premium" do
+    user = users(:two)
+    user.ligas.destroy_all
+    
+    if user.assinatura
+      user.assinatura.update!(plano: :premium, ativa: true)
+    else
+      Assinatura.create!(usuario: user, plano: :premium, ativa: true)
+    end
+    user.reload
+    
+    service = Ligas::Create.new(
+      current_user: user,
+      params: { nome: "Liga Zerada Teste Premium", pontuacao_zerada: true, publica: true, entrada_livre: true }
+    )
+    liga = service.call
+    
+    assert liga.persisted?
+    assert liga.pontuacao_zerada?
+  end
 end

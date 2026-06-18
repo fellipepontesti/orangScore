@@ -45,10 +45,24 @@
 
           <div class="form-control">
             <label class="cursor-pointer label justify-start gap-4 w-full">
-              <%= form.check_box :pontuacao_zerada, class: "toggle toggle-accent shrink-0", disabled: liga.persisted? %>
+              <%= form.check_box :pontuacao_zerada, class: "toggle toggle-accent shrink-0", disabled: liga.persisted? || !current_user.premium? %>
               <div class="flex flex-col flex-1 min-w-0">
-                <span class="label-text font-bold whitespace-normal">Começar com pontuação zerada</span>
-                <span class="label-text-alt opacity-70 whitespace-normal">Os pontos e palpites dos membros só começam a contar a partir do momento em que eles entram na liga. (Não editável após a criação)</span>
+                <div class="flex items-center gap-2">
+                  <span class="label-text font-bold whitespace-normal">Começar com pontuação zerada</span>
+                  <% unless current_user.premium? %>
+                    <span class="badge badge-warning text-[10px] font-black text-black gap-1 uppercase shrink-0 py-1 px-1.5 shadow-sm">
+                      ⭐ Premium
+                    </span>
+                  <% end %>
+                </div>
+                <span class="label-text-alt opacity-70 whitespace-normal">
+                  Os pontos e palpites dos membros só começam a contar a partir do momento em que eles entram na liga.
+                  <% if current_user.premium? %>
+                    (Não editável após a criação)
+                  <% else %>
+                    <%= link_to "Seja Premium para liberar!", planos_path, class: "text-amber-400 hover:text-amber-500 font-black underline" %>
+                  <% end %>
+                </span>
               </div>
             </label>
           </div>

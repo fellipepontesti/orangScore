@@ -114,7 +114,7 @@ class User < ApplicationRecord
   end
 
   def limite_ligas
-    assinatura.limite_ligas
+    assinatura.present? ? assinatura.limite_ligas : 1
   end
 
   def atingiu_limite_de_ligas?
@@ -122,7 +122,7 @@ class User < ApplicationRecord
   end
 
   def limite_usuarios_por_liga
-    assinatura.limite_usuarios_por_liga
+    assinatura.present? ? assinatura.limite_usuarios_por_liga : 10
   end
 
   def selecao_editavel?
