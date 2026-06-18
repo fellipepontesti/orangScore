@@ -7,7 +7,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if @user.persisted?
       flash[:notice] = I18n.t 'devise.omniauth_callbacks.success', kind: 'Google'
-      @user.remember_me!
+      omniauth_params = request.env['omniauth.params'] || {}
+      if omniauth_params['remember_me'] == '1'
+        @user.remember_me!
+      else
+        @user.forget_me!
+      end
       sign_in_and_redirect @user, event: :authentication
     else
       session['devise.google_data'] = request.env['omniauth.auth'].except(:extra)
