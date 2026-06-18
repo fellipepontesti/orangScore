@@ -224,7 +224,7 @@
     <ul class="list bg-base-100 rounded-box shadow-md w-full p-4 sm:p-8 space-y-3">
       <% @membros_ativos.each_with_index do |liga_membro, i| %>
         
-        <li class="list-row flex flex-col sm:flex-row items-stretch sm:items-center justify-between hover:bg-base-300/50! p-4 gap-4 border-b last:border-b-0 border-base-200 rounded-xl transition-colors">
+        <li class="list-row flex flex-row items-center justify-between hover:bg-base-300/50! p-3 sm:p-4 gap-2 sm:gap-4 border-b last:border-b-0 border-base-200 rounded-xl transition-colors">
           
           <%# 1. BLOCO DA ESQUERDA: Rank + Avatar + Nome (Ocupa o espaço livre no desktop) %>
           <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -270,20 +270,19 @@
             </div>
           </div>
 
-          <%# 2. BLOCO DA DIREITA (GRID): Alinhamento impecável no Desktop / Ajuste fluido no Mobile %>
-          <%# Criamos um grid de 3 colunas fixas a partir de 'sm:' para garantir que Palpites, Pontos e Ações fiquem sempre alinhados verticalmente na listagem %>
-          <div class="grid grid-cols-3 sm:grid-cols-3 items-center gap-2 sm:gap-6 border-t border-base-200/40 sm:border-t-0 pt-3 sm:pt-0 mt-1 sm:mt-0 text-center sm:text-right shrink-0 w-full sm:w-[280px]">
+          <%# 2. BLOCO DA DIREITA (GRID): Alinhamento impecável no Desktop e Mobile em uma única linha %>
+          <div class="grid grid-cols-3 items-center gap-2 sm:gap-6 shrink-0 w-[160px] sm:w-[280px]">
             
             <%# Coluna 1: Palpites %>
-            <div class="flex flex-col items-center sm:items-end shrink-0">
-              <span class="text-[9px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider">Palpites</span>
-              <span class="font-bold text-base sm:text-lg text-slate-300"><%= liga_membro.total_palpites || 0 %></span>
+            <div class="flex flex-col items-end shrink-0">
+              <span class="text-[8px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider whitespace-nowrap">Palpites</span>
+              <span class="font-bold text-sm sm:text-lg text-slate-300"><%= liga_membro.total_palpites || 0 %></span>
             </div>
 
             <%# Coluna 2: Pontuação %>
-            <div class="flex flex-col items-center sm:items-end shrink-0">
-              <span class="text-[9px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider text-primary">Pontuação</span>
-              <span class="font-black text-xl sm:text-2xl text-primary"><%= liga_membro.total_pontos_ranking || 0 %></span>
+            <div class="flex flex-col items-end shrink-0">
+              <span class="text-[8px] sm:text-[10px] uppercase font-black opacity-40 tracking-wider text-primary whitespace-nowrap">Pontos</span>
+              <span class="font-black text-lg sm:text-2xl text-primary leading-none"><%= liga_membro.total_pontos_ranking || 0 %></span>
             </div>
 
             <%# Coluna 3: Botões de Ação (Alinhados totalmente à direita no desktop) %>

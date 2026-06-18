@@ -219,8 +219,24 @@
 
       <% if info && info.dados.present? %>
         <%
-          h_stats = info.dados['home'] || {}
-          a_stats = info.dados['away'] || {}
+          dados_raw = info.dados
+          if dados_raw.is_a?(String)
+            begin
+              dados_raw = JSON.parse(dados_raw)
+            rescue
+              dados_raw = {}
+            end
+          end
+          dados_raw ||= {}
+
+          dados_estatisticas = dados_raw.is_a?(Hash) && dados_raw.key?('statistics') ? dados_raw['statistics'] : dados_raw
+          dados_estatisticas ||= {}
+
+          h_stats = dados_estatisticas['home'] || {}
+          a_stats = dados_estatisticas['away'] || {}
+
+          goals = dados_raw.is_a?(Hash) ? (dados_raw['goals'] || []) : []
+          subs = dados_raw.is_a?(Hash) ? (dados_raw['substitutions'] || []) : []
         %>
         
         <div class="space-y-4">
@@ -353,6 +369,73 @@
               </div>
             </div>
           <% end %>
+
+          <% if goals.any? || subs.any? %>
+            <div class="border-t border-base-200 pt-6 space-y-6">
+              <h4 class="font-extrabold text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-1.5 justify-center">
+                Acontecimentos do Jogo
+              </h4>
+              
+              <div class="relative border-l-2 border-base-300 ml-4 pl-6 space-y-6 text-sm">
+                <%
+                  eventos = []
+                  goals.each do |g|
+                    eventos << { 
+                      tipo: :gol, 
+                      minuto: g['minute'].to_i, 
+                      time: g['team'], 
+                      jogador: g['scorer'], 
+                      assist: g['assist'] 
+                    }
+                  end
+                  subs.each do |s|
+                    eventos << { 
+                      tipo: :sub, 
+                      minuto: s['minute'].to_i, 
+                      time: s['team'], 
+                      on: s['on'], 
+                      off: s['off'] 
+                    }
+                  end
+                  eventos = eventos.sort_by { |e| e[:minuto] }
+                %>
+
+                <% eventos.each do |e| %>
+                  <div class="relative flex items-start gap-3">
+                    <div class="absolute -left-[31px] mt-1.5 w-4 h-4 rounded-full border-2 border-base-100 flex items-center justify-center text-[8px] font-black text-white
+                      <%= e[:tipo] == :gol ? 'bg-success' : 'bg-primary' %>">
+                    </div>
+                    
+                    <div class="flex-none font-bold text-xs opacity-50 w-8 pt-0.5"><%= e[:minuto] %>'</div>
+                    
+                    <div class="flex-1 min-w-0">
+                      <% if e[:tipo] == :gol %>
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-black text-white">⚽ Gol!</span>
+                          <span class="font-bold"><%= e[:jogador] %></span>
+                          <% if e[:assist].present? %>
+                            <span class="text-xs opacity-60">(Assist. <%= e[:assist] %>)</span>
+                          <% end %>
+                        </div>
+                        <div class="text-[10px] uppercase font-bold opacity-40">
+                          <%= e[:time] == 'home' ? @jogo.mandante.nome : @jogo.visitante.nome %>
+                        </div>
+                      <% else %>
+                        <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs opacity-80">
+                          <span class="text-emerald-500 font-bold">▲ <%= e[:on] %></span>
+                          <span class="opacity-40 text-[10px]">entra no lugar de</span>
+                          <span class="text-red-500 font-bold">▼ <%= e[:off] %></span>
+                        </div>
+                        <div class="text-[10px] uppercase font-bold opacity-40">
+                          <%= e[:time] == 'home' ? @jogo.mandante.nome : @jogo.visitante.nome %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
 
       <% else %>
@@ -365,23 +448,6 @@
           <% end %>
         </div>
       <% end %>
-    </div>
-  <% end %>
-
-  <% if current_user.root? %>
-    <div class="bg-base-200/50 rounded-2xl border border-base-200 p-4 space-y-3">
-      <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Ferramentas de Administrador</h4>
-      <div class="flex flex-wrap gap-2 justify-center">
-        <%= link_to "Editar Jogo", edit_jogo_path(@jogo), class: "btn btn-warning btn-sm font-bold" %>
-        
-        <%= button_to "Excluir Jogo", @jogo, method: :delete, class: "btn btn-error btn-sm font-bold text-white", data: { turbo_confirm: "Tem certeza?" } %>
-
-        <% if @jogo.programado? %>
-          <%= button_to "Iniciar Partida", start_jogo_path(@jogo), method: :patch, class: "btn btn-success btn-sm font-bold text-white", data: { turbo_confirm: "Deseja iniciar a partida? Todos os palpiteiros serão notificados." } %>
-        <% elsif @jogo.em_andamento? %>
-          <%= link_to "Finalizar Partida", finalize_jogo_path(@jogo), class: "btn btn-info btn-sm font-bold text-white" %>
-        <% end %>
-      </div>
     </div>
   <% end %>
 </div>

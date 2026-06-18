@@ -56,7 +56,7 @@
       <div id="campo_mandante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :mandante_id, "Mandante", class: "label font-medium p-2" %>
         <%= form.select :mandante_id,
-          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }),
+          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }, jogo.mandante_id),
           { prompt: "Selecione o mandante" },
           {
             class: "select select-ghost select-bordered bg-base-300 w-full",
@@ -67,7 +67,7 @@
       <div id="campo_visitante" class="<%= 'hidden' if jogo.definir? %>">
         <%= form.label :visitante_id, "Visitante", class: "label font-medium p-2" %>
         <%= form.select :visitante_id,
-          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }),
+          options_for_select(@selecoes.map { |s| [s.nome, s.id, { "data-grupo-id": s.grupo_id }] }, jogo.visitante_id),
           { prompt: "Selecione o visitante" },
           {
             class: "select select-ghost select-bordered bg-base-300 w-full",
@@ -198,7 +198,7 @@
     }
   }
 
-  function filtrarSelecoesPorGrupo() {
+  function filtrarSelecoesPorGrupo(resetValue = false) {
     const grupoSelect = document.getElementById('jogo_grupo_id')
     const mandanteSelect = document.getElementById('jogo_mandante_id')
     const visitanteSelect = document.getElementById('jogo_visitante_id')
@@ -208,14 +208,22 @@
     const grupoId = grupoSelect.value
 
     function filtrar(select) {
+      const selectedValue = select.value
+      let hasValidSelection = false
+
       Array.from(select.options).forEach(option => {
         if (!option.value) return
         const grupoOption = option.getAttribute('data-grupo-id')
-
-        option.hidden = grupoId && grupoOption !== grupoId
+        const hidden = grupoId && grupoOption !== grupoId
+        option.hidden = hidden
+        if (option.value === selectedValue && !hidden) {
+          hasValidSelection = true
+        }
       })
 
-      select.value = ''
+      if (resetValue && !hasValidSelection) {
+        select.value = ''
+      }
     }
 
     if (mandanteSelect) filtrar(mandanteSelect)
@@ -229,10 +237,10 @@
 
     if (tipo) tipo.addEventListener('change', toggleCamposJogo)
     if (definir) definir.addEventListener('change', toggleCamposJogo)
-    if (grupo) grupo.addEventListener('change', filtrarSelecoesPorGrupo)
+    if (grupo) grupo.addEventListener('change', () => filtrarSelecoesPorGrupo(true))
 
     toggleCamposJogo()
-    filtrarSelecoesPorGrupo()
+    filtrarSelecoesPorGrupo(false)
   }
 
   document.addEventListener('DOMContentLoaded', bindCamposJogo)

@@ -45,13 +45,20 @@ module Jogos
       end
 
       stats = api_match['statistics']
+      goals = api_match['goals'] || []
+      subs = api_match['substitutions'] || []
+
       if stats.blank?
         return { success: false, error: "Estatísticas ainda não disponíveis para esta partida na API." }
       end
 
       info = Jogo.transaction do
         info_local = jogo.informacao_jogo || JogoInformacaoWrapper.get_or_build(jogo)
-        info_local.dados = stats
+        info_local.dados = {
+          'statistics' => stats,
+          'goals' => goals,
+          'substitutions' => subs
+        }
         info_local.save!
         info_local
       end
@@ -111,7 +118,11 @@ module Jogos
           begin
             InformacaoJogo.transaction do
               info = jogo_local.informacao_jogo || InformacaoJogo.new(jogo_id: jogo_local.id)
-              info.dados = stats
+              info.dados = {
+                'statistics' => stats,
+                'goals' => api_match['goals'] || [],
+                'substitutions' => api_match['substitutions'] || []
+              }
               info.save!
             end
             updated_count += 1
