@@ -47,9 +47,14 @@ module Jogos
       api_match = data['data'].find do |m|
         home_team_api = m['homeTeam'].to_s.downcase
         away_team_api = m['awayTeam'].to_s.downcase
+        
+        translated_home = Jogos::TeamMapping.translate_country(m['homeTeam']).to_s.downcase
+        translated_away = Jogos::TeamMapping.translate_country(m['awayTeam']).to_s.downcase
 
-        (api_home_names.include?(home_team_api) && api_away_names.include?(away_team_api)) ||
-        (api_home_names.include?(away_team_api) && api_away_names.include?(home_team_api))
+        ((api_home_names.include?(home_team_api) || api_home_names.include?(translated_home)) &&
+         (api_away_names.include?(away_team_api) || api_away_names.include?(translated_away))) ||
+        ((api_home_names.include?(away_team_api) || api_home_names.include?(translated_away)) &&
+         (api_away_names.include?(home_team_api) || api_away_names.include?(translated_home)))
       end
 
       unless api_match
@@ -115,6 +120,9 @@ module Jogos
 
         home_team_api = api_match['homeTeam'].to_s.downcase
         away_team_api = api_match['awayTeam'].to_s.downcase
+        
+        translated_home = Jogos::TeamMapping.translate_country(api_match['homeTeam']).to_s.downcase
+        translated_away = Jogos::TeamMapping.translate_country(api_match['awayTeam']).to_s.downcase
 
         # Acha o jogo local correspondente
         jogo_local = jogos_locais.find do |jl|
@@ -132,8 +140,10 @@ module Jogos
             Jogos::TeamMapping.api_team_code(jl.visitante.nome).to_s.downcase
           ].reject(&:blank?)
 
-          (home_names.include?(home_team_api) && away_names.include?(away_team_api)) ||
-          (home_names.include?(away_team_api) && away_names.include?(home_team_api))
+          ((home_names.include?(home_team_api) || home_names.include?(translated_home)) &&
+           (away_names.include?(away_team_api) || away_names.include?(translated_away))) ||
+          ((home_names.include?(away_team_api) || home_names.include?(translated_away)) &&
+           (away_names.include?(home_team_api) || away_names.include?(translated_home)))
         end
 
         if jogo_local
