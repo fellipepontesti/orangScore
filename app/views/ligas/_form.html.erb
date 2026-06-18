@@ -36,10 +36,20 @@
             </label>
           </div>
 
-          <div class="form-control" id="container_entrada_livre" style="<%= liga.publica ? '' : 'display: none;' %>">
+          <div class="form-control mb-4" id="container_entrada_livre" style="<%= liga.publica ? '' : 'display: none;' %>">
             <label class="cursor-pointer label justify-start gap-4">
               <%= form.check_box :entrada_livre, class: "toggle toggle-secondary" %>
               <span class="label-text font-bold">Entrada Livre (Usuários entram diretamente sem precisar de aprovação)</span>
+            </label>
+          </div>
+
+          <div class="form-control">
+            <label class="cursor-pointer label justify-start gap-4">
+              <%= form.check_box :pontuacao_zerada, class: "toggle toggle-accent", disabled: liga.persisted? %>
+              <div class="flex flex-col">
+                <span class="label-text font-bold">Começar com pontuação zerada</span>
+                <span class="label-text-alt opacity-70">Os pontos e palpites dos membros só começam a contar a partir do momento em que eles entram na liga. (Não editável após a criação)</span>
+              </div>
             </label>
           </div>
         </div>

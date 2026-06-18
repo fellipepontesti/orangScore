@@ -102,23 +102,34 @@ class LigasController < ApplicationController
       return redirect_to ligas_publicas_path, alert: "Esta liga não é pública."
     end
 
-    @total_pontos = UserPoint.joins(user: :liga_membros)
-                             .where(liga_membros: { liga_id: @liga.id, status: :accepted })
-                             .sum(:pontos)
-                             
-    @total_palpites = Palpite.joins(user: :liga_membros)
-                             .where(liga_membros: { liga_id: @liga.id, status: :accepted })
-                             .count
+    points_scope = UserPoint.joins(user: :liga_membros)
+                            .where(liga_membros: { liga_id: @liga.id, status: :accepted })
+    palpites_scope = Palpite.joins(user: :liga_membros)
+                            .where(liga_membros: { liga_id: @liga.id, status: :accepted })
+
+    if @liga.pontuacao_zerada?
+      points_scope = points_scope.where("user_points.created_at >= liga_membros.created_at")
+      palpites_scope = palpites_scope.where("palpites.created_at >= liga_membros.created_at")
+    end
+
+    @total_pontos = points_scope.sum(:pontos)
+    @total_palpites = palpites_scope.count
   end
 
   def show
     # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
+    if @liga.pontuacao_zerada?
+      pontos_subquery = "COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id AND up.created_at >= liga_membros.created_at), 0)"
+      palpites_subquery = "COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id AND p.created_at >= liga_membros.created_at), 0)"
+    else
+      pontos_subquery = "COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id), 0)"
+      palpites_subquery = "COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id), 0)"
+    end
+
     @membros_ativos = @liga.liga_membros
                           .includes(:user)
                           .where(status: :accepted)
-                          .select("liga_membros.*,
-                                   COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id), 0) AS total_pontos_ranking,
-                                   COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id), 0) AS total_palpites")
+                          .select("liga_membros.*, #{pontos_subquery} AS total_pontos_ranking, #{palpites_subquery} AS total_palpites")
                           .order('total_pontos_ranking DESC NULLS LAST, total_palpites DESC, liga_membros.created_at ASC').to_a
 
     @membros_pendentes = @liga.liga_membros
@@ -308,7 +319,7 @@ class LigasController < ApplicationController
     end
 
     def liga_params
-      params.require(:liga).permit(:owner_id, :nome, :publica, :entrada_livre)
+      params.require(:liga).permit(:owner_id, :nome, :publica, :entrada_livre, :pontuacao_zerada)
     end
 
     def ligas_visiveis

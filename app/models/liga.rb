@@ -9,8 +9,9 @@ class Liga < ApplicationRecord
 
   scope :com_total_pontos, -> {
     joins("LEFT JOIN (
-      SELECT lm.liga_id, COALESCE(SUM(up.pontos), 0) as pontos_totais
+      SELECT lm.liga_id, COALESCE(SUM(CASE WHEN l.pontuacao_zerada THEN (CASE WHEN up.created_at >= lm.created_at THEN up.pontos ELSE 0 END) ELSE up.pontos END), 0) as pontos_totais
       FROM liga_membros lm
+      JOIN ligas l ON l.id = lm.liga_id
       JOIN user_points up ON up.user_id = lm.user_id
       WHERE lm.status = 1
       GROUP BY lm.liga_id
@@ -41,12 +42,19 @@ class Liga < ApplicationRecord
   end
 
   def total_pontos_liga
-    if respond_to?(:total_pontos_liga)
+    if respond_to?(:total_pontos_liga) && read_attribute(:total_pontos_liga).present?
       read_attribute(:total_pontos_liga)
     else
-      UserPoint.joins(user: :liga_membros)
-               .where(liga_membros: { liga_id: id, status: :accepted })
-               .sum(:pontos)
+      if pontuacao_zerada?
+        UserPoint.joins(user: :liga_membros)
+                 .where(liga_membros: { liga_id: id, status: :accepted })
+                 .where("user_points.created_at >= liga_membros.created_at")
+                 .sum(:pontos)
+      else
+        UserPoint.joins(user: :liga_membros)
+                 .where(liga_membros: { liga_id: id, status: :accepted })
+                 .sum(:pontos)
+      end
     end
   end
   

@@ -53,7 +53,7 @@ class DashboardController < ApplicationController
       @ranking_liga = @liga_principal.liga_membros
                                      .includes(:user)
                                      .where(status: :accepted)
-                                     .sort_by { |lm| -(lm.user.total_pontos || 0) }
+                                     .sort_by { |lm| -lm.pontos_na_liga }
                                      .first(5)
     end
 

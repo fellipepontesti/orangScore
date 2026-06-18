@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_18_041017) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_18_165359) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -120,6 +120,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_18_041017) do
     t.boolean "publica", null: false
     t.boolean "entrada_livre", null: false
     t.uuid "uuid", null: false
+    t.boolean "pontuacao_zerada", default: false, null: false
   end
 
   create_table "notificacoes", force: :cascade do |t|
