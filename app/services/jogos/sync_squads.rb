@@ -166,6 +166,51 @@ module Jogos
       end
     end
 
+    def self.clean_player_name(raw_name)
+      return "" if raw_name.blank?
+      clean = raw_name.split(/\s+\d+/).first.to_s
+      clean = clean.gsub(/\b(pen|o\.?g\.?)\b/i, "")
+      clean.strip
+    end
+
+    def self.names_match?(lineup_player_name, raw_scorer_name)
+      scorer = clean_player_name(raw_scorer_name)
+      return false if scorer.blank?
+
+      lineup_name = lineup_player_name.to_s.strip
+
+      s_norm = I18n.transliterate(scorer).downcase.gsub(/[^a-z0-9\s\.]/, "")
+      l_norm = I18n.transliterate(lineup_name).downcase.gsub(/[^a-z0-9\s]/, "")
+
+      s_flat = s_norm.gsub(/[^a-z0-9]/, "")
+      l_flat = l_norm.gsub(/[^a-z0-9]/, "")
+      return true if l_flat.include?(s_flat) || s_flat.include?(l_flat)
+
+      if s_norm =~ /^([a-z])\.\s+(.+)$/
+        initial = $1
+        lastname = $2
+
+        parts = l_norm.split(/\s+/)
+        first_part = parts.first.to_s
+        last_parts = parts[1..-1].to_a.join(" ")
+
+        clean_lastname = lastname.gsub(/[^a-z0-9]/, "")
+        clean_last_parts = last_parts.gsub(/[^a-z0-9]/, "")
+        clean_l_norm = l_norm.gsub(/[^a-z0-9]/, "")
+
+        if first_part.start_with?(initial) && (clean_last_parts.include?(clean_lastname) || clean_l_norm.include?(clean_lastname))
+          return true
+        end
+      end
+
+      if s_flat.size > 2
+        l_parts = l_norm.split(/\s+/)
+        return true if l_parts.any? { |p| p.gsub(/[^a-z0-9]/, "") == s_flat }
+      end
+
+      false
+    end
+
     def consolidate_goals_from_matches
       url = "https://api.zafronix.com/fifa/worldcup/v1/matches?year=#{year}"
       uri = URI(url)
@@ -206,12 +251,17 @@ module Jogos
           team_side = g['team']
           next if scorer.blank? || !team_side.in?(%w[home away])
 
+          # Ignorar own goals (gols contra)
+          next if scorer.downcase.include?('o.g')
+
           team_name = team_side == 'home' ? match['homeTeam'] : match['awayTeam']
           
           selecao_local = Selecao.all.find do |s|
-            Jogos::TeamMapping.api_search_name(s.nome).to_s.downcase == team_name.downcase ||
-            Jogos::TeamMapping.api_team_code(s.nome).to_s.downcase == team_name.downcase ||
-            s.nome.downcase == team_name.downcase
+            local_name = s.nome.to_s.strip
+            Jogos::TeamMapping.api_search_name(local_name).to_s.downcase == team_name.downcase ||
+            Jogos::TeamMapping.api_team_code(local_name).to_s.downcase == team_name.downcase ||
+            local_name.downcase == team_name.downcase ||
+            Jogos::TeamMapping.translate_country(team_name).to_s.downcase == local_name.downcase
           end
 
           unless selecao_local
@@ -227,13 +277,16 @@ module Jogos
           end
 
           player_in_lineup = team_lineup.find do |p|
-            p_name = p['player'].to_s.downcase
-            p_name.include?(scorer.downcase) || scorer.downcase.include?(p_name)
+            Jogos::SyncSquads.names_match?(p['player'], scorer)
           end
 
           if player_in_lineup
-            jogador_local = selecao_local.jogadores.find_by(numero: player_in_lineup['number']) ||
-                            selecao_local.jogadores.where("LOWER(nome) LIKE ?", "%#{player_in_lineup['player'].to_s.downcase}%").first
+            jogador_local = selecao_local.jogadores.find_by(numero: player_in_lineup['number'])
+            unless jogador_local
+              jogador_local = selecao_local.jogadores.find do |j|
+                Jogos::SyncSquads.names_match?(j.nome, player_in_lineup['player'])
+              end
+            end
 
             if jogador_local
               jogador_local.increment!(:gols)
@@ -248,13 +301,16 @@ module Jogos
           assist = g['assist']
           if assist.present?
             assist_in_lineup = team_lineup.find do |p|
-              p_name = p['player'].to_s.downcase
-              p_name.include?(assist.downcase) || assist.downcase.include?(p_name)
+              Jogos::SyncSquads.names_match?(p['player'], assist)
             end
 
             if assist_in_lineup
-              jogador_assist = selecao_local.jogadores.find_by(numero: assist_in_lineup['number']) ||
-                               selecao_local.jogadores.where("LOWER(nome) LIKE ?", "%#{assist_in_lineup['player'].to_s.downcase}%").first
+              jogador_assist = selecao_local.jogadores.find_by(numero: assist_in_lineup['number'])
+              unless jogador_assist
+                jogador_assist = selecao_local.jogadores.find do |j|
+                  Jogos::SyncSquads.names_match?(j.nome, assist_in_lineup['player'])
+                end
+              end
 
               if jogador_assist
                 jogador_assist.increment!(:assistencias)

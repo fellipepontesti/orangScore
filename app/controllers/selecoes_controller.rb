@@ -104,8 +104,17 @@ class SelecoesController < ApplicationController
 
   def sync_players_data
     year = params[:year].presence || '2026'
-    SyncPlayersDataJob.perform_later(year: year, user_id: current_user.id)
-    redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de gols e assistências dos jogadores foi iniciada em segundo plano. Os dados estarão atualizados em breve!"
+    selecao_id = params[:selecao_id]
+    SyncPlayersDataJob.perform_later(year: year, user_id: current_user.id, selecao_id: selecao_id)
+    
+    notice_msg = if selecao_id.present?
+      selecao = Selecao.find_by(id: selecao_id)
+      "A sincronização de gols da seleção \"#{selecao&.nome}\" foi iniciada em segundo plano. Os dados estarão atualizados em breve!"
+    else
+      "A sincronização de gols e assistências de todos os jogadores foi iniciada em segundo plano. Os dados estarão atualizados em breve!"
+    end
+
+    redirect_back fallback_location: authenticated_root_path, notice: notice_msg
   rescue => e
     redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
   end

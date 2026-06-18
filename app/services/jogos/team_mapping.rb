@@ -133,6 +133,13 @@ module Jogos
     end
 
     ADDITIONAL_COUNTRY_TRANSLATIONS = {
+      'Korea Republic' => 'Coréia do Sul',
+      'Republic of Korea' => 'Coréia do Sul',
+      'Côte d\'Ivoire' => 'Costa do Marfim',
+      'Cote d\'Ivoire' => 'Costa do Marfim',
+      'IR Iran' => 'Irã',
+      'Congo DR' => 'RD Congo',
+      'DR Congo' => 'RD Congo',
       'England' => 'Inglaterra',
       'Italy' => 'Itália',
       'Spain' => 'Espanha',
