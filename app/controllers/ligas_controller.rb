@@ -201,6 +201,8 @@ class LigasController < ApplicationController
               .new(liga.id, current_user.id)
               .call
 
+    Notificacao.where(user_id: current_user.id, liga_id: liga.id, tipo: :invite, status: :unread).update_all(status: :read)
+
     redirect_to liga_path(liga), notice: "Você entrou na liga."
   end
 
@@ -210,6 +212,8 @@ class LigasController < ApplicationController
     Ligas::RecuseInvite
       .new(liga.id, current_user.id)
       .call
+
+    Notificacao.where(user_id: current_user.id, liga_id: liga.id, tipo: :invite, status: :unread).update_all(status: :read)
 
     redirect_to notificacoes_path, notice: "Convite recusado."
   rescue ActiveRecord::RecordNotFound

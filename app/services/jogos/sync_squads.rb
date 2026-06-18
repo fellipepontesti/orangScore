@@ -4,7 +4,7 @@ require 'uri'
 
 module Jogos
   class SyncSquads
-    attr_reader :selecao, :api_name, :year, :api_key, :import_squad, :import_goals
+    attr_reader :selecao, :api_name, :year, :api_key, :import_squad, :import_goals, :warnings
 
     def initialize(selecao: nil, api_name: nil, year: '2026', import_squad: true, import_goals: true)
       @selecao = selecao
@@ -13,9 +13,11 @@ module Jogos
       @api_key = ENV['ZAFRONIX_API_KEY'].presence || 'zwc_free_2ea90adb52e1da3babbe8aea'
       @import_squad = import_squad
       @import_goals = import_goals
+      @warnings = []
     end
 
     def call
+      @warnings = []
       result = { success: true }
 
       if import_squad
@@ -44,16 +46,21 @@ module Jogos
         else
           result = sync_all_teams(data['teams'])
         end
+
+        if result[:warning].present?
+          @warnings << result[:warning]
+        end
       end
 
       if result[:success] && import_goals
         consolidate_goals_from_matches
       end
 
+      result[:warnings] = @warnings if @warnings.present?
       result
     rescue => e
       Rails.logger.error("Erro ao sincronizar elenco (Ano: #{year}): #{e.message}")
-      { success: false, error: e.message }
+      { success: false, error: e.message, warnings: @warnings }
     end
 
     private
@@ -189,7 +196,10 @@ module Jogos
         next if goals.blank?
 
         lineups = match['lineups']
-        next if lineups.blank?
+        if lineups.blank?
+          @warnings << "Partida #{match['homeTeam']} x #{match['awayTeam']} não possui lineups (escalações) na API."
+          next
+        end
 
         goals.each do |g|
           scorer = g['scorer']
@@ -199,15 +209,22 @@ module Jogos
           team_name = team_side == 'home' ? match['homeTeam'] : match['awayTeam']
           
           selecao_local = Selecao.all.find do |s|
-            Jogos::TeamMapping.api_search_name(s.nome).downcase == team_name.downcase ||
+            Jogos::TeamMapping.api_search_name(s.nome).to_s.downcase == team_name.downcase ||
+            Jogos::TeamMapping.api_team_code(s.nome).to_s.downcase == team_name.downcase ||
             s.nome.downcase == team_name.downcase
           end
 
-          next unless selecao_local
+          unless selecao_local
+            @warnings << "Seleção da API '#{team_name}' não encontrada no banco local."
+            next
+          end
           next if selecao.present? && selecao.id != selecao_local.id
 
           team_lineup = lineups[team_side]
-          next if team_lineup.blank?
+          if team_lineup.blank?
+            @warnings << "Escalação do time '#{team_name}' (lado #{team_side}) está vazia ou incompleta na partida #{match['homeTeam']} x #{match['awayTeam']}."
+            next
+          end
 
           player_in_lineup = team_lineup.find do |p|
             p_name = p['player'].to_s.downcase
@@ -220,7 +237,11 @@ module Jogos
 
             if jogador_local
               jogador_local.increment!(:gols)
+            else
+              @warnings << "Jogador '#{scorer}' (número #{player_in_lineup['number']} / nome API '#{player_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
             end
+          else
+            @warnings << "Jogador '#{scorer}' marcado no gol não foi encontrado na escalação (lineup) do time '#{team_name}'."
           end
 
           # Assistência
@@ -237,7 +258,11 @@ module Jogos
 
               if jogador_assist
                 jogador_assist.increment!(:assistencias)
+              else
+                @warnings << "Jogador de assistência '#{assist}' (número #{assist_in_lineup['number']} / nome API '#{assist_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
               end
+            else
+              @warnings << "Jogador da assistência '#{assist}' não foi encontrado na escalação (lineup) do time '#{team_name}'."
             end
           end
         end

@@ -69,7 +69,7 @@ class SelecoesController < ApplicationController
     year = params[:year].presence || '2026'
 
     if params[:sync_all] == 'true'
-      SyncSquadsJob.perform_later(year: year)
+      SyncSquadsJob.perform_later(year: year, user_id: current_user.id)
       redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todas as seleções foi iniciada em segundo plano. Os elencos estarão atualizados em breve!"
       return
     end
@@ -87,7 +87,7 @@ class SelecoesController < ApplicationController
       return
     end
 
-    SyncSquadsJob.perform_later(selecao_id: selecao.id, api_name: api_name, year: year)
+    SyncSquadsJob.perform_later(selecao_id: selecao.id, api_name: api_name, year: year, user_id: current_user.id)
 
     redirect_to selecao_path(selecao), notice: "A sincronização do elenco de \"#{selecao.nome}\" foi iniciada em segundo plano. A escalação estará atualizada em instantes!"
   rescue => e
@@ -96,7 +96,7 @@ class SelecoesController < ApplicationController
 
   def sync_squads_only
     year = params[:year].presence || '2026'
-    SyncSquadsOnlyJob.perform_later(year: year)
+    SyncSquadsOnlyJob.perform_later(year: year, user_id: current_user.id)
     redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todos os elencos foi iniciada em segundo plano. Os elencos estarão atualizados em breve!"
   rescue => e
     redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
@@ -104,7 +104,7 @@ class SelecoesController < ApplicationController
 
   def sync_players_data
     year = params[:year].presence || '2026'
-    SyncPlayersDataJob.perform_later(year: year)
+    SyncPlayersDataJob.perform_later(year: year, user_id: current_user.id)
     redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de gols e assistências dos jogadores foi iniciada em segundo plano. Os dados estarão atualizados em breve!"
   rescue => e
     redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"

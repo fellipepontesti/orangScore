@@ -7,6 +7,11 @@ class NotificacoesController < ApplicationController
     @notificacoes = Notificacao.where(user_id: current_user.id)
   end
 
+  def read_all
+    current_user.notificacoes.unread.update_all(status: :read)
+    redirect_to notificacoes_path, notice: "Todas as notificações foram marcadas como lidas."
+  end
+
   def show
     @notificacao.read!
   end

@@ -108,6 +108,20 @@ class JogosController < ApplicationController
   def sync_statistics
     result = Jogos::SyncMatchStatistics.new(jogo: @jogo).call
 
+    if current_user.root?
+      texto = if result[:success]
+        "Sincronização de estatísticas do jogo #{@jogo.mandante&.nome} x #{@jogo.visitante&.nome} concluída com sucesso!"
+      else
+        "Sincronização de estatísticas do jogo #{@jogo.mandante&.nome} x #{@jogo.visitante&.nome} falhou: #{result[:error]}"
+      end
+      Notificacao.create!(
+        user: current_user,
+        tipo: :info,
+        status: :unread,
+        texto: texto
+      )
+    end
+
     if result[:success]
       redirect_to @jogo, notice: "Estatísticas sincronizadas com sucesso da API Zafronix!"
     else
@@ -133,7 +147,7 @@ class JogosController < ApplicationController
 
   def sync_all_statistics
     year = params[:year].presence || '2026'
-    SyncAllStatisticsJob.perform_later(year: year)
+    SyncAllStatisticsJob.perform_later(year: year, user_id: current_user.id)
     redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todas as estatísticas de jogo foi iniciada em segundo plano. Os dados de posse de bola, chutes e passes serão atualizados em breve!"
   rescue => e
     redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização de estatísticas: #{e.message}"

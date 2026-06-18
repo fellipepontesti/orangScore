@@ -30,6 +30,9 @@ Rails.application.routes.draw do
       patch :accept_admin_invite
       patch :reject_admin_invite
     end
+    collection do
+      post :read_all
+    end
   end
 
   resources :users, path: 'usuarios', only: [:index, :show, :edit, :update, :destroy] do

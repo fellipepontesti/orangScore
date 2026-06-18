@@ -15,8 +15,17 @@ module Jogos
     def call
       return { success: false, error: "Jogo sem mandante ou visitante definido." } unless jogo.mandante && jogo.visitante
 
-      api_home_name = Jogos::TeamMapping.api_search_name(jogo.mandante.nome)
-      api_away_name = Jogos::TeamMapping.api_search_name(jogo.visitante.nome)
+      api_home_names = [
+        jogo.mandante.nome.downcase,
+        Jogos::TeamMapping.api_search_name(jogo.mandante.nome).to_s.downcase,
+        Jogos::TeamMapping.api_team_code(jogo.mandante.nome).to_s.downcase
+      ].reject(&:blank?)
+
+      api_away_names = [
+        jogo.visitante.nome.downcase,
+        Jogos::TeamMapping.api_search_name(jogo.visitante.nome).to_s.downcase,
+        Jogos::TeamMapping.api_team_code(jogo.visitante.nome).to_s.downcase
+      ].reject(&:blank?)
 
       url = "https://api.zafronix.com/fifa/worldcup/v1/matches?year=#{year}"
       uri = URI(url)
@@ -36,8 +45,11 @@ module Jogos
       return { success: false, error: "Nenhuma partida encontrada na API." } unless data.is_a?(Hash) && data['data'].present?
 
       api_match = data['data'].find do |m|
-        (m['homeTeam'].to_s.downcase == api_home_name.downcase && m['awayTeam'].to_s.downcase == api_away_name.downcase) ||
-        (m['homeTeam'].to_s.downcase == api_away_name.downcase && m['awayTeam'].to_s.downcase == api_home_name.downcase)
+        home_team_api = m['homeTeam'].to_s.downcase
+        away_team_api = m['awayTeam'].to_s.downcase
+
+        (api_home_names.include?(home_team_api) && api_away_names.include?(away_team_api)) ||
+        (api_home_names.include?(away_team_api) && api_away_names.include?(home_team_api))
       end
 
       unless api_match
@@ -107,11 +119,21 @@ module Jogos
         # Acha o jogo local correspondente
         jogo_local = jogos_locais.find do |jl|
           next unless jl.mandante && jl.visitante
-          api_home_local = Jogos::TeamMapping.api_search_name(jl.mandante.nome).to_s.downcase
-          api_away_local = Jogos::TeamMapping.api_search_name(jl.visitante.nome).to_s.downcase
+          
+          home_names = [
+            jl.mandante.nome.downcase,
+            Jogos::TeamMapping.api_search_name(jl.mandante.nome).to_s.downcase,
+            Jogos::TeamMapping.api_team_code(jl.mandante.nome).to_s.downcase
+          ].reject(&:blank?)
 
-          (api_home_local == home_team_api && api_away_local == away_team_api) ||
-          (api_home_local == away_team_api && api_away_local == home_team_api)
+          away_names = [
+            jl.visitante.nome.downcase,
+            Jogos::TeamMapping.api_search_name(jl.visitante.nome).to_s.downcase,
+            Jogos::TeamMapping.api_team_code(jl.visitante.nome).to_s.downcase
+          ].reject(&:blank?)
+
+          (home_names.include?(home_team_api) && away_names.include?(away_team_api)) ||
+          (home_names.include?(away_team_api) && away_names.include?(home_team_api))
         end
 
         if jogo_local

@@ -315,7 +315,7 @@
             </div>
 
             <%# Ações no Mobile (lado direito superior) %>
-            <% if capture_acoes.strip.present? %>
+            <% if capture_acoes.to_s.strip.present? %>
               <div class="flex sm:hidden items-center gap-1 shrink-0">
                 <%= capture_acoes %>
               </div>
