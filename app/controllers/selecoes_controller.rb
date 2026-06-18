@@ -94,6 +94,22 @@ class SelecoesController < ApplicationController
     redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
   end
 
+  def sync_squads_only
+    year = params[:year].presence || '2026'
+    SyncSquadsOnlyJob.perform_later(year: year)
+    redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todos os elencos foi iniciada em segundo plano. Os elencos estarão atualizados em breve!"
+  rescue => e
+    redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
+  end
+
+  def sync_players_data
+    year = params[:year].presence || '2026'
+    SyncPlayersDataJob.perform_later(year: year)
+    redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de gols e assistências dos jogadores foi iniciada em segundo plano. Os dados estarão atualizados em breve!"
+  rescue => e
+    redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização: #{e.message}"
+  end
+
   private
     def set_selecao
       @selecao = Selecao.find_by_uuid_param!(params[:id])

@@ -61,6 +61,75 @@ module Jogos
       Rails.logger.error("Erro ao sincronizar estatísticas do jogo #{jogo.id}: #{e.message}")
       { success: false, error: e.message }
     end
+
+    def self.sync_all(year: '2026')
+      api_key = ENV['ZAFRONIX_API_KEY'].presence || 'zwc_free_2ea90adb52e1da3babbe8aea'
+      url = "https://api.zafronix.com/fifa/worldcup/v1/matches?year=#{year}"
+      uri = URI(url)
+      
+      req = Net::HTTP::Get.new(uri)
+      req['X-API-Key'] = api_key
+
+      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.request(req)
+      end
+
+      unless res.is_a?(Net::HTTPSuccess)
+        return { success: false, error: "Erro na chamada da API: #{res.code} #{res.message}" }
+      end
+
+      data = JSON.parse(res.body)
+      unless data.is_a?(Hash) && data['data'].present?
+        return { success: false, error: "Nenhuma partida encontrada na API." }
+      end
+
+      updated_count = 0
+      errors = []
+
+      # Carregar todos os jogos locais com mandante e visitante pré-carregados
+      jogos_locais = Jogo.includes(:mandante, :visitante).all
+
+      data['data'].each do |api_match|
+        next unless api_match['status'] == 'finished'
+        stats = api_match['statistics']
+        next if stats.blank?
+
+        home_team_api = api_match['homeTeam'].to_s.downcase
+        away_team_api = api_match['awayTeam'].to_s.downcase
+
+        # Acha o jogo local correspondente
+        jogo_local = jogos_locais.find do |jl|
+          next unless jl.mandante && jl.visitante
+          api_home_local = Jogos::TeamMapping.api_search_name(jl.mandante.nome).to_s.downcase
+          api_away_local = Jogos::TeamMapping.api_search_name(jl.visitante.nome).to_s.downcase
+
+          (api_home_local == home_team_api && api_away_local == away_team_api) ||
+          (api_home_local == away_team_api && api_away_local == home_team_api)
+        end
+
+        if jogo_local
+          begin
+            InformacaoJogo.transaction do
+              info = jogo_local.informacao_jogo || InformacaoJogo.new(jogo_id: jogo_local.id)
+              info.dados = stats
+              info.save!
+            end
+            updated_count += 1
+          rescue => e
+            errors << "Erro no jogo #{jogo_local.id}: #{e.message}"
+          end
+        end
+      end
+
+      if errors.any?
+        { success: true, count: updated_count, warning: "Sincronizado com alguns erros: #{errors.join(', ')}" }
+      else
+        { success: true, count: updated_count }
+      end
+    rescue => e
+      Rails.logger.error("Erro ao sincronizar estatísticas gerais: #{e.message}")
+      { success: false, error: e.message }
+    end
   end
 end
 

@@ -4,44 +4,49 @@ require 'uri'
 
 module Jogos
   class SyncSquads
-    attr_reader :selecao, :api_name, :year, :api_key
+    attr_reader :selecao, :api_name, :year, :api_key, :import_squad, :import_goals
 
-    def initialize(selecao: nil, api_name: nil, year: '2026')
+    def initialize(selecao: nil, api_name: nil, year: '2026', import_squad: true, import_goals: true)
       @selecao = selecao
       @api_name = api_name.to_s.strip if api_name
       @year = year.presence || '2026'
       @api_key = ENV['ZAFRONIX_API_KEY'].presence || 'zwc_free_2ea90adb52e1da3babbe8aea'
+      @import_squad = import_squad
+      @import_goals = import_goals
     end
 
     def call
-      url = "https://api.zafronix.com/fifa/worldcup/v1/tournaments/#{year}"
-      uri = URI(url)
-      
-      req = Net::HTTP::Get.new(uri)
-      req['X-API-Key'] = api_key
+      result = { success: true }
 
-      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-        http.request(req)
+      if import_squad
+        url = "https://api.zafronix.com/fifa/worldcup/v1/tournaments/#{year}"
+        uri = URI(url)
+        
+        req = Net::HTTP::Get.new(uri)
+        req['X-API-Key'] = api_key
+
+        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+          http.request(req)
+        end
+
+        unless res.is_a?(Net::HTTPSuccess)
+          return { success: false, error: "Erro na chamada da API: #{res.code} #{res.message}" }
+        end
+
+        data = JSON.parse(res.body)
+        
+        unless data.is_a?(Hash) && data['teams'].present?
+          return { success: false, error: "Resposta da API com formato inesperado ou sem seleções." }
+        end
+
+        if selecao.present?
+          result = sync_single_team(data['teams'])
+        else
+          result = sync_all_teams(data['teams'])
+        end
       end
 
-      unless res.is_a?(Net::HTTPSuccess)
-        return { success: false, error: "Erro na chamada da API: #{res.code} #{res.message}" }
-      end
-
-      data = JSON.parse(res.body)
-      
-      unless data.is_a?(Hash) && data['teams'].present?
-        return { success: false, error: "Resposta da API com formato inesperado ou sem seleções." }
-      end
-
-      result = nil
-      if selecao.present?
-        result = sync_single_team(data['teams'])
-      else
-        result = sync_all_teams(data['teams'])
-      end
-
-      if result[:success]
+      if result[:success] && import_goals
         consolidate_goals_from_matches
       end
 

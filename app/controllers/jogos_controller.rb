@@ -131,6 +131,14 @@ class JogosController < ApplicationController
     redirect_to authenticated_root_path, alert: "Falha ao calcular odds: #{e.message}"
   end
 
+  def sync_all_statistics
+    year = params[:year].presence || '2026'
+    SyncAllStatisticsJob.perform_later(year: year)
+    redirect_back fallback_location: authenticated_root_path, notice: "A sincronização de todas as estatísticas de jogo foi iniciada em segundo plano. Os dados de posse de bola, chutes e passes serão atualizados em breve!"
+  rescue => e
+    redirect_back fallback_location: authenticated_root_path, alert: "Erro ao agendar sincronização de estatísticas: #{e.message}"
+  end
+
   def destroy
     Jogos::Destroy.new(jogo: @jogo).call
 

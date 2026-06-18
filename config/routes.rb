@@ -89,6 +89,7 @@ Rails.application.routes.draw do
   resources :jogos do
     collection do
       post :sync_odds
+      post :sync_all_statistics
     end
 
     member do
@@ -104,6 +105,8 @@ Rails.application.routes.draw do
   resources :selecoes do
     collection do
       post :sync_squads
+      post :sync_squads_only
+      post :sync_players_data
     end
   end
 
