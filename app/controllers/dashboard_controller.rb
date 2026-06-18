@@ -149,7 +149,12 @@ class DashboardController < ApplicationController
         params[:jogadores].each do |jogador_id, jogador_params|
           jogador = @selecao.jogadores.find_by(id: jogador_id)
           if jogador
-            unless jogador.update(numero: jogador_params[:numero].presence)
+            update_attrs = {
+              numero: jogador_params[:numero].presence,
+              nome: jogador_params[:nome].presence || jogador.nome,
+              capitao: jogador_params[:capitao] == '1'
+            }
+            unless jogador.update(update_attrs)
               errors << "Erro ao salvar #{jogador.nome}: #{jogador.errors.full_messages.to_sentence}"
             end
           end

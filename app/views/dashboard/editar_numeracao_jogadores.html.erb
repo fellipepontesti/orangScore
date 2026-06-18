@@ -52,7 +52,8 @@
           <thead>
             <tr class="bg-base-200/30 text-xs opacity-60 uppercase font-black">
               <th class="w-24 text-center">Nº da Camisa</th>
-              <th>Jogador</th>
+              <th class="w-20 text-center">Capitão</th>
+              <th>Jogador (Nome)</th>
               <th>Posição</th>
               <th class="hidden md:table-cell">Clube</th>
               <th class="text-center w-24">Status</th>
@@ -74,13 +75,26 @@
                            class="input input-bordered input-sm w-20 text-center font-bold font-mono focus:input-primary rounded-xl <%= 'border-warning focus:border-warning' if sem_numero %>" />
                   </div>
                 </td>
+
+                <td class="p-3 text-center">
+                  <div class="flex justify-center">
+                    <input type="hidden" name="jogadores[<%= jogador.id %>][capitao]" value="0" />
+                    <input type="checkbox" 
+                           name="jogadores[<%= jogador.id %>][capitao]" 
+                           value="1" 
+                           <%= 'checked' if jogador.capitao? %>
+                           class="checkbox checkbox-warning checkbox-sm rounded-lg"
+                           title="Marcar como Capitão" />
+                  </div>
+                </td>
                 
-                <td class="font-bold text-slate-100 min-w-[150px]">
+                <td class="font-bold text-slate-100 min-w-[200px]">
                   <div class="flex items-center gap-1.5">
-                    <span><%= jogador.nome %></span>
-                    <% if jogador.capitao? %>
-                      <span class="badge badge-warning badge-xs font-black text-[8px] text-white" title="Capitão">C</span>
-                    <% end %>
+                    <input type="text"
+                           name="jogadores[<%= jogador.id %>][nome]"
+                           value="<%= jogador.nome %>"
+                           class="input input-bordered input-sm w-full font-bold focus:input-primary rounded-xl"
+                           required />
                   </div>
                 </td>
 
