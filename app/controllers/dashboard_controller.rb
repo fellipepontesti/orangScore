@@ -16,6 +16,7 @@ class DashboardController < ApplicationController
 
     if current_user.root?
       @total_usuarios = User.count
+      @total_online = User.where('last_seen_at > ?', 5.minutes.ago).count
       @total_palpites = Palpite.count
       @total_premium = User.joins(:assinatura).where(assinaturas: { plano: :premium, ativa: true }).count
       @total_jogos = Jogo.count

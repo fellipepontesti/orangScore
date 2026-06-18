@@ -291,11 +291,21 @@
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <div class="card bg-base-100 shadow-xl border border-base-200">
       <div class="card-body items-center text-center justify-center">
         <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Total de Usuários</h2>
         <p class="text-6xl font-black text-primary"><%= @total_usuarios %></p>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl border border-base-200">
+      <div class="card-body items-center text-center justify-center">
+        <h2 class="card-title text-sm opacity-70 uppercase tracking-wider">Usuários Online</h2>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+          <p class="text-6xl font-black text-emerald-500"><%= @total_online %></p>
+        </div>
       </div>
     </div>
 
@@ -312,6 +322,7 @@
         <p class="text-6xl font-black text-accent"><%= @total_jogos %></p>
       </div>
     </div>
+  </div>
 
     <% if false %>
     <div class="card bg-base-100 shadow-xl border border-base-200">
@@ -333,7 +344,12 @@
           <% @ultimos_usuarios.each do |user| %>
             <li class="p-4 border-b last:border-b-0 border-base-200 flex justify-between items-center gap-3">
               <div class="min-w-0">
-                <p class="font-bold truncate"><%= user.name %></p>
+                <div class="flex items-center gap-2">
+                  <p class="font-bold truncate"><%= user.name %></p>
+                  <% if user.online? %>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Online agora"></span>
+                  <% end %>
+                </div>
                 <div class="flex flex-wrap items-center gap-2 mt-1">
                   <%= conta_status_badge(user) %>
                   <span class="text-xs opacity-50"><%= login_count_label(user) %></span>

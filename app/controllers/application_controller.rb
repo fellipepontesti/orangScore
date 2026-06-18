@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :check_terms_acceptance, if: -> { user_signed_in? && !devise_controller? }
   before_action :store_referral_id
   before_action :restrict_semi_root_access, if: -> { user_signed_in? }
+  before_action :update_last_seen_at, if: -> { user_signed_in? && (current_user.last_seen_at.nil? || current_user.last_seen_at < 5.minutes.ago) }
   
   protected
 
@@ -75,5 +76,9 @@ class ApplicationController < ActionController::Base
 
   def store_referral_id
     session[:referral_id] = params[:ref] if params[:ref].present?
+  end
+
+  def update_last_seen_at
+    current_user.update_columns(last_seen_at: Time.current)
   end
 end

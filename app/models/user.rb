@@ -101,6 +101,10 @@ class User < ApplicationRecord
     )
   end
 
+  def online?
+    last_seen_at.present? && last_seen_at > 5.minutes.ago
+  end
+
   def premium?
     assinatura.present? && assinatura.premium?
   end
