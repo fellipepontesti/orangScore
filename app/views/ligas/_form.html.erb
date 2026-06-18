@@ -44,11 +44,11 @@
           </div>
 
           <div class="form-control">
-            <label class="cursor-pointer label justify-start gap-4">
-              <%= form.check_box :pontuacao_zerada, class: "toggle toggle-accent", disabled: liga.persisted? %>
-              <div class="flex flex-col">
-                <span class="label-text font-bold">Começar com pontuação zerada</span>
-                <span class="label-text-alt opacity-70">Os pontos e palpites dos membros só começam a contar a partir do momento em que eles entram na liga. (Não editável após a criação)</span>
+            <label class="cursor-pointer label justify-start gap-4 w-full">
+              <%= form.check_box :pontuacao_zerada, class: "toggle toggle-accent shrink-0", disabled: liga.persisted? %>
+              <div class="flex flex-col flex-1 min-w-0">
+                <span class="label-text font-bold whitespace-normal">Começar com pontuação zerada</span>
+                <span class="label-text-alt opacity-70 whitespace-normal">Os pontos e palpites dos membros só começam a contar a partir do momento em que eles entram na liga. (Não editável após a criação)</span>
               </div>
             </label>
           </div>
