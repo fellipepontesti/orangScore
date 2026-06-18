@@ -196,6 +196,178 @@
     <% end %>
   </div>
 
+  <% if @jogo.finalizado? %>
+    <% info = @jogo.informacao_jogo %>
+    <div class="bg-base-100 rounded-3xl border border-base-200 p-6 shadow-sm space-y-6">
+      <div class="flex items-center justify-between border-b border-base-200 pb-3">
+        <h3 class="font-extrabold text-lg flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-primary">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+          </svg>
+          Estatísticas da Partida
+        </h3>
+
+        <% if current_user.root? %>
+          <%= button_to sync_statistics_jogo_path(@jogo), method: :post, class: "btn btn-outline btn-xs btn-primary font-bold gap-1 flex items-center" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            Sincronizar
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if info && info.dados.present? %>
+        <%
+          h_stats = info.dados['home'] || {}
+          a_stats = info.dados['away'] || {}
+        %>
+        
+        <div class="space-y-4">
+          <!-- Item: Posse de bola -->
+          <% if h_stats['possessionPct'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['possessionPct'] %>%</span>
+                <span>Posse de Bola</span>
+                <span><%= a_stats['possessionPct'] %>%</span>
+              </div>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= h_stats['possessionPct'] %>%;"></div>
+                <div class="bg-accent" style="width: <%= a_stats['possessionPct'] %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Chutes no gol -->
+          <% if h_stats['shotsOnGoal'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['shotsOnGoal'] %></span>
+                <span>Chutes no Gol</span>
+                <span><%= a_stats['shotsOnGoal'] %></span>
+              </div>
+              <%
+                total_sog = h_stats['shotsOnGoal'].to_f + a_stats['shotsOnGoal'].to_f
+                pct_h_sog = total_sog > 0 ? (h_stats['shotsOnGoal'].to_f / total_sog * 100).round : 50
+                pct_a_sog = 100 - pct_h_sog
+              %>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= pct_h_sog %>%;"></div>
+                <div class="bg-accent" style="width: <%= pct_a_sog %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Chutes totais -->
+          <% if h_stats['shotsTotal'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['shotsTotal'] %></span>
+                <span>Finalizações</span>
+                <span><%= a_stats['shotsTotal'] %></span>
+              </div>
+              <%
+                total_shots = h_stats['shotsTotal'].to_f + a_stats['shotsTotal'].to_f
+                pct_h_shots = total_shots > 0 ? (h_stats['shotsTotal'].to_f / total_shots * 100).round : 50
+                pct_a_shots = 100 - pct_h_shots
+              %>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= pct_h_shots %>%;"></div>
+                <div class="bg-accent" style="width: <%= pct_a_shots %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Faltas -->
+          <% if h_stats['fouls'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['fouls'] %></span>
+                <span>Faltas</span>
+                <span><%= a_stats['fouls'] %></span>
+              </div>
+              <%
+                total_fouls = h_stats['fouls'].to_f + a_stats['fouls'].to_f
+                pct_h_fouls = total_fouls > 0 ? (h_stats['fouls'].to_f / total_fouls * 100).round : 50
+                pct_a_fouls = 100 - pct_h_fouls
+              %>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= pct_h_fouls %>%;"></div>
+                <div class="bg-accent" style="width: <%= pct_a_fouls %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Escanteios -->
+          <% if h_stats['corners'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['corners'] %></span>
+                <span>Escanteios</span>
+                <span><%= a_stats['corners'] %></span>
+              </div>
+              <%
+                total_corners = h_stats['corners'].to_f + a_stats['corners'].to_f
+                pct_h_corners = total_corners > 0 ? (h_stats['corners'].to_f / total_corners * 100).round : 50
+                pct_a_corners = 100 - pct_h_corners
+              %>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= pct_h_corners %>%;"></div>
+                <div class="bg-accent" style="width: <%= pct_a_corners %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Impedimentos -->
+          <% if h_stats['offsides'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['offsides'] %></span>
+                <span>Impedimentos</span>
+                <span><%= a_stats['offsides'] %></span>
+              </div>
+              <%
+                total_offsides = h_stats['offsides'].to_f + a_stats['offsides'].to_f
+                pct_h_offsides = total_offsides > 0 ? (h_stats['offsides'].to_f / total_offsides * 100).round : 50
+                pct_a_offsides = 100 - pct_h_offsides
+              %>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= pct_h_offsides %>%;"></div>
+                <div class="bg-accent" style="width: <%= pct_a_offsides %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Item: Precisão de passes -->
+          <% if h_stats['passesPct'].present? %>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                <span><%= h_stats['passesPct'] %>% (<%= h_stats['passesAccurate'] %>/<%= h_stats['passesTotal'] %>)</span>
+                <span>Precisão de Passes</span>
+                <span><%= a_stats['passesPct'] %>% (<%= a_stats['passesAccurate'] %>/<%= a_stats['passesTotal'] %>)</span>
+              </div>
+              <div class="flex h-2 w-full rounded-full overflow-hidden bg-base-200">
+                <div class="bg-primary" style="width: <%= h_stats['passesPct'] %>%;"></div>
+                <div class="bg-accent" style="width: <%= a_stats['passesPct'] %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+      <% else %>
+        <div class="py-4 text-center space-y-2">
+          <p class="text-sm opacity-60">Estatísticas da partida não sincronizadas.</p>
+          <% if current_user.root? %>
+            <%= button_to sync_statistics_jogo_path(@jogo), method: :post, class: "btn btn-primary btn-sm font-bold shadow-md shadow-primary/20" do %>
+              Sincronizar Estatísticas
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if current_user.root? %>
     <div class="bg-base-200/50 rounded-2xl border border-base-200 p-4 space-y-3">
       <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Ferramentas de Administrador</h4>

@@ -1,9 +1,9 @@
 class JogosController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish ]
+  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish sync_statistics ]
   before_action :load_selecoes, only: %i[new create edit update finalize]
-  before_action :authorize_root_or_semi_root!, only: %i[start update finish]
-  before_action :authorize_root!, except: %i[index show start update finish]
+  before_action :authorize_root_or_semi_root!, only: %i[start update finish sync_statistics]
+  before_action :authorize_root!, except: %i[index show start update finish sync_statistics]
 
   def index
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
@@ -96,9 +96,22 @@ class JogosController < ApplicationController
     @jogo = Jogos::Update.new(jogo: @jogo, params: jogo_params.merge(status: 'finalizado')).call
 
     if @jogo.errors.empty?
+      # Tenta sincronizar as estatísticas reais de chutes/posse da partida na API Zafronix
+      Jogos::SyncMatchStatistics.new(jogo: @jogo).call rescue nil
+
       redirect_to @jogo, notice: "Jogo finalizado com sucesso! Pontuações calculadas."
     else
       render :finalize, status: :unprocessable_entity
+    end
+  end
+
+  def sync_statistics
+    result = Jogos::SyncMatchStatistics.new(jogo: @jogo).call
+
+    if result[:success]
+      redirect_to @jogo, notice: "Estatísticas sincronizadas com sucesso da API Zafronix!"
+    else
+      redirect_to @jogo, alert: "Erro ao sincronizar estatísticas: #{result[:error]}"
     end
   end
 

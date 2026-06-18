@@ -95,6 +95,7 @@ Rails.application.routes.draw do
       patch :start
       get :finalize
       patch :finish
+      post :sync_statistics
     end
   end
 

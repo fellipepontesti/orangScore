@@ -34,11 +34,18 @@ module Jogos
         return { success: false, error: "Resposta da API com formato inesperado ou sem seleções." }
       end
 
+      result = nil
       if selecao.present?
-        sync_single_team(data['teams'])
+        result = sync_single_team(data['teams'])
       else
-        sync_all_teams(data['teams'])
+        result = sync_all_teams(data['teams'])
       end
+
+      if result[:success]
+        consolidate_goals_from_matches
+      end
+
+      result
     rescue => e
       Rails.logger.error("Erro ao sincronizar elenco (Ano: #{year}): #{e.message}")
       { success: false, error: e.message }
@@ -144,6 +151,91 @@ module Jogos
         { success: true, count: players_imported, teams_count: teams_imported, warning: "Sincronizado com alguns erros: #{errors.join(', ')}" }
       else
         { success: true, count: players_imported, teams_count: teams_imported }
+      end
+    end
+
+    def consolidate_goals_from_matches
+      url = "https://api.zafronix.com/fifa/worldcup/v1/matches?year=#{year}"
+      uri = URI(url)
+      
+      req = Net::HTTP::Get.new(uri)
+      req['X-API-Key'] = api_key
+
+      res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+        http.request(req)
+      end
+
+      return unless res.is_a?(Net::HTTPSuccess)
+
+      data = JSON.parse(res.body)
+      return unless data.is_a?(Hash) && data['data'].present?
+
+      # Zera os gols e assistências antes de recomputar
+      if selecao.present?
+        selecao.jogadores.update_all(gols: 0, assistencias: 0)
+      else
+        Jogador.update_all(gols: 0, assistencias: 0)
+      end
+
+      data['data'].each do |match|
+        next unless match['status'] == 'finished'
+
+        goals = match['goals']
+        next if goals.blank?
+
+        lineups = match['lineups']
+        next if lineups.blank?
+
+        goals.each do |g|
+          scorer = g['scorer']
+          team_side = g['team']
+          next if scorer.blank? || !team_side.in?(%w[home away])
+
+          team_name = team_side == 'home' ? match['homeTeam'] : match['awayTeam']
+          
+          selecao_local = Selecao.all.find do |s|
+            Jogos::TeamMapping.api_search_name(s.nome).downcase == team_name.downcase ||
+            s.nome.downcase == team_name.downcase
+          end
+
+          next unless selecao_local
+          next if selecao.present? && selecao.id != selecao_local.id
+
+          team_lineup = lineups[team_side]
+          next if team_lineup.blank?
+
+          player_in_lineup = team_lineup.find do |p|
+            p_name = p['player'].to_s.downcase
+            p_name.include?(scorer.downcase) || scorer.downcase.include?(p_name)
+          end
+
+          if player_in_lineup
+            jogador_local = selecao_local.jogadores.find_by(numero: player_in_lineup['number']) ||
+                            selecao_local.jogadores.where("LOWER(nome) LIKE ?", "%#{player_in_lineup['player'].to_s.downcase}%").first
+
+            if jogador_local
+              jogador_local.increment!(:gols)
+            end
+          end
+
+          # Assistência
+          assist = g['assist']
+          if assist.present?
+            assist_in_lineup = team_lineup.find do |p|
+              p_name = p['player'].to_s.downcase
+              p_name.include?(assist.downcase) || assist.downcase.include?(p_name)
+            end
+
+            if assist_in_lineup
+              jogador_assist = selecao_local.jogadores.find_by(numero: assist_in_lineup['number']) ||
+                               selecao_local.jogadores.where("LOWER(nome) LIKE ?", "%#{assist_in_lineup['player'].to_s.downcase}%").first
+
+              if jogador_assist
+                jogador_assist.increment!(:assistencias)
+              end
+            end
+          end
+        end
       end
     end
   end
