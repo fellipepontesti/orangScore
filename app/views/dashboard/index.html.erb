@@ -314,14 +314,14 @@
                   <% end %>
                 </div>
               </div>
-              <div class="flex items-center gap-2 sm:gap-4 text-right shrink-0">
-                <div class="flex flex-col items-end w-12 sm:w-16">
-                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter">Palpites</span>
-                  <span class="font-bold text-md text-slate-300"><%= user.try(:total_palpites) || 0 %></span>
+              <div class="flex items-center gap-3 sm:gap-4 text-right shrink-0">
+                <div class="flex flex-col items-end min-w-[50px] sm:min-w-[64px]">
+                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter whitespace-nowrap">Palpites</span>
+                  <span class="font-bold text-sm sm:text-md text-slate-300"><%= user.try(:total_palpites) || 0 %></span>
                 </div>
-                <div class="flex flex-col items-end w-14 sm:w-20">
-                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter text-secondary">Pontuação</span>
-                  <span class="text-xl sm:text-2xl font-black text-secondary"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %></span>
+                <div class="flex flex-col items-end min-w-[56px] sm:min-w-[76px]">
+                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter text-secondary whitespace-nowrap">Pontos</span>
+                  <span class="text-lg sm:text-2xl font-black text-secondary leading-none"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %></span>
                 </div>
               </div>
             </li>
@@ -341,8 +341,15 @@
                   <span class="badge badge-secondary badge-xs mt-1 w-fit">Sua Posição</span>
                 </div>
               </div>
-              <div class="flex flex-col items-end shrink-0 w-14 sm:w-20">
-                <span class="text-xl sm:text-2xl font-black text-secondary"><%= current_user.total_pontos %></span>
+              <div class="flex items-center gap-3 sm:gap-4 text-right shrink-0">
+                <div class="flex flex-col items-end min-w-[50px] sm:min-w-[64px]">
+                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter whitespace-nowrap">Palpites</span>
+                  <span class="font-bold text-sm sm:text-md text-slate-300"><%= current_user.palpites.count %></span>
+                </div>
+                <div class="flex flex-col items-end min-w-[56px] sm:min-w-[76px]">
+                  <span class="text-[8px] uppercase font-black opacity-30 tracking-tighter text-secondary whitespace-nowrap">Pontos</span>
+                  <span class="text-lg sm:text-2xl font-black text-secondary leading-none"><%= current_user.total_pontos %></span>
+                </div>
               </div>
             </li>
           <% end %>
