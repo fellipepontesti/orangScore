@@ -1,4 +1,6 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  skip_before_action :verify_authenticity_token, only: :failure
+
   def google_oauth2
     ref_id = session.delete('referral_id')
     @user = User.from_omniauth(request.env['omniauth.auth'], ref_id)

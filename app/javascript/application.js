@@ -8,3 +8,11 @@ document.addEventListener("click", (event) => {
     window.location = row.dataset.url
   }
 })
+
+// Força o reload da página se ela for carregada a partir do cache de histórico (BFCache)
+// prevenindo problemas de CSRF expirado no celular após logouts ou retornos de página.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    window.location.reload()
+  }
+})
