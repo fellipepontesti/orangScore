@@ -1,9 +1,9 @@
 class JogosController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish sync_statistics ]
+  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish sync_statistics palpites ]
   before_action :load_selecoes, only: %i[new create edit update finalize]
   before_action :authorize_root_or_semi_root!, only: %i[start update finish sync_statistics]
-  before_action :authorize_root!, except: %i[index show start update finish sync_statistics]
+  before_action :authorize_root!, except: %i[index show start update finish sync_statistics palpites]
 
   def index
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
@@ -31,6 +31,26 @@ class JogosController < ApplicationController
   def show
     @palpite = current_user.palpites.find_by(jogo_id: @jogo.id)
     @user_point = current_user.user_points.find_by(jogo_id: @jogo.id)
+  end
+
+  def palpites
+    if @jogo.programado? && !current_user.root?
+      redirect_to @jogo, alert: "Os palpites só estarão visíveis após o início da partida."
+      return
+    end
+
+    @palpites = @jogo.palpites.includes(:user).order("users.name")
+    @user_points_by_user = @jogo.user_points.index_by(&:user_id)
+
+    @total_palpites = @palpites.size
+    mais_comum = @palpites.map { |p| "#{p.gols_casa}x#{p.gols_fora}" }.tally.max_by { |_, count| count }
+    @palpite_mais_comum = mais_comum ? mais_comum.first.gsub('x', ' - ') : "—"
+    
+    @media_gols_palpitados = if @palpites.any?
+      (@palpites.sum { |p| p.gols_casa + p.gols_fora }.to_f / @total_palpites).round(1)
+    else
+      "—"
+    end
   end
 
   def new

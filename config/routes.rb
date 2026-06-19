@@ -106,6 +106,7 @@ Rails.application.routes.draw do
       get :finalize
       patch :finish
       post :sync_statistics
+      get :palpites
     end
   end
 

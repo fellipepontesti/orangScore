@@ -1,0 +1,219 @@
+<% content_for :title, "Palpites do Jogo" %>
+
+<div class="w-full max-w-4xl mx-auto px-4 py-8 pb-32 space-y-10">
+  
+  <!-- Cabeçalho Principal -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg shadow-primary/5 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 10.089 18a11.374 11.374 0 0 1-5.18-2.625 11.374 11.374 0 0 1-3.669-5.179 11.386 11.386 0 0 1-.84-2.625v-.108c0-.622.05-1.224.148-1.817M15 19.128v-.003c.84.453 1.765.748 2.75.86m2.593-3.62a9.337 9.337 0 0 1-2.593 3.62m0 0A10.741 10.741 0 0 1 12 18c-3.136 0-5.961-1.336-7.986-3.486m13.782 0A11.374 11.374 0 0 0 21 10.089c0-1.848-.44-3.593-1.221-5.138m-3.957 8.663c-.156.496-.372.966-.64 1.402a11.374 11.374 0 0 1-5.181 5.182c-.437.268-.906.484-1.402.64m5.182-5.822a4.125 4.125 0 1 1-8.25 0 4.125 4.125 0 0 1 8.25 0Zm-7.24 6.44A11.374 11.374 0 0 1 2.22 13.918M2.22 13.918A11.386 11.386 0 0 1 1.38 11.29v-.108c0-.38.017-.756.05-1.127m.79 3.863A11.374 11.374 0 0 0 4.908 15" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+          <%= link_to "Jogos", jogos_path, class: "hover:underline" %>
+          <span>/</span>
+          <%= link_to "Detalhes", jogo_path(@jogo), class: "hover:underline" %>
+          <span>/</span>
+          <span>Palpites</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent tracking-tight pb-1">Palpites dos Usuários</h1>
+        <p class="text-xs opacity-60 font-medium">Todos os palpites registrados para esta partida</p>
+      </div>
+    </div>
+    
+    <%= link_to "Voltar ao Jogo", jogo_path(@jogo), class: "btn btn-outline btn-sm hover:bg-primary hover:border-primary transition-all rounded-2xl shadow-md sm:btn-md" %>
+  </div>
+
+  <!-- Painel do Jogo (Mini Placar) -->
+  <div class="bg-base-100 rounded-3xl border border-base-200 p-6 shadow-xl text-center space-y-4">
+    <div class="flex flex-row items-center justify-center gap-2 sm:gap-6 py-2 w-full min-w-0">
+      
+      <% if @jogo.mandante.present? %>
+        <div class="flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0">
+          <span class="font-extrabold text-xs sm:text-xl text-base-content leading-tight truncate text-right">
+            <%= @jogo.mandante.nome %>
+          </span>
+          <div class="mask mask-squircle h-8 w-8 sm:h-10 sm:w-10 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+            <% if @jogo.mandante.logo.present? %>
+              <%= image_tag "selecoes/#{@jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+            <% else %>
+              <span class="text-xs sm:text-lg font-bold">?</span>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="flex items-center justify-end gap-1.5 sm:gap-3 flex-1 min-w-0 opacity-60">
+          <span class="font-extrabold text-xs sm:text-xl text-base-content/70 leading-tight truncate text-right">
+            <%= @jogo.nome_provisorio_mandante.presence || "Mandante" %>
+          </span>
+          <div class="mask mask-squircle h-8 w-8 sm:h-10 sm:w-10 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner text-xs sm:text-lg font-bold">
+            ?
+          </div>
+        </div>
+      <% end %>
+
+      <div class="flex items-center justify-center gap-1 sm:gap-3 shrink-0 px-1 select-none">
+        <% if @jogo.programado? || @jogo.times_a_definir? %>
+          <span class="text-xs sm:text-lg font-black opacity-30 px-3 py-1 bg-base-200 rounded-xl">VS</span>
+        <% else %>
+          <span class="text-lg sm:text-2xl font-black px-2 sm:px-3 bg-base-200 rounded-xl py-1 shadow-inner min-w-[1.8rem] sm:min-w-[2.5rem] text-center">
+            <%= @jogo.gols_mandante %>
+          </span>
+          <span class="text-xs sm:text-lg opacity-40 font-bold">:</span>
+          <span class="text-lg sm:text-2xl font-black px-2 sm:px-3 bg-base-200 rounded-xl py-1 shadow-inner min-w-[1.8rem] sm:min-w-[2.5rem] text-center">
+            <%= @jogo.gols_visitante %>
+          </span>
+        <% end %>
+      </div>
+
+      <% if @jogo.visitante.present? %>
+        <div class="flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0">
+          <div class="mask mask-squircle h-8 w-8 sm:h-10 sm:w-10 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+            <% if @jogo.visitante.logo.present? %>
+              <%= image_tag "selecoes/#{@jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+            <% else %>
+              <span class="text-xs sm:text-lg font-bold">?</span>
+            <% end %>
+          </div>
+          <span class="font-extrabold text-xs sm:text-xl text-base-content leading-tight truncate text-left">
+            <%= @jogo.visitante.nome %>
+          </span>
+        </div>
+      <% else %>
+        <div class="flex items-center justify-start gap-1.5 sm:gap-3 flex-1 min-w-0 opacity-60">
+          <div class="mask mask-squircle h-8 w-8 sm:h-10 sm:w-10 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden shadow-inner text-xs sm:text-lg font-bold">
+            ?
+          </div>
+          <span class="font-extrabold text-xs sm:text-xl text-base-content/70 leading-tight truncate text-left">
+            <%= @jogo.nome_provisorio_visitante.presence || "Visitante" %>
+          </span>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div class="flex justify-center">
+      <% if @jogo.em_andamento? %>
+        <span class="badge badge-success gap-1.5 font-bold animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-white"></span>
+          Em Andamento
+        </span>
+      <% elsif @jogo.finalizado? %>
+        <span class="badge badge-error gap-1.5 font-bold text-white">
+          Finalizado
+        </span>
+      <% else %>
+        <span class="badge badge-info gap-1.5 font-bold text-white">
+          Programado (Apenas Root pode visualizar)
+        </span>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Cards de Estatísticas Rápidas -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Card 1: Total de Palpites -->
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-primary/30 transition-all duration-300">
+      <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+        </svg>
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40">Total de Palpites</span>
+        <h3 class="text-2xl font-black text-white mt-0.5"><%= @total_palpites %></h3>
+      </div>
+    </div>
+
+    <!-- Card 2: Palpite Mais Comum -->
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-warning/30 transition-all duration-300">
+      <div class="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-xl shrink-0">
+        📊
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40">Mais Frequente</span>
+        <h3 class="text-2xl font-black text-white mt-0.5"><%= @palpite_mais_comum %></h3>
+      </div>
+    </div>
+
+    <!-- Card 3: Média de Gols Palpitados -->
+    <div class="bg-base-100 rounded-2xl border border-base-200/60 p-5 shadow-xl flex items-center gap-4 relative overflow-hidden group hover:border-secondary/30 transition-all duration-300">
+      <div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-xl shrink-0">
+        ⚽
+      </div>
+      <div>
+        <span class="text-[10px] uppercase font-black tracking-widest opacity-40 font-bold">Média de Gols</span>
+        <h3 class="text-2xl font-black text-white mt-0.5"><%= @media_gols_palpitados %></h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Palpites -->
+  <div class="bg-base-100 shadow-2xl rounded-2xl border border-base-200 overflow-hidden">
+    <div class="px-6 py-4 bg-base-200/50 border-b border-base-200 flex items-center justify-between text-xs font-black uppercase tracking-wider opacity-60">
+      <span>Participante</span>
+      <div class="flex items-center gap-12">
+        <span class="w-24 text-center">Palpite</span>
+        <span class="w-20 text-right">Pontos</span>
+      </div>
+    </div>
+    
+    <ul class="list w-full divide-y divide-base-200">
+      <% if @palpites.any? %>
+        <% @palpites.each do |palpite| %>
+          <% is_current = (palpite.user_id == current_user.id) %>
+          <% user_point = @user_points_by_user[palpite.user_id] %>
+          
+          <li class="p-4 flex items-center justify-between transition-all duration-300 <%= is_current ? 'bg-secondary/10 border-l-4 border-l-secondary relative overflow-hidden font-semibold shadow-inner' : 'hover:bg-base-200/50' %>">
+            
+            <!-- Usuário -->
+            <div class="flex items-center gap-3">
+              <div class="avatar placeholder shrink-0">
+                <div class="bg-neutral text-neutral-content rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs uppercase">
+                  <%= palpite.user.name[0..1] %>
+                </div>
+              </div>
+              
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm md:text-base <%= 'text-secondary font-black' if is_current %> text-white"><%= palpite.user.name %></span>
+                  <% if is_current %>
+                    <span class="badge badge-secondary badge-sm text-[10px] uppercase font-black tracking-wider py-1.5 px-2">Você</span>
+                  <% end %>
+                  <% if palpite.user.premium? %>
+                    <span class="text-amber-400 shrink-0" title="Usuário Premium">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.537 1.651l3.6 3.1-.114 4.712c-.02.839.865 1.482 1.58 1.053L10 15.741l4.122 2.522c.715.43 1.6-.214 1.58-1.053l-.114-4.712 3.6-3.1c.634-.544.296-1.584-.537-1.65l-4.752-.382-1.83-4.4Z" clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Palpite e Pontuação -->
+            <div class="flex items-center gap-12 text-right">
+              <span class="w-24 font-bold text-sm md:text-base text-center bg-base-200/50 rounded-lg py-1 px-3">
+                <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+              </span>
+              
+              <span class="w-20 text-xl font-black <%= user_point && user_point.pontos > 0 ? 'text-success' : 'text-base-content/40' %>">
+                <% if @jogo.finalizado? %>
+                  <%= user_point ? "+#{user_point.pontos}" : "0" %>
+                <% else %>
+                  —
+                <% end %>
+              </span>
+            </div>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="p-8 text-center text-xs opacity-40 italic">
+          Nenhum palpite registrado para este jogo.
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

@@ -159,7 +159,7 @@
               <% if jogo.finalizado? %>
                 <% # Sem opções de palpites quando finalizado %>
               <% elsif jogo.em_andamento? %>
-                <button class="btn btn-sm btn-success btn-outline cursor-not-allowed" disabled>Palpites encerrados</button>
+                <%= link_to "Ver todos os palpites", palpites_jogo_path(jogo), class: "btn btn-sm btn-success btn-outline" %>
               <% elsif palpite.present? %>
                 <%= link_to "Editar palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white" %>
               <% else %>
