@@ -15,10 +15,6 @@ class LigaMembro < ApplicationRecord
   end
 
   def palpites_na_liga_count
-    if liga.pontuacao_zerada?
-      user.palpites.where("created_at >= ?", created_at).count
-    else
-      user.palpites.count
-    end
+    user.palpites.count
   end
 end

@@ -45,7 +45,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <% @jogos_de_hoje.each do |jogo| %>
           <% palpite = @palpites_por_jogo_id[jogo.id] %>
-          <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-4 overflow-hidden">
+          <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-4 overflow-hidden hover:shadow-2xl hover:border-primary/20 transition cursor-pointer"
+               onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
             <div class="flex items-center justify-between gap-3 mb-4">
               <div class="min-w-0">
                 <p class="text-[10px] uppercase font-black opacity-50">
@@ -58,8 +59,20 @@
                 <p class="text-xs opacity-60 truncate"><%= jogo.estadio.presence || "Estádio não definido" %></p>
               </div>
 
-              <div class="badge <%= jogo.em_andamento? ? 'badge-success' : 'badge-info' %> badge-outline shrink-0 font-bold">
-                <%= jogo.em_andamento? ? "Em andamento" : "Programado" %>
+              <div class="badge <%= if jogo.finalizado?
+                                      'badge-error'
+                                    elsif jogo.em_andamento?
+                                      'badge-success'
+                                    else
+                                      'badge-info'
+                                    end %> badge-outline shrink-0 font-bold">
+                <%= if jogo.finalizado?
+                      "Finalizado"
+                    elsif jogo.em_andamento?
+                      "Em andamento"
+                    else
+                      "Programado"
+                    end %>
               </div>
             </div>
 
@@ -88,7 +101,12 @@
               </div>
 
               <div class="flex flex-col items-center min-w-[92px]">
-                <% if jogo.em_andamento? %>
+                <% if jogo.finalizado? %>
+                  <span class="text-[10px] uppercase font-black text-error mb-1">Finalizado</span>
+                  <span class="text-2xl font-black font-mono whitespace-nowrap">
+                    <%= jogo.gols_mandante.to_i %> - <%= jogo.gols_visitante.to_i %>
+                  </span>
+                <% elsif jogo.em_andamento? %>
                   <span class="text-[10px] uppercase font-black text-success mb-1">Placar</span>
                   <span class="text-2xl font-black font-mono whitespace-nowrap">
                     <%= jogo.gols_mandante.to_i %> - <%= jogo.gols_visitante.to_i %>
@@ -131,7 +149,9 @@
             <div class="flex flex-wrap justify-end gap-2 mt-4">
               <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200" %>
 
-              <% if jogo.em_andamento? %>
+              <% if jogo.finalizado? %>
+                <% # Sem opções de palpites quando finalizado %>
+              <% elsif jogo.em_andamento? %>
                 <button class="btn btn-sm btn-success btn-outline cursor-not-allowed" disabled>Palpites encerrados</button>
               <% elsif palpite.present? %>
                 <%= link_to "Editar palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white" %>

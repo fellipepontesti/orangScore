@@ -109,7 +109,6 @@ class LigasController < ApplicationController
 
     if @liga.pontuacao_zerada?
       points_scope = points_scope.where("user_points.created_at >= liga_membros.created_at")
-      palpites_scope = palpites_scope.where("palpites.created_at >= liga_membros.created_at")
     end
 
     @total_pontos = points_scope.sum(:pontos)
@@ -120,7 +119,7 @@ class LigasController < ApplicationController
     # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
     if @liga.pontuacao_zerada?
       pontos_subquery = "COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id AND up.created_at >= liga_membros.created_at), 0)"
-      palpites_subquery = "COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id AND p.created_at >= liga_membros.created_at), 0)"
+      palpites_subquery = "COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id), 0)"
     else
       pontos_subquery = "COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id), 0)"
       palpites_subquery = "COALESCE((SELECT COUNT(*) FROM palpites p WHERE p.user_id = liga_membros.user_id), 0)"
