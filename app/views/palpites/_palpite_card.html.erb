@@ -176,10 +176,6 @@
   </div>
 
   <div class="flex justify-center gap-3 pt-6 border-t border-dashed border-base-300 mt-4">
-    <%= link_to "Detalhes",
-      palpite_path(palpite),
-      class: "btn btn-ghost bg-base-200 btn-sm sm:btn-md font-bold" %>
-
     <% if palpite.jogo.programado? || palpite.jogo.times_a_definir? %>
       <%= link_to "Editar",
         edit_palpite_path(palpite),
