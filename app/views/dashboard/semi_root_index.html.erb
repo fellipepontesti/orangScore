@@ -1,13 +1,20 @@
 <div class="space-y-8 max-w-7xl mx-auto py-8 px-4">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-    <div class="flex flex-col gap-1">
-      <div class="flex items-center gap-3">
-        <h1 class="text-4xl font-bold text-white">Olá, <%= current_user.name %></h1>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-6">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Home</span>
+        <span>/</span>
+        <span>Painel Operacional</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 min-w-0">
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+          Olá, <%= current_user.name %>
+        </h1>
         <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-linear-to-b from-indigo-500 to-indigo-800 text-white border border-indigo-300">
           <span class="text-[10px] font-black tracking-widest uppercase">OPERADOR</span>
         </div>
       </div>
-      <p class="text-base-content/70">Painel operacional para controle e atualizações das partidas do OrangScore.</p>
+      <p class="opacity-70 text-base sm:text-lg">Painel operacional para controle e atualizações das partidas do OrangScore.</p>
     </div>
   </div>
 

@@ -1,19 +1,24 @@
 <% content_for :title, current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
 
 <div class="flex-1 flex flex-col w-full max-w-7xl mx-auto overflow-x-hidden">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-8">
-    <div>
-      <h1 class="font-bold text-3xl sm:text-4xl">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-6 px-4 sm:px-8 pt-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Palpites</span>
+        <span>/</span>
+        <span><%= current_user.root? ? "Todos" : "Meus Palpites" %></span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
         <%= current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
       </h1>
-      <p class="opacity-70 mt-2">
+      <p class="opacity-70 text-slate-400 text-sm sm:text-base">
         <%= current_user.root? ? "Acompanhe os palpites de todos os usuários." : "Acompanhe todos os palpites que você já fez." %>
       </p>
     </div>
 
     <%= link_to "Criar palpite",
       jogos_path,
-      class: "btn btn-primary w-full sm:w-auto" %>
+      class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl w-full sm:w-auto" %>
   </div>
 
   <div class="w-full px-4 sm:px-8 pb-4">

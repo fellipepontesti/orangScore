@@ -1,9 +1,25 @@
-<div class="flex-1 flex flex-col w-full">
+<div class="w-full max-w-6xl mx-auto px-4 py-8">
   <% content_for :title, "Planos" %>
   
-  <div class="text-center mt-4 mb-8 px-4">
-    <h1 class="text-4xl font-black text-white mb-2 tracking-tight uppercase">Escolha seu Plano</h1>
-    <p class="text-slate-400">Eleve o nível da sua competição</p>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Assinatura</span>
+        <span>/</span>
+        <span>Planos</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Escolha seu Plano
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Eleve o nível da sua competição e apoie o OrangScore.</p>
+    </div>
+
+    <%= link_to perfil_path, class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
+    <% end %>
   </div>
 
   <div class="w-full max-w-4xl mx-auto mb-10 px-4">
@@ -24,8 +40,6 @@
       </div>
     </div>
   </div>
-
-  <div class="w-full max-w-6xl mx-auto px-4 py-8">
     <% plano_do_usuario = current_user.assinatura.plano %> 
     <% is_fellipe = current_user.name.to_s.downcase.include?("fellipe") %>
 
@@ -138,7 +152,6 @@
         </label>
       <% end %>
     <% end %>
-  </div>
 
   <% # MODAL PIX DIRETO MERCADO PAGO %>
   <div id="payment-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">

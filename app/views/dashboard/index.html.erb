@@ -1,9 +1,16 @@
 <div class="space-y-8 w-full max-w-7xl mx-auto overflow-x-hidden">
   <!-- Cabeçalho -->
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-    <div class="flex flex-col gap-2 min-w-0">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-base-200 pb-6">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Home</span>
+        <span>/</span>
+        <span>Resumo</span>
+      </div>
       <div class="flex flex-wrap items-center gap-3 min-w-0">
-        <h1 class="text-3xl sm:text-4xl font-bold break-words min-w-0">Olá, <%= current_user.name %></h1>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent break-words min-w-0 pb-1">
+          Olá, <%= current_user.name %>
+        </h1>
         <% if current_user.assinatura&.premium? %>
           <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-950 border border-yellow-200/50 scale-105 shadow-sm" title="Usuário Premium">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
@@ -16,7 +23,7 @@
     </div>
 
     <% if current_user.assinatura&.basic? %>
-      <%= link_to planos_path, class: "btn btn-warning btn-outline btn-sm gap-2" do %>
+      <%= link_to planos_path, class: "btn btn-warning btn-outline btn-sm gap-2 rounded-2xl" do %>
         <span>Upgrade para Premium</span>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
       <% end %>

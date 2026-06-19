@@ -152,7 +152,9 @@ class DashboardController < ApplicationController
             update_attrs = {
               numero: jogador_params[:numero].presence,
               nome: jogador_params[:nome].presence || jogador.nome,
-              capitao: jogador_params[:capitao] == '1'
+              capitao: jogador_params[:capitao] == '1',
+              clube: jogador_params[:clube].presence,
+              clube_pais: jogador_params[:clube_pais].presence
             }
             unless jogador.update(update_attrs)
               errors << "Erro ao salvar #{jogador.nome}: #{jogador.errors.full_messages.to_sentence}"

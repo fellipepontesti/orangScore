@@ -1,15 +1,22 @@
 <% content_for :title, "Perfil" %>
 
 <div class="w-full max-w-3xl mx-auto px-4">
-  <div class="flex items-center justify-between gap-4 mb-8">
-    <div>
-      <h1 class="font-bold text-4xl">Meu perfil</h1>
-      <p class="text-base-content/60 mt-2">Confira suas informações no OrangScore.</p>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8 py-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Perfil</span>
+        <span>/</span>
+        <span>Meu Perfil</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Meu Perfil
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Confira suas informações no OrangScore.</p>
     </div>
 
-    <div class="flex flex-wrap gap-2">
-      <%= link_to "Editar perfil", edit_perfil_path, class: "btn btn-primary" %>
-      <button type="button" class="btn btn-outline" onclick="modal_alterar_senha.showModal()">Alterar senha</button>
+    <div class="flex flex-wrap gap-2 items-center">
+      <%= link_to "Editar perfil", edit_perfil_path, class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl" %>
+      <button type="button" class="btn btn-outline btn-sm sm:btn-md rounded-2xl" onclick="modal_alterar_senha.showModal()">Alterar senha</button>
     </div>
   </div>
 

@@ -55,7 +55,8 @@
               <th class="w-20 text-center">Capitão</th>
               <th>Jogador (Nome)</th>
               <th>Posição</th>
-              <th class="hidden md:table-cell">Clube</th>
+              <th class="hidden md:table-cell w-44">Clube</th>
+              <th class="hidden md:table-cell w-36">País do Clube</th>
               <th class="text-center w-24">Status</th>
             </tr>
           </thead>
@@ -102,11 +103,20 @@
                   <%= jogador.posicao_pt %>
                 </td>
 
-                <td class="text-xs text-slate-400 max-w-[200px] truncate hidden md:table-cell">
-                  <%= jogador.clube %>
-                  <% if jogador.clube_pais.present? %>
-                    <span class="opacity-50 text-[10px] ml-1">(<%= jogador.clube_pais %>)</span>
-                  <% end %>
+                <td class="hidden md:table-cell">
+                  <input type="text"
+                         name="jogadores[<%= jogador.id %>][clube]"
+                         value="<%= jogador.clube %>"
+                         placeholder="Sem clube"
+                         class="input input-bordered input-sm w-full font-semibold focus:input-primary rounded-xl text-xs text-slate-300" />
+                </td>
+
+                <td class="hidden md:table-cell">
+                  <input type="text"
+                         name="jogadores[<%= jogador.id %>][clube_pais]"
+                         value="<%= jogador.clube_pais %>"
+                         placeholder="Sem país"
+                         class="input input-bordered input-sm w-full font-semibold focus:input-primary rounded-xl text-xs text-slate-300" />
                 </td>
 
                 <td class="text-center p-3">

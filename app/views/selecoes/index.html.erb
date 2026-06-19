@@ -1,19 +1,36 @@
 <% content_for :title, "Seleções" %>
 
-<div class="w-full">
-  <div class="flex justify-between items-center p-4 pb-8 pt-8">
-    <h1 class="font-bold text-4xl">Seleções</h1>
+<div class="w-full max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Seleções</span>
+        <span>/</span>
+        <span>Lista</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Seleções
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Visualize a tabela, pontuação e elenco de cada seleção na Copa 2026.</p>
+    </div>
 
-    <div class="flex gap-2">
-      <button class="btn btn-outline" onclick="modal_filtros_selecoes.showModal()">
+    <div class="flex flex-wrap gap-2 items-center">
+      <button class="btn btn-outline btn-sm sm:btn-md rounded-2xl" onclick="modal_filtros_selecoes.showModal()">
         Filtros
       </button>
       
       <% if current_user.root? %>
         <%= link_to "Cadastrar seleção",
           new_selecao_path,
-          class: "rounded-md px-3.5 py-2.5 bg-primary hover:bg-primary/90 text-white font-medium flex items-center"
+          class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl"
         %>
+      <% end %>
+
+      <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+        </svg>
+        Voltar
       <% end %>
     </div>
   </div>
@@ -25,18 +42,18 @@
         <div class="space-y-4">
           <div class="form-control">
             <label class="label"><span class="label-text">Nome</span></label>
-            <%= f.text_field :nome, value: params[:nome], class: "input input-bordered w-full", placeholder: "Buscar por nome..." %>
+            <%= f.text_field :nome, value: params[:nome], class: "input input-bordered w-full rounded-2xl focus:border-orange-500 focus:ring-1 focus:ring-orange-500", placeholder: "Buscar por nome..." %>
           </div>
           <div class="form-control">
             <label class="label"><span class="label-text">Grupo</span></label>
-            <%= f.select :grupo_id, options_from_collection_for_select(Grupo.order(:nome), :id, :nome, params[:grupo_id]), { include_blank: "Todos os Grupos" }, class: "select select-bordered w-full" %>
+            <%= f.select :grupo_id, options_from_collection_for_select(Grupo.order(:nome), :id, :nome, params[:grupo_id]), { include_blank: "Todos os Grupos" }, class: "select select-bordered w-full rounded-2xl focus:border-orange-500 focus:ring-1 focus:ring-orange-500" %>
           </div>
         </div>
         <div class="modal-action flex justify-between mt-6">
-          <%= link_to "Limpar", selecoes_path, class: "btn btn-ghost bg-error text-white" %>
+          <%= link_to "Limpar", selecoes_path, class: "btn btn-ghost bg-error text-white rounded-2xl" %>
           <div class="flex gap-2">
-            <button type="button" class="btn" onclick="modal_filtros_selecoes.close()">Cancelar</button>
-            <%= f.submit "Aplicar", class: "btn btn-primary" %>
+            <button type="button" class="btn rounded-2xl" onclick="modal_filtros_selecoes.close()">Cancelar</button>
+            <%= f.submit "Aplicar", class: "btn btn-primary rounded-2xl" %>
           </div>
         </div>
       <% end %>

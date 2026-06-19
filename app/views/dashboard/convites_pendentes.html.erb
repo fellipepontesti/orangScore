@@ -1,19 +1,25 @@
 <% content_for :title, "Convites de Liga Pendentes" %>
 
-<div class="space-y-8 max-w-7xl mx-auto py-8 px-4">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    <div class="flex flex-col gap-1">
-      <h1 class="text-4xl font-bold text-white tracking-tight">Convites de Liga Pendentes</h1>
-      <p class="text-base-content/70">Aprove ou negue as solicitações de entrada pendentes em ligas de terceiros.</p>
+<div class="space-y-8 max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Painel Root</span>
+        <span>/</span>
+        <span>Convites Pendentes</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Convites de Liga
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Aprove ou negue as solicitações de entrada pendentes em ligas de terceiros.</p>
     </div>
-    <div>
-      <%= link_to authenticated_root_path, class: "btn btn-outline gap-2" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-        </svg>
-        Voltar ao Painel
-      <% end %>
-    </div>
+
+    <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
+    <% end %>
   </div>
 
   <% if @convites.any? %>
@@ -73,14 +79,14 @@
                   <div class="flex justify-center items-center gap-2">
                     <%= button_to dashboard_aceitar_convite_path(liga_membro_id: convite.uuid),
                                   method: :patch,
-                                  class: "btn btn-sm btn-success text-white font-bold px-4 rounded-xl hover:scale-105 transition",
+                                  class: "btn btn-sm btn-success text-white font-bold px-4 rounded-2xl hover:scale-105 transition",
                                   data: { confirm: "Tem certeza que deseja aceitar o usuário #{convite.user.name} na liga '#{convite.liga.nome}'?" } do %>
                       Aceitar
                     <% end %>
 
                     <%= button_to dashboard_negar_convite_path(liga_membro_id: convite.uuid),
                                   method: :delete,
-                                  class: "btn btn-sm btn-outline btn-error font-bold px-4 rounded-xl hover:scale-105 transition",
+                                  class: "btn btn-sm btn-outline btn-error font-bold px-4 rounded-2xl hover:scale-105 transition",
                                   data: { confirm: "Tem certeza que deseja rejeitar o pedido do usuário #{convite.user.name} para a liga '#{convite.liga.nome}'?" } do %>
                       Rejeitar
                     <% end %>

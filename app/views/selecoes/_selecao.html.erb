@@ -22,7 +22,7 @@
 
       <% if current_user.root? %>
         <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
-          <button type="button" class="btn btn-outline btn-info btn-sm sm:btn-md font-bold gap-2 shadow-sm" onclick="modal_sync_squads.showModal()">
+          <button type="button" class="btn btn-outline btn-info btn-sm sm:btn-md font-bold gap-2 shadow-sm rounded-2xl" onclick="modal_sync_squads.showModal()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
@@ -30,17 +30,17 @@
           </button>
           <%= button_to sync_players_data_selecoes_path(selecao_id: selecao.id),
               method: :post,
-              class: "btn btn-outline btn-success btn-sm sm:btn-md font-bold gap-2 shadow-sm" do %>
+              class: "btn btn-outline btn-success btn-sm sm:btn-md font-bold gap-2 shadow-sm rounded-2xl" do %>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
             Sincronizar Gols
           <% end %>
-          <%= link_to edit_selecao_path(selecao), class: "btn btn-warning btn-sm sm:btn-md font-bold gap-2" do %>
+          <%= link_to edit_selecao_path(selecao), class: "btn btn-warning btn-sm sm:btn-md font-bold gap-2 rounded-2xl" do %>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
             Editar
           <% end %>
-          <%= button_to selecao_path(selecao), method: :delete, data: { turbo_confirm: "Tem certeza?" }, class: "btn btn-error btn-outline btn-sm sm:btn-md font-bold gap-2" do %>
+          <%= button_to selecao_path(selecao), method: :delete, data: { turbo_confirm: "Tem certeza?" }, class: "btn btn-error btn-outline btn-sm sm:btn-md font-bold gap-2 rounded-2xl" do %>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             Excluir
           <% end %>
@@ -245,23 +245,23 @@
                 <%= f.select :selecao_id, 
                   options_from_collection_for_select(Selecao.order(:nome), :id, :nome, selecao.id), 
                   { prompt: "Selecione a seleção local..." }, 
-                  class: "select select-bordered w-full", id: "show_sync_selecao_id", required: true %>
+                  class: "select select-bordered w-full rounded-2xl focus:border-orange-500 focus:ring-1 focus:ring-orange-500", id: "show_sync_selecao_id", required: true %>
               </div>
               
               <div class="form-control">
                 <label class="label"><span class="label-text font-bold">Nome da Seleção na API (em Inglês)</span></label>
-                <%= f.text_field :api_name, value: (selecao.nome_en.presence || selecao.nome), class: "input input-bordered w-full", id: "show_sync_api_name", placeholder: "Ex: Brazil, Canada, Ghana, France...", required: true %>
+                <%= f.text_field :api_name, value: (selecao.nome_en.presence || selecao.nome), class: "input input-bordered w-full rounded-2xl focus:border-orange-500 focus:ring-1 focus:ring-orange-500", id: "show_sync_api_name", placeholder: "Ex: Brazil, Canada, Ghana, France...", required: true %>
               </div>
 
               <div class="form-control">
                 <label class="label"><span class="label-text font-bold">Ano do Torneio</span></label>
-                <%= f.select :year, options_for_select([["2026", "2026"], ["1986", "1986"]], "2026"), {}, class: "select select-bordered w-full" %>
+                <%= f.select :year, options_for_select([["2026", "2026"], ["1986", "1986"]], "2026"), {}, class: "select select-bordered w-full rounded-2xl focus:border-orange-500 focus:ring-1 focus:ring-orange-500" %>
               </div>
             </div>
             
             <div class="modal-action flex justify-between mt-6">
-              <button type="button" class="btn btn-ghost bg-base-300" onclick="modal_sync_squads.close()">Cancelar</button>
-              <%= f.submit "Sincronizar", class: "btn btn-primary" %>
+              <button type="button" class="btn btn-ghost bg-base-300 rounded-2xl" onclick="modal_sync_squads.close()">Cancelar</button>
+              <%= f.submit "Sincronizar", class: "btn btn-primary rounded-2xl" %>
             </div>
           <% end %>
         </div>

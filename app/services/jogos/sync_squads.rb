@@ -252,7 +252,7 @@ module Jogos
           next if scorer.blank? || !team_side.in?(%w[home away])
 
           # Ignorar own goals (gols contra)
-          next if scorer.downcase.include?('o.g')
+          next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/
 
           team_name = team_side == 'home' ? match['homeTeam'] : match['awayTeam']
           

@@ -1,17 +1,23 @@
-<div class="space-y-8 max-w-7xl mx-auto py-8">
-  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-3">
-        <h1 class="text-4xl font-bold">⚽ Artilharia da Copa 2026</h1>
-        <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-b from-primary via-primary/80 to-primary/60 text-white border border-primary/30">
-          <span class="text-xs font-black tracking-wide">ÁREA DO ADMINISTRADOR</span>
-        </div>
+<div class="space-y-8 max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Estatísticas</span>
+        <span>/</span>
+        <span>Artilharia</span>
       </div>
-      <p class="opacity-70 text-lg">Classificação de artilheiros da Copa do Mundo</p>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1 flex flex-wrap items-center gap-2">
+        <span>⚽ Artilharia da Copa 2026</span>
+        <span class="badge badge-primary font-black tracking-wide text-[10px] py-1.5 px-2.5 rounded-full border border-primary/30 uppercase text-white shadow-sm shrink-0">ÁREA DO ADMINISTRADOR</span>
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Classificação de artilheiros e estatísticas de gols da Copa do Mundo.</p>
     </div>
-    
-    <%= link_to authenticated_root_path, class: "btn btn-outline border-base-200 text-white hover:bg-base-200 gap-2 font-bold" do %>
-      ← Voltar ao Dashboard
+
+    <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
     <% end %>
   </div>
 
@@ -215,7 +221,7 @@
       </div>
       <h2 class="text-2xl font-bold mb-2">Nenhum gol registrado ainda</h2>
       <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
-      <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-xl font-bold" do %>
+      <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-2xl font-bold" do %>
         Ir para o Painel Administrativo
       <% end %>
     </div>

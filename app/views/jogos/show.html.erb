@@ -1,10 +1,17 @@
 <% content_for :title, "Detalhes do Jogo" %>
 
 <div class="max-w-3xl mx-auto px-4 py-8 space-y-6">
-  <div class="items-center border-b border-base-200 pb-4">
-    <!-- Lado Central: Badge Perfeitamente Centralizada -->
-    <div class="flex justify-center text-center">
-      <span class="badge badge-outline badge-md uppercase tracking-wider font-semibold opacity-70 whitespace-nowrap">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <%= link_to "Jogos", jogos_path, class: "hover:underline" %>
+        <span>/</span>
+        <span>Detalhes do Jogo</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        <%= @jogo.mandante&.nome || @jogo.nome_provisorio_mandante || "Mandante" %> x <%= @jogo.visitante&.nome || @jogo.nome_provisorio_visitante || "Visitante" %>
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base">
         <%=
           case @jogo.tipo
           when "grupo"
@@ -13,11 +20,8 @@
             @jogo.tipo.humanize
           end
         %>
-      </span>
+      </p>
     </div>
-
-    <!-- Lado Direito: Vazio para equilibrar o Grid e manter o centro perfeito -->
-    <div></div>
   </div>
 
   <div class="bg-base-100 rounded-3xl border border-base-200 p-6 sm:p-8 shadow-sm text-center space-y-6">

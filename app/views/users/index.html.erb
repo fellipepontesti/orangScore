@@ -1,9 +1,26 @@
 <% content_for :title, "Usuários" %>
 
-<div class="w-full max-w-6xl mx-auto px-4">
-  <h1 class="font-bold text-4xl text-center mb-8 p-4 pb-8 pt-8">
-    Usuários
-  </h1>
+<div class="w-full max-w-6xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Painel Root</span>
+        <span>/</span>
+        <span>Gerenciar Usuários</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Usuários
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Gerencie os usuários do OrangScore, visualize permissões, logins, palpites e pontos.</p>
+    </div>
+
+    <%= link_to authenticated_root_path, class: "btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
+    <% end %>
+  </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="card bg-base-100 shadow border border-base-200">
@@ -89,17 +106,17 @@
 
           <%= link_to "Limpar",
             users_path,
-            class: "btn btn-ghost bg-error text-white" %>
+            class: "btn btn-ghost bg-error text-white rounded-2xl" %>
 
           <div class="flex gap-2">
             <button type="button"
-              class="btn"
+              class="btn rounded-2xl"
               onclick="modal_filtros_usuarios.close()">
               Cancelar
             </button>
 
             <%= f.submit "Aplicar",
-              class: "btn btn-primary" %>
+              class: "btn btn-primary rounded-2xl" %>
           </div>
 
         </div>
@@ -111,7 +128,7 @@
 
   <div class="flex justify-end mb-4">
     <button
-      class="btn btn-primary p-6"
+      class="btn btn-primary btn-sm sm:btn-md rounded-2xl"
       onclick="modal_filtros_usuarios.showModal()">
       Filtros
     </button>

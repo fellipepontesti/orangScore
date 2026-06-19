@@ -1,8 +1,17 @@
 <% content_for :title, "Jogos" %>
 
-<div class="w-full max-w-6xl mx-auto px-4">
-  <div class="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8 p-4 pb-8 pt-8">
-    <h1 class="font-bold text-4xl text-center lg:text-left">Jogos</h1>
+<div class="w-full max-w-6xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-6">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Jogos</span>
+        <span>/</span>
+        <span>Calendário</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Jogos
+      </h1>
+    </div>
   </div>
 
   <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>

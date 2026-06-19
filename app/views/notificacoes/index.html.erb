@@ -1,19 +1,30 @@
 <% content_for :title, "Notificações" %>
 
-<div class="flex-1 flex flex-col w-full">
-  <div class="flex items-center justify-between p-8">
-    <h1 class="font-bold text-4xl">Notificações</h1>
-    <div class="flex items-center gap-4">
+<div class="w-full max-w-4xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Notificações</span>
+        <span>/</span>
+        <span>Caixa de Entrada</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Notificações
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Confira as mensagens e avisos enviados para você.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 items-center">
       <% if @notificacoes.unread.any? %>
         <%= button_to "Marcar todas como lidas",
           read_all_notificacoes_path,
           method: :post,
-          class: "btn btn-outline btn-secondary btn-sm md:btn-md" %>
+          class: "btn btn-outline btn-secondary btn-sm sm:btn-md rounded-2xl" %>
       <% end %>
       <% if current_user.root? %>
         <%= link_to "Enviar para todos",
           new_notificacao_path,
-          class: "btn btn-primary btn-sm md:btn-md" %>
+          class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl" %>
       <% end %>
     </div>
   </div>

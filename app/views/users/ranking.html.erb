@@ -3,7 +3,7 @@
 <div class="w-full max-w-4xl mx-auto px-4 py-8 pb-32 space-y-10">
   
   <!-- Cabeçalho Principal -->
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-base-200/50 pb-6">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
     <div class="flex items-center gap-3">
       <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/20 shadow-lg shadow-secondary/5 shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7 text-secondary animate-pulse">
@@ -11,12 +11,17 @@
         </svg>
       </div>
       <div>
-        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">Ranking Global</h1>
+        <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+          <span>Ranking</span>
+          <span>/</span>
+          <span>Global</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent tracking-tight pb-1">Ranking Global</h1>
         <p class="text-xs opacity-60 font-medium">Os melhores palpiteros da Copa 2026</p>
       </div>
     </div>
     
-    <%= link_to "Voltar ao Dashboard", authenticated_root_path, class: "btn btn-outline btn-sm hover:bg-secondary hover:border-secondary transition-all rounded-xl shadow-md" %>
+    <%= link_to "Voltar ao Dashboard", authenticated_root_path, class: "btn btn-outline btn-sm hover:bg-secondary hover:border-secondary transition-all rounded-2xl shadow-md sm:btn-md" %>
   </div>
 
   <!-- Cards de Estatísticas Rápidas -->

@@ -1,25 +1,34 @@
 <% content_for :title, "Ligas" %>
 
-<div class="flex-1 flex flex-col w-full">
-  <div class="flex items-center justify-between p-8">
-    <h1 class="font-bold text-4xl">Ligas</h1>
+<div class="flex-1 flex flex-col w-full px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-6">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Ligas</span>
+        <span>/</span>
+        <span>Minhas Ligas</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Ligas
+      </h1>
+    </div>
 
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2 items-center">
       <% if current_user.root? %>
-        <button class="btn btn-outline h-full py-4" onclick="modal_filtros_ligas.showModal()">
+        <button class="btn btn-outline btn-sm sm:btn-md rounded-2xl" onclick="modal_filtros_ligas.showModal()">
           Filtros
         </button>
       <% end %>
 
       <%= link_to "Ver ligas públicas",
         publicas_ligas_path,
-        class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white flex items-center"
+        class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl"
       %>
 
       <% if !current_user.atingiu_limite_de_ligas? || current_user.root? %>
         <%= link_to "Criar nova liga",
           new_liga_path,
-          class: "rounded-md px-4 py-4 bg-primary hover:bg-primary/80! font-bold text-white flex items-center"
+          class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl"
         %>
       <% end %>
     </div>

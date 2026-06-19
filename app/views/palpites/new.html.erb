@@ -1,7 +1,18 @@
 <% content_for :title, "Novo palpite" %>
 
-<div class="w-full">
-  <h1 class="font-bold text-center text-4xl p-4 pb-8 pt-8">Novo palpite</h1>
+<div class="w-full max-w-3xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <%= link_to "Palpites", palpites_path, class: "hover:underline" %>
+        <span>/</span>
+        <span>Novo Palpite</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Novo Palpite
+      </h1>
+    </div>
+  </div>
 
   <%= render "form", palpite: @palpite %>
 </div>
