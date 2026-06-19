@@ -22,7 +22,7 @@
 
       <%= link_to "Ver ligas públicas",
         publicas_ligas_path,
-        class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl"
+        class: "btn btn-outline btn-primary btn-sm sm:btn-md font-bold rounded-2xl"
       %>
 
       <% if !current_user.atingiu_limite_de_ligas? || current_user.root? %>

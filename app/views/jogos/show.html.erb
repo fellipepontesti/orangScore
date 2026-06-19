@@ -116,7 +116,7 @@
 
   <% if @jogo.prob_mandante.present? && !current_user.esconder_odds %>
     <div class="bg-base-100 rounded-2xl border border-base-200 p-5 space-y-3">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Probabilidades do System</h3>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60 text-center">Probabilidades do OrangScore</h3>
       <div class="flex items-center justify-between text-sm font-semibold">
         <span class="text-success"><%= @jogo.mandante&.nome || 'Casa' %>: <%= @jogo.prob_mandante %>%</span>
         <span class="text-base-content/70">Empate: <%= @jogo.prob_empate %>%</span>
