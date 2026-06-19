@@ -8,7 +8,7 @@ module Jogos
     def call
       if jogo.update(params)
         Jogos::StatusNotifier.new(jogo: jogo).call if jogo.saved_change_to_status?
-        Jogos::CalculaPontuacao.new(jogo: jogo).call if jogo.finalizado? && (jogo.saved_change_to_status? || jogo.saved_change_to_gols_mandante? || jogo.saved_change_to_gols_visitante?)
+        Jogos::CalculaPontuacao.new(jogo: jogo).call if jogo.finalizado? && jogo.saved_change_to_status?
       end
       jogo
     end

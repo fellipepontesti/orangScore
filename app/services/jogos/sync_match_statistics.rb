@@ -78,21 +78,8 @@ module Jogos
         }
         info_local.save!
 
-        # Sincroniza o placar e o status do jogo se for finalizado na API
-        if api_match['status'] == 'finished'
-          gols_home = goals.count { |g| g['team'] == 'home' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
-          gols_away = goals.count { |g| g['team'] == 'away' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
-          
-          # Atualiza placar e status usando o service Jogos::Update para disparar os recálculos corretos
-          Jogos::Update.new(
-            jogo: jogo, 
-            params: { 
-              gols_mandante: gols_home, 
-              gols_visitante: gols_away, 
-              status: 'finalizado' 
-            }
-          ).call
-        end
+        # Re-consolida os gols e assistências dos jogadores a partir de todas as partidas sincronizadas
+        Jogos::SyncSquads.new(import_squad: false, import_goals: true).call
 
         info_local
       end
