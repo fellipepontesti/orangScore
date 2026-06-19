@@ -1,0 +1,234 @@
+diff --git a/app/views/dashboard/artilharia.html.erb b/app/views/dashboard/artilharia.html.erb
+index 90c829b..3e4a9c2 100644
+--- a/app/views/dashboard/artilharia.html.erb
++++ b/app/views/dashboard/artilharia.html.erb
+@@ -7,7 +7,7 @@
+         <span>Artilharia</span>
+       </div>
+       <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1 flex flex-wrap items-center gap-2">
+-        <span>⚽ Artilharia da Copa 2026</span>
++        <span>Artilharia da Copa 2026</span>
+       </h1>
+       <p class="text-base-content/60 text-sm sm:text-base">Classificação de artilheiros e estatísticas de gols da Copa do Mundo.</p>
+@@ -24,14 +24,27 @@
+   <% if @artilheiros.any? %>
+     <!-- Pódio dos Top 3 Goleadores -->
+     <% 
+-      top_1 = @artilheiros[0]
+-      top_2 = @artilheiros[1]
+-      top_3 = @artilheiros[2]
++      gols_distintos = @artilheiros.map(&:gols).uniq.sort.reverse
++      maior_gols_1 = gols_distintos[0]
++      maior_gols_2 = gols_distintos[1]
++      maior_gols_3 = gols_distintos[2]
++
++      jogadores_1 = @artilheiros.select { |j| j.gols == maior_gols_1 }
++      jogadores_2 = maior_gols_2 ? @artilheiros.select { |j| j.gols == maior_gols_2 } : []
++      jogadores_3 = maior_gols_3 ? @artilheiros.select { |j| j.gols == maior_gols_3 } : []
++
++      top_1 = jogadores_1[0]
++      top_2 = jogadores_2[0]
++      top_3 = jogadores_3[0]
++
++      empatados_1 = jogadores_1[1..-1] || []
++      empatados_2 = jogadores_2[1..-1] || []
++      empatados_3 = jogadores_3[1..-1] || []
+     %>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-8 pb-4 max-w-4xl mx-auto">
+       
+       <!-- 2º Lugar -->
+-      <div class="order-2 md:order-1 flex flex-col items-center">
++      <div class="order-2 md:order-1 flex flex-col items-center justify-end w-full">
+         <% if top_2 %>
+           <div class="avatar mb-3 relative group">
+             <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
+@@ -45,7 +58,7 @@
+               <% end %>
+             </div>
+           </div>
+-          <div class="text-center mb-4 min-w-0 px-2 w-full">
++          <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+             <h3 class="font-extrabold text-base truncate text-white" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
+             <% if top_2.selecao.present? %>
+               <%= link_to selecao_path(top_2.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+@@ -57,6 +70,11 @@
+             <div class="flex items-center justify-center gap-2 mt-1.5">
+               <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
+             </div>
++            <% if empatados_2.any? %>
++              <button onclick="modal_empatados_2.showModal()" class="mt-2 text-[10px] text-slate-300 font-bold hover:underline bg-slate-400/10 px-2.5 py-1 rounded-full border border-slate-300/20 transition cursor-pointer flex items-center gap-1">
++                👤 +<%= empatados_2.size %> <%= empatados_2.size == 1 ? 'empatado' : 'empatados' %>
++              </button>
++            <% end %>
+           </div>
+         <% end %>
+         <!-- Bloco do pódio -->
+@@ -66,7 +84,7 @@
+       </div>
+ 
+       <!-- 1º Lugar -->
+-      <div class="order-1 md:order-2 flex flex-col items-center">
++      <div class="order-1 md:order-2 flex flex-col items-center justify-end w-full">
+         <% if top_1 %>
+           <div class="avatar mb-4 relative scale-110 group">
+             <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
+@@ -76,11 +94,11 @@
+                   <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+                 <% end %>
+               <% else %>
+-                <span class="text-3xl font-bold text-amber-400">?</span>
++                <span class="text-2xl font-bold text-amber-400">?</span>
+               <% end %>
+             </div>
+           </div>
+-          <div class="text-center mb-4 min-w-0 px-2 w-full scale-105">
++          <div class="text-center mb-4 min-w-0 px-2 w-full scale-105 flex flex-col items-center">
+             <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
+               <%= top_1.nome %>
+             </h3>
+@@ -94,6 +112,11 @@
+             <div class="flex items-center justify-center gap-2 mt-2">
+               <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
+             </div>
++            <% if empatados_1.any? %>
++              <button onclick="modal_empatados_1.showModal()" class="mt-2 text-[10px] text-amber-400 font-bold hover:underline bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20 transition cursor-pointer flex items-center gap-1">
++                👤 +<%= empatados_1.size %> <%= empatados_1.size == 1 ? 'empatado' : 'empatados' %>
++              </button>
++            <% end %>
+           </div>
+         <% end %>
+         <!-- Bloco do pódio -->
+@@ -104,7 +127,7 @@
+       </div>
+ 
+       <!-- 3º Lugar -->
+-      <div class="order-3 flex flex-col items-center">
++      <div class="order-3 flex flex-col items-center justify-end w-full">
+         <% if top_3 %>
+           <div class="avatar mb-3 relative group">
+             <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
+@@ -118,7 +141,7 @@
+               <% end %>
+             </div>
+           </div>
+-          <div class="text-center mb-4 min-w-0 px-2 w-full">
++          <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+             <h3 class="font-extrabold text-base truncate text-white" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
+             <% if top_3.selecao.present? %>
+               <%= link_to selecao_path(top_3.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+@@ -130,6 +153,11 @@
+             <div class="flex items-center justify-center gap-2 mt-1.5">
+               <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
+             </div>
++            <% if empatados_3.any? %>
++              <button onclick="modal_empatados_3.showModal()" class="mt-2 text-[10px] text-amber-700 font-bold hover:underline bg-amber-700/10 px-2.5 py-1 rounded-full border border-amber-700/20 transition cursor-pointer flex items-center gap-1">
++                👤 +<%= empatados_3.size %> <%= empatados_3.size == 1 ? 'empatado' : 'empatados' %>
++              </button>
++            <% end %>
+           </div>
+         <% end %>
+         <!-- Bloco do pódio -->
+@@ -140,6 +168,103 @@
+ 
+     </div>
+ 
++    <%# MODAIS DE EMPATADOS %>
++    <% if top_1 && empatados_1.any? %>
++      <dialog id="modal_empatados_1" class="modal">
++        <div class="modal-box bg-base-100 border border-amber-400/20 shadow-2xl max-w-md">
++          <h3 class="font-black text-xl text-amber-400 text-center mb-6 flex items-center justify-center gap-2">
++            <span>🏆</span> Goleadores com <%= top_1.gols %> gols
++          </h3>
++          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_1.close()">✕</button>
++          
++          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
++            <% ([top_1] + empatados_1).each do |jogador| %>
++              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
++                <div class="flex items-center gap-3">
++                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
++                    <% if jogador.selecao&.logo.present? %>
++                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
++                    <% else %>
++                      <span class="text-xs font-bold">?</span>
++                    <% end %>
++                  </div>
++                  <div class="min-w-0">
++                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
++                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
++                  </div>
++                </div>
++                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
++              </div>
++            <% end %>
++          </div>
++        </div>
++      </dialog>
++    <% end %>
++
++    <% if top_2 && empatados_2.any? %>
++      <dialog id="modal_empatados_2" class="modal">
++        <div class="modal-box bg-base-100 border border-slate-300/20 shadow-2xl max-w-md">
++          <h3 class="font-black text-xl text-slate-300 text-center mb-6 flex items-center justify-center gap-2">
++            <span>🥈</span> Goleadores com <%= top_2.gols %> gols
++          </h3>
++          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_2.close()">✕</button>
++          
++          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
++            <% ([top_2] + empatados_2).each do |jogador| %>
++              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
++                <div class="flex items-center gap-3">
++                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
++                    <% if jogador.selecao&.logo.present? %>
++                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
++                    <% else %>
++                      <span class="text-xs font-bold">?</span>
++                    <% end %>
++                  </div>
++                  <div class="min-w-0">
++                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
++                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
++                  </div>
++                </div>
++                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
++              </div>
++            <% end %>
++          </div>
++        </div>
++      </dialog>
++    <% end %>
++
++    <% if top_3 && empatados_3.any? %>
++      <dialog id="modal_empatados_3" class="modal">
++        <div class="modal-box bg-base-100 border border-amber-700/20 shadow-2xl max-w-md">
++          <h3 class="font-black text-xl text-amber-700 text-center mb-6 flex items-center justify-center gap-2">
++            <span>🥉</span> Goleadores com <%= top_3.gols %> gols
++          </h3>
++          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_3.close()">✕</button>
++          
++          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
++            <% ([top_3] + empatados_3).each do |jogador| %>
++              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
++                <div class="flex items-center gap-3">
++                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
++                    <% if jogador.selecao&.logo.present? %>
++                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
++                    <% else %>
++                      <span class="text-xs font-bold">?</span>
++                    <% end %>
++                  </div>
++                  <div class="min-w-0">
++                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
++                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
++                  </div>
++                </div>
++                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
++              </div>
++            <% end %>
++          </div>
++        </div>
++      </dialog>
++    <% end %>
++
+     <!-- Tabela Geral -->
+     <div class="bg-base-100 shadow-2xl rounded-3xl border border-base-200 overflow-hidden mt-8">
+       <div class="px-6 py-5 border-b border-base-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

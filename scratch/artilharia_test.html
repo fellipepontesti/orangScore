@@ -1,0 +1,2315 @@
+<div class="space-y-8 max-w-7xl mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-8">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Estatísticas</span>
+        <span>/</span>
+        <span>Artilharia</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1 flex flex-wrap items-center gap-2">
+        <span>Artilharia da Copa 2026</span>
+      </h1>
+      <p class="text-base-content/60 text-sm sm:text-base">Classificação de artilheiros e estatísticas de gols da Copa do Mundo.</p>
+    </div>
+
+    <a class="btn btn-ghost btn-sm sm:btn-md gap-2 rounded-2xl shrink-0" href="/">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      </svg>
+      Voltar
+</a>  </div>
+
+    <!-- Pódio dos Top 3 Goleadores -->
+    <!-- Grid de Estatísticas Rápidas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl mx-auto mb-6">
+      <div class="bg-base-100 rounded-3xl p-5 border border-base-200 shadow-xl flex items-center gap-4 hover:shadow-2xl transition duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-2xl shrink-0">
+          ⚽
+        </div>
+        <div>
+          <p class="text-[10px] font-mono font-bold uppercase tracking-wider text-orange-500">Total de Gols</p>
+          <h3 class="text-2xl font-black text-white">86</h3>
+        </div>
+      </div>
+
+      <div class="bg-base-100 rounded-3xl p-5 border border-base-200 shadow-xl flex items-center gap-4 hover:shadow-2xl transition duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl shrink-0">
+          👤
+        </div>
+        <div>
+          <p class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-500">Artilheiros Ativos</p>
+          <h3 class="text-2xl font-black text-white">72</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-8 pb-4 max-w-4xl mx-auto">
+      
+      <!-- 2º Lugar -->
+      <div class="order-2 md:order-1 flex flex-col items-center">
+            <!-- Exibição de Empate para o 2º Lugar -->
+            <div class="avatar mb-3 relative group cursor-pointer hover:scale-105 transition duration-300" onclick="modal_empatados_2.showModal()">
+              <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-gradient-to-br from-slate-400/20 to-slate-600/20 border-2 border-slate-300 flex items-center justify-center p-1">
+                <span class="text-2xl">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white cursor-pointer hover:text-primary transition" onclick="modal_empatados_2.showModal()">Jogadores Empatados</h3>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">10 atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white">2</strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_2.showModal()" class="mt-2.5 text-[10px] text-slate-300 font-bold hover:underline bg-slate-400/10 px-2.5 py-1.5 rounded-full border border-slate-300/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-24 rounded-t-3xl border-t border-x border-slate-300/20 flex items-center justify-center shadow-inner">
+          <span class="text-3xl font-black opacity-30 text-slate-300">🥈</span>
+        </div>
+      </div>
+
+      <!-- 1º Lugar -->
+      <div class="order-1 md:order-2 flex flex-col items-center">
+            <!-- Exibição de Empate para o 1º Lugar -->
+            <div class="avatar mb-4 relative scale-110 group cursor-pointer hover:scale-115 transition duration-300" onclick="modal_empatados_1.showModal()">
+              <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
+              <div class="mask mask-squircle h-24 w-24 bg-gradient-to-br from-amber-400/20 to-orange-500/20 border-4 border-amber-400 flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
+                <span class="text-3xl filter drop-shadow">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full scale-105 flex flex-col items-center">
+              <h3 class="font-black text-lg text-amber-400 truncate cursor-pointer hover:text-amber-300 transition" onclick="modal_empatados_1.showModal()">
+                Disputa Empatada
+              </h3>
+              <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5">2 atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white">3</strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_1.showModal()" class="mt-2.5 text-[10px] text-amber-400 font-bold hover:underline bg-amber-400/10 px-2.5 py-1.5 rounded-full border border-amber-400/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-primary/30 to-primary/10 w-full h-36 rounded-t-3xl border-t border-x border-amber-400/20 flex items-center justify-center shadow-lg relative overflow-hidden">
+          <div class="absolute inset-0 bg-radial-to-t from-primary/20 via-transparent to-transparent"></div>
+          <span class="text-4xl font-black text-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)]">🏆</span>
+        </div>
+      </div>
+
+      <!-- 3º Lugar -->
+      <div class="order-3 flex flex-col items-center">
+            <!-- Exibição de Empate para o 3º Lugar -->
+            <div class="avatar mb-3 relative group cursor-pointer hover:scale-105 transition duration-300" onclick="modal_empatados_3.showModal()">
+              <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-gradient-to-br from-amber-700/20 to-amber-900/20 border-2 border-amber-700 flex items-center justify-center p-1">
+                <span class="text-2xl">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white cursor-pointer hover:text-primary transition" onclick="modal_empatados_3.showModal()">Jogadores Empatados</h3>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">60 atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white">1</strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_3.showModal()" class="mt-2.5 text-[10px] text-amber-700 font-bold hover:underline bg-amber-700/10 px-2.5 py-1.5 rounded-full border border-amber-700/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+        <!-- Bloco do pódio -->
+        <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-20 rounded-t-3xl border-t border-x border-amber-700/20 flex items-center justify-center shadow-inner">
+          <span class="text-3xl font-black opacity-30 text-amber-700">🥉</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tabela Geral -->
+    <div class="bg-base-100 shadow-2xl rounded-3xl border border-base-200 overflow-hidden mt-8">
+      <div class="px-6 py-5 border-b border-base-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-bold">Todos os Goleadores</h2>
+          <p class="text-xs opacity-50 mt-0.5">Listagem completa dos jogadores que balançaram as redes na Copa</p>
+        </div>
+        <span class="badge badge-primary font-bold px-3 py-2 text-xs">72 JOGADORES</span>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <table class="table table-zebra w-full text-left">
+          <thead>
+            <tr class="bg-base-200 text-xs font-bold uppercase tracking-wider opacity-70">
+              <th class="w-16 text-center">Pos</th>
+              <th>Jogador</th>
+              <th>Seleção</th>
+              <th>Clube</th>
+              <th class="text-center font-bold text-primary">Gols ⚽</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  1º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Jonathan David
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/f5a5fa1e-9701-481a-abd8-c91917f979da">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CAN-c6132d3da9aa594dd3024c546558c2437cf304ab02f51bddc2e92c8e7a8855f4.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Canadá
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Juventus
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">3</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  2º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Lionel Messi
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/0b0c5fe9-5604-409a-aef2-821c92a3f2a7">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/ARG-526200e420fa92e6749294b2d96a94c2cb7b1bc84d4199b4954f865897e3cec1.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Argentina 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Inter Miami CF
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">3</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  3º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Cyle Larin
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/f5a5fa1e-9701-481a-abd8-c91917f979da">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CAN-c6132d3da9aa594dd3024c546558c2437cf304ab02f51bddc2e92c8e7a8855f4.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Canadá
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Southampton
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  4º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Elijah Just
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/a826ddba-9f80-4ff2-85cf-2652949d6fbf">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/NZL-8d589acf60ea6a2dc20b1b58e3e9b8a7f2cc3e68bfe2b31d8431366d7d2a74cf.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Nova Zelândia 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Motherwell
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  5º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Erling Haaland
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3b9e33fb-1a46-4a65-a0c9-9968fe5462ae">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/NOR-270fc3fa8853bf92a287d922525606b9b2dbc25674061ac3d816df9899825c1d.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Noruega
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Manchester City
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  6º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Folarin Balogun
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/33fad5ea-72bb-477b-826a-2e39528ad015">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/USA-9656f6ce0db45e03e0bf3c1bac7fcb3b6cbb0dff94ecac318128c3391b17f81d.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Estados Unidos
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Monaco
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  7º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Harry Kane
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/83b2657f-5e00-47ca-828d-9d26e2b8ff6e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/ENG-6d2e4657191dae7ddea23e188e56b66966a43326d0a6659b322d4f915278d838.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Inglaterra 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Bayern Munich
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  8º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Johan Manzambi
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/879b87be-b24e-4be9-b657-840d2bb8fd5f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SUI-799f61f7d3256673114ade4cb04f20028e499639988a87b832139a1d2a857b2c.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suiça
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  SC Freiburg
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  9º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Kai Havertz
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Arsenal
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  10º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Kylian Mbappé
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/5cfc8687-daac-4782-9436-417f0af1f754">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/FRA-fa742c0d1d48276db46d06b5c5f7b89f562526bf5b0d492dc9be9163b66857fe.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        França
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Real Madrid
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  11º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Leo Østigård
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3b9e33fb-1a46-4a65-a0c9-9968fe5462ae">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/NOR-270fc3fa8853bf92a287d922525606b9b2dbc25674061ac3d816df9899825c1d.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Noruega
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Genoa
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  12º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Yasin Ayari
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d3b771c7-c11b-457e-a5d0-6bd32818dd9b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SWE-36a3d55b84eb4778c3a2db8f7157571d891e62041a27c9785700f46b5600cdf5.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suécia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Brighton &amp; Hove Albion
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">2</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  13º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Abbosbek Fayzullaev
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/6fca3749-565b-4bb2-87de-69b5ec41523c">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/UZB-40a1f795ff8f536e0b647215b49251ea2fe01dbd0cad5ff98c838623b7b09f1f.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Uzbequistão
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  İstanbul Başakşehir
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  14º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Abdulelah Al-Amri
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/13a0559f-63bc-466b-8808-0335463d0251">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/KSA-5085cfd2ffd16b49181a207713d83a56d2c6f977c62a55673ea5281f78e8430c.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Arábia Saudita 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Al-Nassr
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  15º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ali Olwan
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/ae0612b1-6274-4a1f-a5ff-ade58284b6b5">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/JOR-66c87a1706a2b5975e0ae4d17d8654353bd98193614ac9bff78bff921b5a3070.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Jordânia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Al-Sailiya
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  16º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Amad Diallo
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/90cebd17-0e2c-4a20-b719-042128a0d199">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CIV-b5eb3710ca8795a761ebbc63b160479a1fe15b08dfd9e56b8c620710475fd319.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Costa do Marfim
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Manchester United
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  17º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Bradley Barcola
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/5cfc8687-daac-4782-9436-417f0af1f754">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/FRA-fa742c0d1d48276db46d06b5c5f7b89f562526bf5b0d492dc9be9163b66857fe.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        França
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Paris Saint-Germain
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  18º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Breel Embolo
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/879b87be-b24e-4be9-b657-840d2bb8fd5f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SUI-799f61f7d3256673114ade4cb04f20028e499639988a87b832139a1d2a857b2c.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suiça
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Rennes
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  19º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Caleb Yirenkyi
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/f1de83d0-a5cf-4e9e-b14f-b4fbb6a13a97">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GHA-14d3422e6407481b1879817f1c14efc189a856b409b3ea68cc1e0210bbe43249.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Gana
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Nordsjælland
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  20º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Connor Metcalfe
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/b2aca944-327b-46f3-9153-555ee4dd0dff">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/AUS-5a0faf7636f0a5bfc6c4d56982a9131768009d6f3a0229a9d5b80e16ee9e42fe.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Austrália
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  FC St. Pauli
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  21º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Crysencio Summerville
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/79f4c8b5-1673-4e94-b1cf-5c0f745fb62e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/NED-1e598aa8fc7f688f3d772f0cd990a62db3966636ddea77db77f122cf319d1f5a.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Holanda
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  West Ham United
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  22º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Daichi Kamada
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d2bc0c22-ecd5-4f7f-b66e-c1cf31cb6931">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/JPN-ca23d57d59358bb9e2abcd80db768ba1cae5f5f5e3291ef1b1def1c1e6564f96.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Japão
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Crystal Palace
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  23º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Daniel Muñoz
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d780a7fe-eafa-4f09-b5ad-1e64cbba1504">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/COL-604e569e704be1e0da6f5e7d519b665d97e9e5efb942d888aea196f359d34ac2.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Colômbia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Crystal Palace
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  24º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Deniz Undav
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  VfB Stuttgart
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  25º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Emam Ashour
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/0dc75e95-6ab8-4dc7-b4df-b481c6f1a385">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/EGY-a765576a9dc78be12817183bf051db244ffdafdbddbbd63d588035b8380bdd5e.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Egito
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Al Ahly
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  26º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ermin Mahmić
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/8c50e38d-7151-4f88-8a12-53670aa7230f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/BIH-77426bdb01ba15ad54e8f96871e719d5289737d2b0a9d4eb0e5deb363a172050.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Bósnia e Herzegovina
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Slovan Liberec
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  27º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Felix Nmecha
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Borussia Dortmund
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  28º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Giovanni Reyna
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/33fad5ea-72bb-477b-826a-2e39528ad015">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/USA-9656f6ce0db45e03e0bf3c1bac7fcb3b6cbb0dff94ecac318128c3391b17f81d.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Estados Unidos
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Borussia Mönchengladbach
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  29º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Granit Xhaka
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/879b87be-b24e-4be9-b657-840d2bb8fd5f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SUI-799f61f7d3256673114ade4cb04f20028e499639988a87b832139a1d2a857b2c.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suiça
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Sunderland
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  30º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Hussein Ali
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/2e36933b-2b0f-4133-9fe6-d1dc2d67ec7e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/IRQ-fe4be1307aa1445c32d1e551ab01501291d396d3b8a7a20267a83f2af0b6f43b.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Iraque
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Pogoń Szczecin
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  31º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Hwang In-beom
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/67dfc34f-63c8-44e0-924e-0fd59105ff10">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/KOR-b2f3c2c274eb34e60c866b366fa431bdfb9942067474277dad63ae30bd0726d8.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Coréia do Sul
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Feyenoord
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  32º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ibrahim Mbaye
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/8d952feb-a097-4e9a-bfa8-a18f819f0a72">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SEN-b73100603bb420fda46ff08a45ae38c7164332b356f4958f439876cc0bcdc1e8.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Senegal
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Paris Saint-Germain
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  33º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Isak Hien
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d3b771c7-c11b-457e-a5d0-6bd32818dd9b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SWE-36a3d55b84eb4778c3a2db8f7157571d891e62041a27c9785700f46b5600cdf5.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suécia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Atalanta
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  34º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ismael Saibari
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/60ba159c-791e-44dc-8245-8b032c30de8b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/MAR-0373487f8f47e4d7710777c3e8af3454afbc0940271f0dc27a615aa57759cf39.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Marrocos
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  PSV Eindhoven
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  35º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Jamal Musiala
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Bayern Munich
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  36º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Jaminton Campaz
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d780a7fe-eafa-4f09-b5ad-1e64cbba1504">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/COL-604e569e704be1e0da6f5e7d519b665d97e9e5efb942d888aea196f359d34ac2.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Colômbia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Rosario Central
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  37º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      John McGinn
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/8d6564f2-fbb4-4c54-82e4-86f5b51f331d">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SCO-5b1c4db705d68370dfef8492a9bab53d630f5e6a13ef4f52cf9a9b00cbacb108.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Escócia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Aston Villa
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  38º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Jovo Lukić
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/8c50e38d-7151-4f88-8a12-53670aa7230f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/BIH-77426bdb01ba15ad54e8f96871e719d5289737d2b0a9d4eb0e5deb363a172050.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Bósnia e Herzegovina
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Universitatea Cluj
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  39º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      João Neves
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/1e735069-c5fa-4fbb-96c1-84f7455ed581">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/POR-5ba2d33ed2f8aa4eae5769ebb7ac795c8ba5e73be139d7897be49e71a348268a.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Portugal
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Paris Saint-Germain
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  40º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Jude Bellingham
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/83b2657f-5e00-47ca-828d-9d26e2b8ff6e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/ENG-6d2e4657191dae7ddea23e188e56b66966a43326d0a6659b322d4f915278d838.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Inglaterra 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Real Madrid
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  41º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Julián Quiñones
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/e5cc15c7-57c1-43f5-812b-4ab66d64ed7e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/MEX-4c16dee6901ad9b0dfbfc1c60e3e94265e7405a516ca7d6993f6f3a38e4aad30.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        México
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Al-Qadsiah
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  42º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Keito Nakamura
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d2bc0c22-ecd5-4f7f-b66e-c1cf31cb6931">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/JPN-ca23d57d59358bb9e2abcd80db768ba1cae5f5f5e3291ef1b1def1c1e6564f96.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Japão
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Reims
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  43º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ladislav Krejčí
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/9fc70719-bb5c-4cb7-8ff8-55e93eaf852b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CZE-c190a6cdbf2a6ad6c84d1d5df1754ec9c80f9a0ef118cbcf954830a553278672.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        República Tcheca
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Wolverhampton Wanderers
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  44º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Livano Comenencia
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/8f6e6e3b-ba45-4e50-ae3e-82af3103fc16">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CUW-c4bb9ca8bedca3578a4421f7edfd7a9d1bb6c99d866f03d6274f86cbad1fef64.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Curação
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Zürich
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  45º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Luis Díaz
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d780a7fe-eafa-4f09-b5ad-1e64cbba1504">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/COL-604e569e704be1e0da6f5e7d519b665d97e9e5efb942d888aea196f359d34ac2.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Colômbia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Bayern Munich
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  46º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Luis Romo
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/e5cc15c7-57c1-43f5-812b-4ab66d64ed7e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/MEX-4c16dee6901ad9b0dfbfc1c60e3e94265e7405a516ca7d6993f6f3a38e4aad30.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        México
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Guadalajara
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  47º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Marcus Rashford
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/83b2657f-5e00-47ca-828d-9d26e2b8ff6e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/ENG-6d2e4657191dae7ddea23e188e56b66966a43326d0a6659b322d4f915278d838.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Inglaterra 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Barcelona
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  48º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Marko Arnautović
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/632436b4-b165-4e1d-b1cf-46e43774feb5">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/AUT-121d9b236cb6a642aab98ed29a3acff6909fe794b8e09c47a41482b93a82edb1.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Áustria
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Red Star Belgrade
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  49º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Martin Baturina
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/48765fdc-99d4-4189-a85e-cebcbc2c55ff">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CRO-1f1d7611cf1078eedf8a8e8f9a6fa32d14022d52a8453ba29982fdf2819c0417.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Cróacia 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Como
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  50º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Mattias Svanberg
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d3b771c7-c11b-457e-a5d0-6bd32818dd9b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SWE-36a3d55b84eb4778c3a2db8f7157571d891e62041a27c9785700f46b5600cdf5.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suécia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  VfL Wolfsburg
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  51º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Maurício
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/c06da4f2-5f65-466a-8cc3-4fde06c2ad52">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/PAR-e04c2ebcf27ac13b9a51d24f0c67808b5163a532d0ec470eccc15ad09e1ae6e4.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Paraguai
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Palmeiras
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  52º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Maximiliano Araújo
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/92f22086-e792-48a4-ad50-b7f43546f3b1">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/URU-a1694fec007266a7fa448de0b6f04a272b21d6b112d400bf00ecb07be92d1811.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Uruguai
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Sporting CP
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  53º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Michal Sadílek
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/9fc70719-bb5c-4cb7-8ff8-55e93eaf852b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CZE-c190a6cdbf2a6ad6c84d1d5df1754ec9c80f9a0ef118cbcf954830a553278672.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        República Tcheca
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Slavia Prague
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  54º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Mohamed Hany
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/0dc75e95-6ab8-4dc7-b4df-b481c6f1a385">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/EGY-a765576a9dc78be12817183bf051db244ffdafdbddbbd63d588035b8380bdd5e.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Egito
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Al Ahly
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  55º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Mohammad Mohebi
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3ac3536d-6fab-4d09-a5e9-27ee561a29bd">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/IRN-c72201852ab2c1e3f3ddeb11bb4b848162f214dd451fba7c93231294b477394e.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Irã
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Rostov
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  56º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Nathan Saliba
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/f5a5fa1e-9701-481a-abd8-c91917f979da">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CAN-c6132d3da9aa594dd3024c546558c2437cf304ab02f51bddc2e92c8e7a8855f4.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Canadá
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Anderlecht
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  57º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Nathaniel Brown
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Eintracht Frankfurt
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  58º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Nestory Irankunda
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/b2aca944-327b-46f3-9153-555ee4dd0dff">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/AUS-5a0faf7636f0a5bfc6c4d56982a9131768009d6f3a0229a9d5b80e16ee9e42fe.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Austrália
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Watford
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  59º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Nico Schlotterbeck
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3d9f0d65-c3c0-4a10-8f57-da9cbeb7da3a">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/GER-20331f69d928aa099f672d7c22b74dd81c97b46298c401bbdc02e81d58c1da52.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Alemanha
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Borussia Dortmund
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  60º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Oh Hyeon-gyu
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/67dfc34f-63c8-44e0-924e-0fd59105ff10">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/KOR-b2f3c2c274eb34e60c866b366fa431bdfb9942067474277dad63ae30bd0726d8.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Coréia do Sul
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Beşiktaş
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  61º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Omar Rekik
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/f46f46bb-6a5e-4e33-989c-034f7c61ff87">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/TUN-4556f96c1b1a1f49482f1f465f63072aef4e55dbae9a80abdec574d0697c49f2.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Tunísia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Maribor
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  62º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Petar Musa
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/48765fdc-99d4-4189-a85e-cebcbc2c55ff">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/CRO-1f1d7611cf1078eedf8a8e8f9a6fa32d14022d52a8453ba29982fdf2819c0417.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Cróacia 
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  FC Dallas
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  63º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Ramin Rezaeian
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/3ac3536d-6fab-4d09-a5e9-27ee561a29bd">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/IRN-c72201852ab2c1e3f3ddeb11bb4b848162f214dd451fba7c93231294b477394e.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Irã
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Foolad
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  64º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Raúl Jiménez
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/e5cc15c7-57c1-43f5-812b-4ab66d64ed7e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/MEX-4c16dee6901ad9b0dfbfc1c60e3e94265e7405a516ca7d6993f6f3a38e4aad30.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        México
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Fulham
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  65º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Romano Schmid
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/632436b4-b165-4e1d-b1cf-46e43774feb5">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/AUT-121d9b236cb6a642aab98ed29a3acff6909fe794b8e09c47a41482b93a82edb1.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Áustria
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Werder Bremen
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  66º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Rubén Vargas
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/879b87be-b24e-4be9-b657-840d2bb8fd5f">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SUI-799f61f7d3256673114ade4cb04f20028e499639988a87b832139a1d2a857b2c.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suiça
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Sevilla
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  67º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Teboho Mokoena
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Meio-campista
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/54c6864a-6502-42b5-a59f-b68fc14ad727">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/RSA-dd061e903844781211b6e60126e06bf4b608eeb5146e1bfa3d4578302a8dcc6f.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        África do Sul
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Mamelodi Sundowns
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  68º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Viktor Gyökeres
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/d3b771c7-c11b-457e-a5d0-6bd32818dd9b">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/SWE-36a3d55b84eb4778c3a2db8f7157571d891e62041a27c9785700f46b5600cdf5.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Suécia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Arsenal
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  69º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Vinícius Júnior
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/b1600b15-1f95-4a00-91ed-11d8e0d2ce7c">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/BRA-9429e9ad98051e8f46946497d45de581601995fa0c19fb1c869602e456b87dd3.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Brasil
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Real Madrid
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  70º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Virgil van Dijk
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/79f4c8b5-1673-4e94-b1cf-5c0f745fb62e">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/NED-1e598aa8fc7f688f3d772f0cd990a62db3966636ddea77db77f122cf319d1f5a.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Holanda
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Liverpool
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  71º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Yazan Al-Arab
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Defensor
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/ae0612b1-6274-4a1f-a5ff-ade58284b6b5">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/JOR-66c87a1706a2b5975e0ae4d17d8654353bd98193614ac9bff78bff921b5a3070.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        Jordânia
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  FC Seoul
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+              <tr class="hover:bg-base-200/40 transition duration-150">
+                <td class="font-mono text-center text-sm font-black opacity-55">
+                  72º
+                </td>
+                <td>
+                  <div class="flex items-center gap-3">
+                    <div class="font-bold text-base flex items-center gap-1.5 text-white">
+                      Yoane Wissa
+                    </div>
+                    <span class="badge badge-ghost badge-sm font-semibold opacity-60">
+                      Atacante
+                    </span>
+                  </div>
+                </td>
+                <td>
+                    <a class="flex items-center gap-2 group/selecao" href="/selecoes/108e3f70-6429-453a-895a-fa10591a6e79">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 flex items-center justify-center shrink-0 overflow-hidden group-hover/selecao:scale-105 transition duration-150">
+                          <img class="object-contain w-full h-full" src="/assets/selecoes/COD-e70ffd70c4a39c9146ae16b64ee295bf6d71bdea0385df07c87ca4d9cd6466d1.png" />
+                      </div>
+                      <span class="font-extrabold text-sm text-slate-100 group-hover/selecao:text-primary group-hover/selecao:underline truncate transition duration-150">
+                        RD Congo
+                      </span>
+</a>                </td>
+                <td class="text-sm opacity-75">
+                  Newcastle United
+                </td>
+                <td class="text-center">
+                  <span class="text-lg font-black text-primary">1</span>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+</div>

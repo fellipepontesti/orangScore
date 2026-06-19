@@ -255,7 +255,7 @@
                   <span class="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 font-bold">Ranking Global</span>
                 </a>
               </li>
-              <% if current_user.root? %>
+              <% if current_user.root? || (current_user.premium? && current_user.assinatura&.ativa?) %>
                 <li>
                   <%= link_to dashboard_artilharia_path, class: "flex items-center gap-4 hover:bg-primary whitespace-nowrap p-3 rounded-xl #{'active' if current_page?(dashboard_artilharia_path)}" do %>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 shrink-0 transition-transform group-hover:scale-110">

@@ -7,8 +7,7 @@
         <span>Artilharia</span>
       </div>
       <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1 flex flex-wrap items-center gap-2">
-        <span>⚽ Artilharia da Copa 2026</span>
-        <span class="badge badge-primary font-black tracking-wide text-[10px] py-1.5 px-2.5 rounded-full border border-primary/30 uppercase text-white shadow-sm shrink-0">ÁREA DO ADMINISTRADOR</span>
+        <span>Artilharia da Copa 2026</span>
       </h1>
       <p class="text-base-content/60 text-sm sm:text-base">Classificação de artilheiros e estatísticas de gols da Copa do Mundo.</p>
     </div>
@@ -24,40 +23,97 @@
   <% if @artilheiros.any? %>
     <!-- Pódio dos Top 3 Goleadores -->
     <% 
-      top_1 = @artilheiros[0]
-      top_2 = @artilheiros[1]
-      top_3 = @artilheiros[2]
+      gols_distintos = @artilheiros.map(&:gols).uniq.sort.reverse
+      maior_gols_1 = gols_distintos[0]
+      maior_gols_2 = gols_distintos[1]
+      maior_gols_3 = gols_distintos[2]
+
+      jogadores_1 = @artilheiros.select { |j| j.gols == maior_gols_1 }
+      jogadores_2 = maior_gols_2 ? @artilheiros.select { |j| j.gols == maior_gols_2 } : []
+      jogadores_3 = maior_gols_3 ? @artilheiros.select { |j| j.gols == maior_gols_3 } : []
+
+      top_1 = jogadores_1[0]
+      top_2 = jogadores_2[0]
+      top_3 = jogadores_3[0]
+
+      empatados_1 = jogadores_1[1..-1] || []
+      empatados_2 = jogadores_2[1..-1] || []
+      empatados_3 = jogadores_3[1..-1] || []
     %>
+    <!-- Grid de Estatísticas Rápidas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl mx-auto mb-6">
+      <div class="bg-base-100 rounded-3xl p-5 border border-base-200 shadow-xl flex items-center gap-4 hover:shadow-2xl transition duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-2xl shrink-0">
+          ⚽
+        </div>
+        <div>
+          <p class="text-[10px] font-mono font-bold uppercase tracking-wider text-orange-500">Total de Gols</p>
+          <h3 class="text-2xl font-black text-white"><%= @artilheiros.sum(&:gols) %></h3>
+        </div>
+      </div>
+
+      <div class="bg-base-100 rounded-3xl p-5 border border-base-200 shadow-xl flex items-center gap-4 hover:shadow-2xl transition duration-300">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl shrink-0">
+          👤
+        </div>
+        <div>
+          <p class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-500">Artilheiros Ativos</p>
+          <h3 class="text-2xl font-black text-white"><%= @artilheiros.size %></h3>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-8 pb-4 max-w-4xl mx-auto">
       
       <!-- 2º Lugar -->
       <div class="order-2 md:order-1 flex flex-col items-center">
         <% if top_2 %>
-          <div class="avatar mb-3 relative group">
-            <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
-            <div class="mask mask-squircle h-20 w-20 bg-slate-400/20 border-2 border-slate-300 overflow-hidden flex items-center justify-center p-1">
-              <% if top_2.selecao&.logo.present? %>
-                <%= link_to selecao_path(top_2.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
-                  <%= image_tag "selecoes/#{top_2.selecao.logo}", class: "object-contain w-full h-full" %>
+          <% if jogadores_2.size > 1 %>
+            <!-- Exibição de Empate para o 2º Lugar -->
+            <div class="avatar mb-3 relative group cursor-pointer hover:scale-105 transition duration-300" onclick="modal_empatados_2.showModal()">
+              <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-gradient-to-br from-slate-400/20 to-slate-600/20 border-2 border-slate-300 flex items-center justify-center p-1">
+                <span class="text-2xl">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white cursor-pointer hover:text-primary transition" onclick="modal_empatados_2.showModal()">Jogadores Empatados</h3>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= jogadores_2.size %> atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= maior_gols_2 %></strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_2.showModal()" class="mt-2.5 text-[10px] text-slate-300 font-bold hover:underline bg-slate-400/10 px-2.5 py-1.5 rounded-full border border-slate-300/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+          <% else %>
+            <!-- Exibição Individual Normal -->
+            <div class="avatar mb-3 relative group">
+              <div class="absolute -top-3 -left-3 bg-slate-300 text-slate-900 font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">2º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-slate-400/20 border-2 border-slate-300 overflow-hidden flex items-center justify-center p-1">
+                <% if top_2.selecao&.logo.present? %>
+                  <%= link_to selecao_path(top_2.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                    <%= image_tag "selecoes/#{top_2.selecao.logo}", class: "object-contain w-full h-full" %>
+                  <% end %>
+                <% else %>
+                  <span class="text-2xl font-bold">?</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
+              <% if top_2.selecao.present? %>
+                <%= link_to selecao_path(top_2.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+                  <%= top_2.selecao.nome %>
                 <% end %>
               <% else %>
-                <span class="text-2xl font-bold">?</span>
+                <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
               <% end %>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
+              </div>
             </div>
-          </div>
-          <div class="text-center mb-4 min-w-0 px-2 w-full">
-            <h3 class="font-extrabold text-base truncate text-white" title="<%= top_2.nome %>"><%= top_2.nome %></h3>
-            <% if top_2.selecao.present? %>
-              <%= link_to selecao_path(top_2.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
-                <%= top_2.selecao.nome %>
-              <% end %>
-            <% else %>
-              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
-            <% end %>
-            <div class="flex items-center justify-center gap-2 mt-1.5">
-              <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_2.gols %></strong> <%= top_2.gols == 1 ? 'gol' : 'gols' %></span>
-            </div>
-          </div>
+          <% end %>
         <% end %>
         <!-- Bloco do pódio -->
         <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-24 rounded-t-3xl border-t border-x border-slate-300/20 flex items-center justify-center shadow-inner">
@@ -68,33 +124,56 @@
       <!-- 1º Lugar -->
       <div class="order-1 md:order-2 flex flex-col items-center">
         <% if top_1 %>
-          <div class="avatar mb-4 relative scale-110 group">
-            <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
-            <div class="mask mask-squircle h-24 w-24 bg-amber-500/10 border-4 border-amber-400 overflow-hidden flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
-              <% if top_1.selecao&.logo.present? %>
-                <%= link_to selecao_path(top_1.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
-                  <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+          <% if jogadores_1.size > 1 %>
+            <!-- Exibição de Empate para o 1º Lugar -->
+            <div class="avatar mb-4 relative scale-110 group cursor-pointer hover:scale-115 transition duration-300" onclick="modal_empatados_1.showModal()">
+              <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
+              <div class="mask mask-squircle h-24 w-24 bg-gradient-to-br from-amber-400/20 to-orange-500/20 border-4 border-amber-400 flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
+                <span class="text-3xl filter drop-shadow">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full scale-105 flex flex-col items-center">
+              <h3 class="font-black text-lg text-amber-400 truncate cursor-pointer hover:text-amber-300 transition" onclick="modal_empatados_1.showModal()">
+                Disputa Empatada
+              </h3>
+              <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5"><%= jogadores_1.size %> atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= maior_gols_1 %></strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_1.showModal()" class="mt-2.5 text-[10px] text-amber-400 font-bold hover:underline bg-amber-400/10 px-2.5 py-1.5 rounded-full border border-amber-400/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+          <% else %>
+            <!-- Exibição Individual Normal -->
+            <div class="avatar mb-4 relative scale-110 group">
+              <div class="absolute -top-4 -left-4 bg-amber-400 text-slate-950 font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">1º</div>
+              <div class="mask mask-squircle h-24 w-24 bg-amber-500/10 border-4 border-amber-400 overflow-hidden flex items-center justify-center p-1 shadow-lg shadow-amber-400/10">
+                <% if top_1.selecao&.logo.present? %>
+                  <%= link_to selecao_path(top_1.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                    <%= image_tag "selecoes/#{top_1.selecao.logo}", class: "object-contain w-full h-full" %>
+                  <% end %>
+                <% else %>
+                  <span class="text-2xl font-bold text-amber-400">?</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full scale-105 flex flex-col items-center">
+              <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
+                <%= top_1.nome %>
+              </h3>
+              <% if top_1.selecao.present? %>
+                <%= link_to selecao_path(top_1.selecao), class: "text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5 hover:text-amber-400 hover:underline transition inline-block" do %>
+                  <%= top_1.selecao.nome %>
                 <% end %>
               <% else %>
-                <span class="text-3xl font-bold text-amber-400">?</span>
+                <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5">-</p>
               <% end %>
+              <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
+              </div>
             </div>
-          </div>
-          <div class="text-center mb-4 min-w-0 px-2 w-full scale-105">
-            <h3 class="font-black text-lg text-amber-400 truncate" title="<%= top_1.nome %>">
-              <%= top_1.nome %>
-            </h3>
-            <% if top_1.selecao.present? %>
-              <%= link_to selecao_path(top_1.selecao), class: "text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5 hover:text-amber-400 hover:underline transition inline-block" do %>
-                <%= top_1.selecao.nome %>
-              <% end %>
-            <% else %>
-              <p class="text-xs text-amber-300/80 font-bold uppercase tracking-widest mt-0.5">-</p>
-            <% end %>
-            <div class="flex items-center justify-center gap-2 mt-2">
-              <span class="badge badge-primary gap-1 text-sm font-black py-3 px-3 shadow-md"><strong class="text-white"><%= top_1.gols %></strong> <%= top_1.gols == 1 ? 'gol' : 'gols' %></span>
-            </div>
-          </div>
+          <% end %>
         <% end %>
         <!-- Bloco do pódio -->
         <div class="bg-gradient-to-t from-primary/30 to-primary/10 w-full h-36 rounded-t-3xl border-t border-x border-amber-400/20 flex items-center justify-center shadow-lg relative overflow-hidden">
@@ -106,31 +185,52 @@
       <!-- 3º Lugar -->
       <div class="order-3 flex flex-col items-center">
         <% if top_3 %>
-          <div class="avatar mb-3 relative group">
-            <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
-            <div class="mask mask-squircle h-20 w-20 bg-amber-700/20 border-2 border-amber-700 overflow-hidden flex items-center justify-center p-1">
-              <% if top_3.selecao&.logo.present? %>
-                <%= link_to selecao_path(top_3.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
-                  <%= image_tag "selecoes/#{top_3.selecao.logo}", class: "object-contain w-full h-full" %>
+          <% if jogadores_3.size > 1 %>
+            <!-- Exibição de Empate para o 3º Lugar -->
+            <div class="avatar mb-3 relative group cursor-pointer hover:scale-105 transition duration-300" onclick="modal_empatados_3.showModal()">
+              <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-gradient-to-br from-amber-700/20 to-amber-900/20 border-2 border-amber-700 flex items-center justify-center p-1">
+                <span class="text-2xl">👥</span>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white cursor-pointer hover:text-primary transition" onclick="modal_empatados_3.showModal()">Jogadores Empatados</h3>
+              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5"><%= jogadores_3.size %> atletas</p>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= maior_gols_3 %></strong> gols</span>
+              </div>
+              <button onclick="modal_empatados_3.showModal()" class="mt-2.5 text-[10px] text-amber-700 font-bold hover:underline bg-amber-700/10 px-2.5 py-1.5 rounded-full border border-amber-700/20 transition cursor-pointer flex items-center gap-1">
+                🔍 Ver Goleadores
+              </button>
+            </div>
+          <% else %>
+            <!-- Exibição Individual Normal -->
+            <div class="avatar mb-3 relative group">
+              <div class="absolute -top-3 -left-3 bg-amber-700 text-white font-black w-7 h-7 rounded-full flex items-center justify-center border-2 border-base-100 shadow-md z-10">3º</div>
+              <div class="mask mask-squircle h-20 w-20 bg-amber-700/20 border-2 border-amber-700 overflow-hidden flex items-center justify-center p-1">
+                <% if top_3.selecao&.logo.present? %>
+                  <%= link_to selecao_path(top_3.selecao), class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+                    <%= image_tag "selecoes/#{top_3.selecao.logo}", class: "object-contain w-full h-full" %>
+                  <% end %>
+                <% else %>
+                  <span class="text-2xl font-bold">?</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-center mb-4 min-w-0 px-2 w-full flex flex-col items-center">
+              <h3 class="font-extrabold text-base truncate text-white" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
+              <% if top_3.selecao.present? %>
+                <%= link_to selecao_path(top_3.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
+                  <%= top_3.selecao.nome %>
                 <% end %>
               <% else %>
-                <span class="text-2xl font-bold">?</span>
+                <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
               <% end %>
+              <div class="flex items-center justify-center gap-2 mt-1.5">
+                <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
+              </div>
             </div>
-          </div>
-          <div class="text-center mb-4 min-w-0 px-2 w-full">
-            <h3 class="font-extrabold text-base truncate text-white" title="<%= top_3.nome %>"><%= top_3.nome %></h3>
-            <% if top_3.selecao.present? %>
-              <%= link_to selecao_path(top_3.selecao), class: "text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5 hover:text-primary hover:underline transition inline-block" do %>
-                <%= top_3.selecao.nome %>
-              <% end %>
-            <% else %>
-              <p class="text-xs opacity-60 font-bold uppercase tracking-wider mt-0.5">-</p>
-            <% end %>
-            <div class="flex items-center justify-center gap-2 mt-1.5">
-              <span class="badge badge-primary gap-1 text-xs font-bold py-2.5 px-2.5 shadow-sm"><strong class="text-white"><%= top_3.gols %></strong> <%= top_3.gols == 1 ? 'gol' : 'gols' %></span>
-            </div>
-          </div>
+          <% end %>
         <% end %>
         <!-- Bloco do pódio -->
         <div class="bg-gradient-to-t from-base-200 to-base-200/40 w-full h-20 rounded-t-3xl border-t border-x border-amber-700/20 flex items-center justify-center shadow-inner">
@@ -139,6 +239,103 @@
       </div>
 
     </div>
+
+    <%# Modais de Empates para o Pódio %>
+    <% if top_1 && jogadores_1.size > 1 %>
+      <dialog id="modal_empatados_1" class="modal">
+        <div class="modal-box bg-base-100 border border-amber-400/20 shadow-2xl max-w-md">
+          <h3 class="font-black text-xl text-amber-400 text-center mb-6 flex items-center justify-center gap-2">
+            <span>🏆</span> Goleadores com <%= maior_gols_1 %> gols
+          </h3>
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_1.close()">✕</button>
+          
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+            <% jogadores_1.each do |jogador| %>
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
+                <div class="flex items-center gap-3">
+                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
+                    <% if jogador.selecao&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
+                    <% else %>
+                      <span class="text-xs font-bold">?</span>
+                    <% end %>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
+                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
+                  </div>
+                </div>
+                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </dialog>
+    <% end %>
+
+    <% if top_2 && jogadores_2.size > 1 %>
+      <dialog id="modal_empatados_2" class="modal">
+        <div class="modal-box bg-base-100 border border-slate-300/20 shadow-2xl max-w-md">
+          <h3 class="font-black text-xl text-slate-300 text-center mb-6 flex items-center justify-center gap-2">
+            <span>🥈</span> Goleadores com <%= maior_gols_2 %> gols
+          </h3>
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_2.close()">✕</button>
+          
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+            <% jogadores_2.each do |jogador| %>
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
+                <div class="flex items-center gap-3">
+                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
+                    <% if jogador.selecao&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
+                    <% else %>
+                      <span class="text-xs font-bold">?</span>
+                    <% end %>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
+                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
+                  </div>
+                </div>
+                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </dialog>
+    <% end %>
+
+    <% if top_3 && jogadores_3.size > 1 %>
+      <dialog id="modal_empatados_3" class="modal">
+        <div class="modal-box bg-base-100 border border-amber-700/20 shadow-2xl max-w-md">
+          <h3 class="font-black text-xl text-amber-700 text-center mb-6 flex items-center justify-center gap-2">
+            <span>🥉</span> Goleadores com <%= maior_gols_3 %> gols
+          </h3>
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4" onclick="modal_empatados_3.close()">✕</button>
+          
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+            <% jogadores_3.each do |jogador| %>
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-base-200/50 border border-base-200/50">
+                <div class="flex items-center gap-3">
+                  <div class="mask mask-squircle h-10 w-10 bg-base-300 flex items-center justify-center overflow-hidden shrink-0">
+                    <% if jogador.selecao&.logo.present? %>
+                      <%= image_tag "selecoes/#{jogador.selecao.logo}", class: "object-contain w-full h-full" %>
+                    <% else %>
+                      <span class="text-xs font-bold">?</span>
+                    <% end %>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-extrabold text-sm text-white truncate"><%= jogador.nome %></p>
+                    <p class="text-xs opacity-60 font-semibold"><%= jogador.selecao&.nome || "-" %></p>
+                  </div>
+                </div>
+                <span class="badge badge-primary font-black py-2 px-2.5 shadow-sm text-xs text-white shrink-0"><%= jogador.gols %> gols</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </dialog>
+    <% end %>
 
     <!-- Tabela Geral -->
     <div class="bg-base-100 shadow-2xl rounded-3xl border border-base-200 overflow-hidden mt-8">
@@ -220,9 +417,16 @@
         <span class="text-4xl">⚽</span>
       </div>
       <h2 class="text-2xl font-bold mb-2">Nenhum gol registrado ainda</h2>
-      <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
-      <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-2xl font-bold" do %>
-        Ir para o Painel Administrativo
+      <% if current_user.root? || current_user.semi_root? %>
+        <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols na Copa de 2026. Dispare a sincronização com a API no dashboard para carregar as estatísticas mais recentes!</p>
+        <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-2xl font-bold" do %>
+          Ir para o Painel Administrativo
+        <% end %>
+      <% else %>
+        <p class="text-sm opacity-60 mb-6">Nenhum jogador marcou gols na Copa de 2026 ainda. As estatísticas de gols serão atualizadas assim que as partidas iniciarem!</p>
+        <%= link_to authenticated_root_path, class: "btn btn-primary px-8 rounded-2xl font-bold" do %>
+          Voltar para a Página Inicial
+        <% end %>
       <% end %>
     </div>
   <% end %>

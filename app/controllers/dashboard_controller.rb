@@ -2,7 +2,8 @@ class DashboardController < ApplicationController
   include JogosHelper
 
   before_action :authenticate_user!
-  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user, :artilharia, :editar_numeracao_selecoes, :editar_numeracao_jogadores, :salvar_numeracao_jogadores]
+  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user, :editar_numeracao_selecoes, :editar_numeracao_jogadores, :salvar_numeracao_jogadores]
+  before_action :authorize_premium_or_admin!, only: [:artilharia]
 
   def index 
     if current_user.semi_root?
@@ -175,6 +176,13 @@ class DashboardController < ApplicationController
   end
 
   private
+
+  def authorize_premium_or_admin!
+    return if current_user.root? || current_user.semi_root?
+    return if current_user.premium? && current_user.assinatura&.ativa?
+
+    redirect_to authenticated_root_path, alert: "A tela de artilharia é exclusiva para assinantes Premium!"
+  end
 
   def user_create_params
     params.require(:user).permit(:name, :email)
