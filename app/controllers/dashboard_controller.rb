@@ -74,19 +74,24 @@ class DashboardController < ApplicationController
   end
 
   def detalhamento_jogos
-    # Carregar todos os jogos (focando nos finalizados para a validação, mas listando todos)
-    @jogos = Jogo.includes(:mandante, :visitante, :informacao_jogo).order(data: :desc)
+    # 1. Carregar os jogos omitindo os indefinitivos (times_a_definir)
+    scope = Jogo.includes(:mandante, :visitante, :informacao_jogo).where.not(status: :times_a_definir)
     
-    # 1. Carregar jogadores agrupados por seleção para mapeamento eficiente
+    # Aplicar filtro de status se informado
+    if params[:status].present? && Jogo.statuses.keys.include?(params[:status])
+      scope = scope.where(status: params[:status])
+    end
+    
+    # 2. Carregar todos os jogadores agrupados por seleção para mapeamento eficiente
     jogadores_por_selecao = Jogador.all.group_by(&:selecao_id)
     
-    # 2. Computar gols esperados da artilharia com base nos JSONs
+    # 3. Computar gols esperados da artilharia com base nos JSONs
     @gols_calculados = Hash.new(0)
     @warnings_mapeamento = Hash.new { |h, k| h[k] = [] }
     
-    @jogos.each do |jogo|
-      next unless jogo.finalizado?
-      
+    # Iteramos por TODOS os jogos finalizados do banco para ter uma artilharia 100% calculada
+    # mesmo que o filtro por status restrinja @jogos que exibiremos na listagem
+    Jogo.finalizado.includes(:mandante, :visitante, :informacao_jogo).each do |jogo|
       info = jogo.informacao_jogo
       next unless info && info.dados.present?
       
@@ -102,7 +107,7 @@ class DashboardController < ApplicationController
         next if scorer.blank? || !team_side.in?(%w[home away])
         
         # Ignorar own goals
-        next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/
+        next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/ || g['type'] == 'own_goal' || g['type'] == 'own-goal'
         
         selecao_local = (team_side == 'home') ? jogo.mandante : jogo.visitante
         next unless selecao_local
@@ -128,14 +133,14 @@ class DashboardController < ApplicationController
       end
     end
     
-    # 3. Identificar quais jogadores no banco têm discrepância de gols em relação aos gols calculados
+    # 4. Identificar quais jogadores no banco têm discrepância de gols em relação aos gols calculados
     @jogadores_discrepantes = Jogador.all.select { |j| j.gols.to_i != @gols_calculados[j.id] }
     ids_jogadores_discrepantes = @jogadores_discrepantes.map(&:id).to_set
     
-    # 4. Construir o diagnóstico para cada jogo
+    # 5. Construir o diagnóstico para cada jogo no escopo filtrado
     @diagnostico_jogos = {}
     
-    @jogos.each do |jogo|
+    scope.each do |jogo|
       diag = {
         sincronizado: false,
         placar_bate: false,
@@ -168,9 +173,9 @@ class DashboardController < ApplicationController
       goals = dados['goals'] || []
       lineups = dados['lineups'] || {}
       
-      # Placar API
-      gols_home_api = goals.count { |g| g['team'] == 'home' }
-      gols_away_api = goals.count { |g| g['team'] == 'away' }
+      # Placar API (descartando gols contra provisórios do time que cometeu o gol contra)
+      gols_home_api = goals.count { |g| g['team'] == 'home' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
+      gols_away_api = goals.count { |g| g['team'] == 'away' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
       diag[:placar_api] = "#{gols_home_api} x #{gols_away_api}"
       
       if jogo.gols_mandante.to_i == gols_home_api && jogo.gols_visitante.to_i == gols_away_api
@@ -189,7 +194,7 @@ class DashboardController < ApplicationController
         scorer = g['scorer']
         team_side = g['team']
         next if scorer.blank? || !team_side.in?(%w[home away])
-        next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/
+        next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/ || g['type'] == 'own_goal' || g['type'] == 'own-goal'
         
         selecao_local = (team_side == 'home') ? jogo.mandante : jogo.visitante
         next unless selecao_local
@@ -224,11 +229,97 @@ class DashboardController < ApplicationController
       @diagnostico_jogos[jogo.id] = diag
     end
     
-    # 5. Métricas Gerais para o Painel Superior
-    @total_jogos_validos = @jogos.count { |j| j.finalizado? || j.em_andamento? }
-    @total_sincronizados = @diagnostico_jogos.values.count { |d| d[:sincronizado] }
-    @total_placar_correto = @diagnostico_jogos.values.count { |d| d[:sincronizado] && d[:placar_bate] }
-    @total_artilharia_correta = @diagnostico_jogos.values.count { |d| d[:sincronizado] && d[:artilharia_ok] }
+    # 6. Ordenação prioritária em Ruby:
+    #    - Primeiro os finalizados por data decrescente (mais recentes primeiro).
+    #    - Depois em_andamento e programados por data crescente (próximos a acontecer primeiro).
+    jogos_finalizados = scope.select(&:finalizado?).sort_by(&:data).reverse
+    jogos_futuros = scope.select { |j| j.programado? || j.em_andamento? }.sort_by(&:data)
+    @jogos = jogos_finalizados + jogos_futuros
+    
+    # 7. Filtro por discrepância de dados (em Ruby pós-computação)
+    if params[:com_diferenca] == "true"
+      @jogos = @jogos.select do |jogo|
+        diag = @diagnostico_jogos[jogo.id]
+        diag && (!diag[:sincronizado] || !diag[:placar_bate] || !diag[:artilharia_ok])
+      end
+    end
+    
+    # 8. Métricas Gerais para o Painel Superior (baseado em todos os jogos finalizados/em andamento no banco)
+    jogos_totais_validos = Jogo.where.not(status: :times_a_definir)
+    @total_jogos_validos = jogos_totais_validos.count
+    @total_sincronizados = Jogo.finalizado.joins(:informacao_jogo).where.not(informacao_jogos: { dados: nil }).select { |j| j.informacao_jogo.dados.present? && j.informacao_jogo.dados != '{}' }.count
+    
+    # Precisamos recalcular os totais de divergência para exibir nos cards gerais corretamente
+    @total_placar_correto = 0
+    @total_artilharia_correta = 0
+    
+    # Executa verificação rápida e simplificada de integridade de placar/artilharia para todos os válidos
+    jogos_totais_validos.each do |j|
+      if j.programado?
+        @total_placar_correto += 1
+        @total_artilharia_correta += 1
+        next
+      end
+      
+      d = @diagnostico_jogos[j.id]
+      if d
+        @total_placar_correto += 1 if d[:sincronizado] && d[:placar_bate]
+        @total_artilharia_correta += 1 if d[:sincronizado] && d[:artilharia_ok]
+      else
+        # Se não carregou no escopo filtrado, checa separadamente
+        info = j.informacao_jogo
+        if info && info.dados.present?
+          begin
+            dados = info.dados
+            dados = JSON.parse(dados) if dados.is_a?(String)
+            goals = dados['goals'] || []
+            gols_h = goals.count { |g| g['team'] == 'home' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
+            gols_a = goals.count { |g| g['team'] == 'away' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
+            
+            placar_ok = (j.gols_mandante.to_i == gols_h && j.gols_visitante.to_i == gols_a)
+            @total_placar_correto += 1 if placar_ok
+            
+            # Artilharia simplificada
+            art_ok = true
+            warnings = @warnings_mapeamento[j.id] || []
+            if warnings.any?
+              art_ok = false
+            else
+              goals.each do |g|
+                scorer = g['scorer']
+                team_side = g['team']
+                next if scorer.blank? || !team_side.in?(%w[home away])
+                next if scorer.downcase =~ /\b(o\.?g\.?|own\s+goal)\b/ || g['type'] == 'own_goal' || g['type'] == 'own-goal'
+                
+                selecao_local = (team_side == 'home') ? j.mandante : j.visitante
+                next unless selecao_local
+                
+                team_lineup = (dados['lineups'] || {})[team_side] || []
+                player_in_lineup = team_lineup.find { |p| Jogos::SyncSquads.names_match?(p['player'], scorer) }
+                
+                jogador_local = nil
+                if player_in_lineup
+                  jogadores_selecao = jogadores_por_selecao[selecao_local.id] || []
+                  jogador_local = jogadores_selecao.find { |j_loc| j_loc.numero == player_in_lineup['number'] }
+                  jogador_local ||= jogadores_selecao.find { |j_loc| Jogos::SyncSquads.names_match?(j_loc.nome, player_in_lineup['player']) }
+                else
+                  jogadores_selecao = jogadores_por_selecao[selecao_local.id] || []
+                  jogador_local = jogadores_selecao.find { |j_loc| Jogos::SyncSquads.names_match?(j_loc.nome, scorer) }
+                end
+                
+                if !jogador_local || ids_jogadores_discrepantes.include?(jogador_local.id)
+                  art_ok = false
+                  break
+                end
+              end
+            end
+            @total_artilharia_correta += 1 if art_ok
+          rescue
+            # ignorar falhas silenciosas
+          end
+        end
+      end
+    end
     
     @total_gols_artilharia_banco = Jogador.sum(:gols)
     @total_gols_artilharia_calculado = @gols_calculados.values.sum
