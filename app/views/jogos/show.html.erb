@@ -239,7 +239,7 @@
           h_stats = dados_estatisticas['home'] || {}
           a_stats = dados_estatisticas['away'] || {}
 
-          goals = dados_raw.is_a?(Hash) ? (dados_raw['goals'] || []) : []
+          goals = dados_raw.is_a?(Hash) ? Jogos::SyncSquads.deduplicate_goals(dados_raw['goals'] || []) : []
           subs = dados_raw.is_a?(Hash) ? (dados_raw['substitutions'] || []) : []
         %>
         

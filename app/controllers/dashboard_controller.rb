@@ -98,7 +98,7 @@ class DashboardController < ApplicationController
       dados = info.dados
       dados = JSON.parse(dados) if dados.is_a?(String)
       
-      goals = dados['goals'] || []
+      goals = Jogos::SyncSquads.deduplicate_goals(dados['goals'] || [])
       lineups = dados['lineups'] || {}
       
       goals.each do |g|
@@ -170,7 +170,7 @@ class DashboardController < ApplicationController
       dados = info.dados
       dados = JSON.parse(dados) if dados.is_a?(String)
       
-      goals = dados['goals'] || []
+      goals = Jogos::SyncSquads.deduplicate_goals(dados['goals'] || [])
       lineups = dados['lineups'] || {}
       
       # Placar API (descartando gols contra provisórios do time que cometeu o gol contra)
@@ -272,7 +272,7 @@ class DashboardController < ApplicationController
           begin
             dados = info.dados
             dados = JSON.parse(dados) if dados.is_a?(String)
-            goals = dados['goals'] || []
+            goals = Jogos::SyncSquads.deduplicate_goals(dados['goals'] || [])
             gols_h = goals.count { |g| g['team'] == 'home' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
             gols_a = goals.count { |g| g['team'] == 'away' && !(g['type'] == 'own_goal' && g['provisional'] == true) }
             

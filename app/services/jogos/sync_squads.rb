@@ -168,16 +168,16 @@ module Jogos
 
     def self.clean_player_name(raw_name)
       return "" if raw_name.blank?
-      clean = raw_name.split(/\s+\d+/).first.to_s
+      clean = raw_name.to_s.force_encoding("UTF-8").split(/\s+\d+/).first.to_s
       clean = clean.gsub(/\b(pen|o\.?g\.?)\b/i, "")
       clean.strip
     end
 
     def self.names_match?(lineup_player_name, raw_scorer_name)
-      scorer = clean_player_name(raw_scorer_name)
+      scorer = clean_player_name(raw_scorer_name).to_s.force_encoding("UTF-8")
       return false if scorer.blank?
 
-      lineup_name = lineup_player_name.to_s.strip
+      lineup_name = lineup_player_name.to_s.strip.force_encoding("UTF-8")
 
       s_norm = I18n.transliterate(scorer).downcase.gsub(/[^a-z0-9\s\.]/, "")
       l_norm = I18n.transliterate(lineup_name).downcase.gsub(/[^a-z0-9\s]/, "")
@@ -211,6 +211,31 @@ module Jogos
       false
     end
 
+    def self.deduplicate_goals(goals)
+      return [] if goals.blank?
+      unique_goals = []
+      
+      goals.each do |g|
+        dup_idx = unique_goals.find_index do |u|
+          u['minute'].to_i == g['minute'].to_i &&
+          u['team'] == g['team'] &&
+          (Jogos::SyncSquads.names_match?(u['scorer'], g['scorer']) || u['scorer'] == g['scorer'])
+        end
+        
+        if dup_idx
+          existing = unique_goals[dup_idx]
+          if g['assist'].present? && existing['assist'].blank?
+            unique_goals[dup_idx] = g
+          elsif existing['provisional'] == true && g['provisional'] != true && g['assist'].present? == existing['assist'].present?
+            unique_goals[dup_idx] = g
+          end
+        else
+          unique_goals << g
+        end
+      end
+      unique_goals
+    end
+
     def consolidate_goals_from_matches
       url = "https://api.zafronix.com/fifa/worldcup/v1/matches?year=#{year}"
       uri = URI(url)
@@ -237,7 +262,7 @@ module Jogos
       data['data'].each do |match|
         next unless match['status'] == 'finished'
 
-        goals = match['goals']
+        goals = Jogos::SyncSquads.deduplicate_goals(match['goals'])
         next if goals.blank?
 
         lineups = match['lineups']
