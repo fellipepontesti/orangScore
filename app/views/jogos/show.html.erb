@@ -395,12 +395,15 @@
                 <%
                   eventos = []
                   goals.each do |g|
+                    raw_goals = dados_raw['goals'] || []
+                    raw_idx = raw_goals.find_index(g)
                     eventos << { 
                       tipo: :gol, 
                       minuto: g['minute'].to_i, 
                       time: g['team'], 
                       jogador: g['scorer'], 
-                      assist: g['assist'] 
+                      assist: g['assist'],
+                      raw_index: raw_idx
                     }
                   end
                   subs.each do |s|
@@ -433,8 +436,20 @@
                           <% end %>
                         </div>
                         <div class="text-[10px] uppercase font-bold opacity-40">
-                          <%= e[:time] == 'home' ? @jogo.mandante.nome : @jogo.visitante.nome %>
+                          <%= e[:time] == 'home' ? @jogo.mandante&.nome : @jogo.visitante&.nome %>
                         </div>
+                        
+                        <% if current_user.root? && e[:raw_index].present? %>
+                          <div class="flex items-center gap-2 mt-1">
+                            <button onclick="document.getElementById('edit_goal_modal_<%= e[:raw_index] %>').showModal()" class="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5 bg-transparent border-none p-0 cursor-pointer">
+                              ✏️ Editar
+                            </button>
+                            <span class="opacity-30 text-[10px]">|</span>
+                            <%= button_to remove_goal_jogo_path(@jogo, index: e[:raw_index]), method: :delete, class: "text-[10px] font-bold text-error hover:underline flex items-center gap-0.5 bg-transparent border-none p-0 cursor-pointer inline-flex", data: { turbo_confirm: "Tem certeza de que deseja remover este gol? Isso irá recalcular a artilharia e o placar." } do %>
+                              🗑️ Remover
+                            <% end %>
+                          </div>
+                        <% end %>
                       <% else %>
                         <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs opacity-80">
                           <span class="text-emerald-500 font-bold">▲ <%= e[:on] %></span>
@@ -466,3 +481,45 @@
     </div>
   <% end %>
 </div>
+
+<% if current_user.root? && dados_raw.is_a?(Hash) && dados_raw['goals'].present? %>
+  <% dados_raw['goals'].each_with_index do |g, idx| %>
+    <dialog id="edit_goal_modal_<%= idx %>" class="modal">
+      <div class="modal-box bg-base-100 border border-base-200">
+        <h3 class="font-bold text-lg text-primary mb-4">Editar Acontecimento (Gol)</h3>
+        
+        <%= form_with url: update_goal_jogo_path(@jogo, index: idx), method: :patch, local: true, class: "space-y-4" do |f| %>
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold">Autor do Gol</span></label>
+            <%= f.text_field :scorer, value: g['scorer'], class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold">Minuto</span></label>
+            <%= f.number_field :minute, value: g['minute'], class: "input input-bordered w-full" %>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold">Lado da Equipe</span></label>
+            <%= f.select :team, [['Mandante (Home)', 'home'], ['Visitante (Away)', 'away']], { selected: g['team'] }, class: "select select-bordered w-full" %>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold">Assistência por</span></label>
+            <%= f.text_field :assist, value: g['assist'], class: "input input-bordered w-full", placeholder: "Sem assistência" %>
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold">Tipo de Gol</span></label>
+            <%= f.select :type, [['Normal', 'normal'], ['Gol Contra (Own Goal)', 'own_goal'], ['Pênalti', 'penalty']], { selected: g['type'] || 'normal' }, class: "select select-bordered w-full" %>
+          </div>
+
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('edit_goal_modal_<%= idx %>').close()">Cancelar</button>
+            <%= f.submit "Salvar Alterações", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </dialog>
+  <% end %>
+<% end %>

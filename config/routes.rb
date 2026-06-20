@@ -107,6 +107,8 @@ Rails.application.routes.draw do
       patch :finish
       post :sync_statistics
       get :palpites
+      delete :remove_goal
+      patch :update_goal
     end
   end
 

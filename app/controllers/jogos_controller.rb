@@ -1,6 +1,6 @@
 class JogosController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish sync_statistics palpites ]
+  before_action :set_jogo, only: %i[ show edit update destroy start finalize finish sync_statistics palpites remove_goal update_goal ]
   before_action :load_selecoes, only: %i[new create edit update finalize]
   before_action :authorize_root_or_semi_root!, only: %i[start update finish sync_statistics]
   before_action :authorize_root!, except: %i[index show start update finish sync_statistics palpites]
@@ -179,6 +179,58 @@ class JogosController < ApplicationController
     respond_to do |format|
       format.html { redirect_to jogos_path, notice: "Jogo excluído com sucesso!.", status: :see_other }
       format.json { head :no_content }
+    end
+  end
+
+  def remove_goal
+    info = @jogo.informacao_jogo
+    if info && info.dados.present? && info.dados['goals'].present?
+      index = params[:index].to_i
+      goals = info.dados['goals'].to_a
+      
+      if index >= 0 && index < goals.size
+        removed_goal = goals.delete_at(index)
+        info.dados['goals'] = goals
+        info.save!
+
+        # Re-consolida a artilharia
+        Jogos::SyncSquads.new(import_squad: false, import_goals: true).call
+
+        redirect_to @jogo, notice: "Gol de #{removed_goal['scorer']} removido com sucesso!"
+      else
+        redirect_to @jogo, alert: "Gol não encontrado para remoção."
+      end
+    else
+      redirect_to @jogo, alert: "Nenhuma informação de gol cadastrada para este jogo."
+    end
+  end
+
+  def update_goal
+    info = @jogo.informacao_jogo
+    if info && info.dados.present? && info.dados['goals'].present?
+      index = params[:index].to_i
+      goals = info.dados['goals'].to_a
+      
+      if index >= 0 && index < goals.size
+        # Atualiza os dados do gol
+        goals[index]['scorer'] = params[:scorer]
+        goals[index]['minute'] = params[:minute].to_i
+        goals[index]['team'] = params[:team]
+        goals[index]['assist'] = params[:assist].presence
+        goals[index]['type'] = params[:type].presence || 'normal'
+        
+        info.dados['goals'] = goals
+        info.save!
+
+        # Re-consolida a artilharia
+        Jogos::SyncSquads.new(import_squad: false, import_goals: true).call
+
+        redirect_to @jogo, notice: "Gol atualizado com sucesso!"
+      else
+        redirect_to @jogo, alert: "Gol não encontrado para atualização."
+      end
+    else
+      redirect_to @jogo, alert: "Nenhuma informação de gol cadastrada para este jogo."
     end
   end
 

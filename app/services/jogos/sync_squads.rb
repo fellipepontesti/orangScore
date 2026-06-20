@@ -211,29 +211,57 @@ module Jogos
       false
     end
 
+    def self.own_goal?(g)
+      return false if g.blank?
+      scorer = g['scorer'].to_s.downcase
+      g['type'] == 'own_goal' || g['type'] == 'own-goal' || scorer =~ /\b(o\.?g\.?|own\s+goal)\b/ || scorer.end_with?('og')
+    end
+
     def self.deduplicate_goals(goals)
       return [] if goals.blank?
-      unique_goals = []
+      processed_goals = []
       
       goals.each do |g|
-        dup_idx = unique_goals.find_index do |u|
+        s1 = Jogos::SyncSquads.clean_player_name(g['scorer'])
+        
+        # 1. Procurar duplicata exata no mesmo time
+        dup_idx = processed_goals.find_index do |u|
+          s2 = Jogos::SyncSquads.clean_player_name(u['scorer'])
           u['minute'].to_i == g['minute'].to_i &&
           u['team'] == g['team'] &&
-          (Jogos::SyncSquads.names_match?(u['scorer'], g['scorer']) || u['scorer'] == g['scorer'])
+          (Jogos::SyncSquads.names_match?(s2, s1) || Jogos::SyncSquads.names_match?(s1, s2) || s1 == s2 || u['scorer'] == g['scorer'])
         end
         
         if dup_idx
-          existing = unique_goals[dup_idx]
+          existing = processed_goals[dup_idx]
           if g['assist'].present? && existing['assist'].blank?
-            unique_goals[dup_idx] = g
+            processed_goals[dup_idx] = g
           elsif existing['provisional'] == true && g['provisional'] != true && g['assist'].present? == existing['assist'].present?
-            unique_goals[dup_idx] = g
+            processed_goals[dup_idx] = g
           end
-        else
-          unique_goals << g
+          next
         end
+
+        # 2. Procurar duplicata de gol contra no time oposto (mesmo minuto, mesmo jogador, onde um é own_goal)
+        opp_dup_idx = processed_goals.find_index do |u|
+          s2 = Jogos::SyncSquads.clean_player_name(u['scorer'])
+          u['minute'].to_i == g['minute'].to_i &&
+          u['team'] != g['team'] &&
+          (Jogos::SyncSquads.names_match?(s2, s1) || Jogos::SyncSquads.names_match?(s1, s2) || s1 == s2 || u['scorer'] == g['scorer']) &&
+          (own_goal?(u) || own_goal?(g))
+        end
+
+        if opp_dup_idx
+          existing = processed_goals[opp_dup_idx]
+          if own_goal?(g) && !own_goal?(existing)
+            processed_goals[opp_dup_idx] = g
+          end
+          next
+        end
+
+        processed_goals << g
       end
-      unique_goals
+      processed_goals
     end
 
     def consolidate_goals_from_matches
@@ -262,7 +290,27 @@ module Jogos
       data['data'].each do |match|
         next unless match['status'] == 'finished'
 
-        goals = Jogos::SyncSquads.deduplicate_goals(match['goals'])
+        # Procurar o jogo local correspondente para ver se temos informacao_jogo editado no banco
+        home_team_api = match['homeTeam'].to_s.downcase
+        away_team_api = match['awayTeam'].to_s.downcase
+        translated_home = Jogos::TeamMapping.translate_country(match['homeTeam']).to_s.downcase
+        translated_away = Jogos::TeamMapping.translate_country(match['awayTeam']).to_s.downcase
+
+        jogo_local = Jogo.includes(:mandante, :visitante).find do |jl|
+          next unless jl.mandante && jl.visitante
+          home_names = [jl.mandante.nome.downcase, Jogos::TeamMapping.api_search_name(jl.mandante.nome).to_s.downcase, Jogos::TeamMapping.api_team_code(jl.mandante.nome).to_s.downcase].reject(&:blank?)
+          away_names = [jl.visitante.nome.downcase, Jogos::TeamMapping.api_search_name(jl.visitante.nome).to_s.downcase, Jogos::TeamMapping.api_team_code(jl.visitante.nome).to_s.downcase].reject(&:blank?)
+          ((home_names.include?(home_team_api) || home_names.include?(translated_home)) && (away_names.include?(away_team_api) || away_names.include?(translated_away))) ||
+          ((home_names.include?(away_team_api) || home_names.include?(translated_away)) && (away_names.include?(home_team_api) || away_names.include?(translated_home)))
+        end
+
+        # Se houver informacao_jogo local no banco com dados['goals'], usamos de lá (para respeitar edições do root)
+        api_goals = match['goals'] || []
+        if jogo_local && (info_local = jogo_local.informacao_jogo) && info_local.dados.present? && info_local.dados.key?('goals')
+          api_goals = info_local.dados['goals']
+        end
+
+        goals = Jogos::SyncSquads.deduplicate_goals(api_goals)
         next if goals.blank?
 
         lineups = match['lineups']
