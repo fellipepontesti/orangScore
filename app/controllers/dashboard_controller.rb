@@ -74,13 +74,8 @@ class DashboardController < ApplicationController
   end
 
   def detalhamento_jogos
-    # 1. Carregar os jogos omitindo os indefinitivos (times_a_definir)
-    scope = Jogo.includes(:mandante, :visitante, :informacao_jogo).where.not(status: :times_a_definir)
-    
-    # Aplicar filtro de status se informado
-    if params[:status].present? && Jogo.statuses.keys.include?(params[:status])
-      scope = scope.where(status: params[:status])
-    end
+    # 1. Carregar apenas os jogos finalizados
+    scope = Jogo.includes(:mandante, :visitante, :informacao_jogo).where(status: :finalizado)
     
     # 2. Carregar todos os jogadores agrupados por seleção para mapeamento eficiente
     jogadores_por_selecao = Jogador.all.group_by(&:selecao_id)
@@ -244,8 +239,8 @@ class DashboardController < ApplicationController
       end
     end
     
-    # 8. Métricas Gerais para o Painel Superior (baseado em todos os jogos finalizados/em andamento no banco)
-    jogos_totais_validos = Jogo.where.not(status: :times_a_definir)
+    # 8. Métricas Gerais para o Painel Superior (baseado em todos os jogos finalizados no banco)
+    jogos_totais_validos = Jogo.where(status: :finalizado)
     @total_jogos_validos = jogos_totais_validos.count
     @total_sincronizados = Jogo.finalizado.joins(:informacao_jogo).where.not(informacao_jogos: { dados: nil }).select { |j| j.informacao_jogo.dados.present? && j.informacao_jogo.dados != '{}' }.count
     
