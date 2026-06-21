@@ -4,6 +4,25 @@ module Jogos
       @jogo = jogo
     end
 
+    def self.calcular_pontos_em_memoria(palpite, gols_mandante, gols_visitante)
+      return 0 if gols_mandante.nil? || gols_visitante.nil?
+
+      palpite_m = palpite.gols_casa.to_i
+      palpite_v = palpite.gols_fora.to_i
+      gols_m = gols_mandante.to_i
+      gols_v = gols_visitante.to_i
+
+      if palpite_m == gols_m && palpite_v == gols_v
+        10
+      elsif (gols_m <=> gols_v) == (palpite_m <=> palpite_v) && (palpite_m == gols_m || palpite_v == gols_v)
+        7
+      elsif (gols_m <=> gols_v) == (palpite_m <=> palpite_v)
+        5
+      else
+        2
+      end
+    end
+
     def call
       return unless @jogo.finalizado?
 

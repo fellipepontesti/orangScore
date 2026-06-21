@@ -386,7 +386,7 @@ class DashboardController < ApplicationController
 
   def editar_numeracao_jogadores
     @selecao = Selecao.find_by_uuid_param!(params[:selecao_id])
-    @jogadores = @selecao.jogadores.order(Arel.sql('CASE WHEN numero IS NULL THEN 0 ELSE 1 END, numero ASC, nome ASC'))
+    @jogadores = @selecao.jogadores.order(:nome)
   end
 
   def salvar_numeracao_jogadores

@@ -27,7 +27,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :palpites
+  resources :palpites, except: [:destroy]
 
   resources :emails, only: %i[new create]
 

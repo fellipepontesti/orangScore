@@ -1,5 +1,5 @@
 class PalpitesController < ApplicationController
-  before_action :set_palpite, only: %i[ show edit update destroy ]
+  before_action :set_palpite, only: %i[ show edit update ]
 
   # GET /palpites or /palpites.json
   def index
@@ -88,15 +88,7 @@ class PalpitesController < ApplicationController
     end
   end
 
-  # DELETE /palpites/1 or /palpites/1.json
-  def destroy
-    @palpite.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to palpites_path, notice: "Palpite was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
-  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

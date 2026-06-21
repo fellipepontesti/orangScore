@@ -150,13 +150,26 @@
     </div>
   </div>
 
+  <!-- Aviso de Pontuação Provisória para Jogos Em Andamento -->
+  <% if @jogo.em_andamento? %>
+    <div class="alert alert-warning shadow-lg rounded-2xl border border-warning/20 bg-warning/5 text-warning flex items-start gap-3 p-4">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6 mt-0.5">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <div>
+        <h3 class="font-bold text-xs uppercase tracking-wider">Pontuação Provisória</h3>
+        <p class="text-xs opacity-90 font-medium mt-1">As pontuações exibidas abaixo são baseadas no placar atual e servem apenas como acompanhamento em tempo real. A pontuação oficial definitiva só será calculada e consolidada após o término do jogo.</p>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Tabela de Palpites -->
   <div class="bg-base-100 shadow-2xl rounded-2xl border border-base-200 overflow-hidden">
-    <div class="px-6 py-4 bg-base-200/50 border-b border-base-200 flex items-center justify-between text-xs font-black uppercase tracking-wider opacity-60">
-      <span>Participante</span>
-      <div class="flex items-center gap-12">
-        <span class="w-24 text-center">Palpite</span>
-        <span class="w-20 text-right">Pontos</span>
+    <div class="px-2 sm:px-6 py-4 bg-base-200/50 border-b border-base-200 flex items-center justify-between gap-2 sm:gap-4 text-xs font-black uppercase tracking-wider opacity-60">
+      <span class="flex-1">Participante</span>
+      <div class="flex items-center gap-2 sm:gap-8 shrink-0 text-right">
+        <span class="w-14 sm:w-24 text-center">Palpite</span>
+        <span class="w-10 sm:w-16 text-right">Pontos</span>
       </div>
     </div>
     
@@ -164,27 +177,27 @@
       <% if @palpites.any? %>
         <% @palpites.each do |palpite| %>
           <% is_current = (palpite.user_id == current_user.id) %>
-          <% user_point = @user_points_by_user[palpite.user_id] %>
+          <% pontos = @pontos_por_palpite[palpite.id] %>
           
-          <li class="p-4 flex items-center justify-between transition-all duration-300 <%= is_current ? 'bg-secondary/10 border-l-4 border-l-secondary relative overflow-hidden font-semibold shadow-inner' : 'hover:bg-base-200/50' %>">
+          <li class="p-2 sm:p-4 flex items-center justify-between gap-2 sm:gap-4 transition-all duration-300 <%= is_current ? 'bg-secondary/10 border-l-4 border-l-secondary relative overflow-hidden font-semibold shadow-inner' : 'hover:bg-base-200/50' %>">
             
             <!-- Usuário -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 min-w-0 flex-1">
               <div class="avatar placeholder shrink-0">
                 <div class="bg-neutral text-neutral-content rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs uppercase">
                   <%= palpite.user.name[0..1] %>
                 </div>
               </div>
               
-              <div class="flex flex-col">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm md:text-base <%= 'text-secondary font-black' if is_current %> text-white"><%= palpite.user.name %></span>
+              <div class="flex flex-col min-w-0 flex-1">
+                <div class="flex items-center gap-1 min-w-0 flex-wrap sm:flex-nowrap">
+                  <span class="text-xs sm:text-base font-medium truncate text-white <%= 'text-secondary font-black' if is_current %>"><%= palpite.user.name %></span>
                   <% if is_current %>
-                    <span class="badge badge-secondary badge-sm text-[10px] uppercase font-black tracking-wider py-1.5 px-2">Você</span>
+                    <span class="badge badge-secondary badge-xs py-0.5 px-1 text-[8px] uppercase font-black tracking-wider shrink-0">Você</span>
                   <% end %>
                   <% if palpite.user.premium? %>
                     <span class="text-amber-400 shrink-0" title="Usuário Premium">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                         <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.537 1.651l3.6 3.1-.114 4.712c-.02.839.865 1.482 1.58 1.053L10 15.741l4.122 2.522c.715.43 1.6-.214 1.58-1.053l-.114-4.712 3.6-3.1c.634-.544.296-1.584-.537-1.65l-4.752-.382-1.83-4.4Z" clip-rule="evenodd" />
                       </svg>
                     </span>
@@ -194,16 +207,16 @@
             </div>
             
             <!-- Palpite e Pontuação -->
-            <div class="flex items-center gap-12 text-right">
-              <span class="w-24 font-bold text-sm md:text-base text-center bg-base-200/50 rounded-lg py-1 px-3">
+            <div class="flex items-center gap-2 sm:gap-8 text-right shrink-0">
+              <span class="w-14 sm:w-24 font-bold text-xs sm:text-base text-center bg-base-200/50 rounded-lg py-1 px-1 sm:px-3">
                 <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
               </span>
               
-              <span class="w-20 text-xl font-black <%= user_point && user_point.pontos > 0 ? 'text-success' : 'text-base-content/40' %>">
-                <% if @jogo.finalizado? %>
-                  <%= user_point ? "+#{user_point.pontos}" : "0" %>
-                <% else %>
+              <span class="w-10 sm:w-16 text-sm sm:text-xl font-black <%= pontos > 0 ? 'text-success' : 'text-base-content/40' %>">
+                <% if @jogo.programado? %>
                   —
+                <% else %>
+                  <%= pontos > 0 ? "+#{pontos}" : pontos %>
                 <% end %>
               </span>
             </div>

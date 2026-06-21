@@ -38,11 +38,4 @@ class PalpitesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to palpite_url(@palpite)
   end
 
-  test "should destroy palpite" do
-    assert_difference("Palpite.count", -1) do
-      delete palpite_url(@palpite)
-    end
-
-    assert_redirected_to palpites_url
-  end
 end

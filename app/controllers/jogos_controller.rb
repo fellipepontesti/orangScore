@@ -39,8 +39,25 @@ class JogosController < ApplicationController
       return
     end
 
-    @palpites = @jogo.palpites.includes(:user).order("users.name")
+    @palpites = @jogo.palpites.includes(:user).to_a
     @user_points_by_user = @jogo.user_points.index_by(&:user_id)
+
+    @pontos_por_palpite = {}
+    @palpites.each do |p|
+      pontos = if @jogo.finalizado? && @user_points_by_user[p.user_id]
+        @user_points_by_user[p.user_id].pontos.to_i
+      elsif @jogo.em_andamento? || @jogo.finalizado?
+        Jogos::CalculaPontuacao.calcular_pontos_em_memoria(p, @jogo.gols_mandante, @jogo.gols_visitante)
+      else
+        0
+      end
+      @pontos_por_palpite[p.id] = pontos
+    end
+
+    @palpites.sort_by! do |p|
+      pontos = @pontos_por_palpite[p.id]
+      [pontos, p.user.name.to_s.downcase]
+    end
 
     @total_palpites = @palpites.size
     mais_comum = @palpites.map { |p| "#{p.gols_casa}x#{p.gols_fora}" }.tally.max_by { |_, count| count }
