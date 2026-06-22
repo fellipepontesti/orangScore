@@ -41,11 +41,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "basic user should not get ranking and be redirected to plans" do
+  test "basic user should get ranking page successfully but default to weekly" do
     sign_in @user
     get ranking_users_path
-    assert_redirected_to planos_path
-    assert_equal "O Ranking Global é uma funcionalidade exclusiva para assinantes Premium. Faça seu upgrade e confira sua posição!", flash[:alert]
+    assert_response :success
   end
 
   test "ranking points should be aggregated correctly without multiplication (product cartesian bug)" do

@@ -1,7 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking]
-  before_action :authorize_premium_or_root!, only: [:ranking]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -18,15 +17,56 @@ class UsersController < ApplicationController
   end
 
   def ranking
-    # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
-    @usuarios_ranking = User
-                      .joins("LEFT JOIN (SELECT user_id, SUM(pontos) as total_points FROM user_points GROUP BY user_id) points_summary ON points_summary.user_id = users.id")
-                      .joins("LEFT JOIN (SELECT user_id, COUNT(id) as total_palpites FROM palpites GROUP BY user_id) palpites_summary ON palpites_summary.user_id = users.id")
-                      .select("users.*, 
-                               COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
-                               COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
-                      .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
-                      .to_a
+    @periodo = params[:periodo].presence || 'global'
+    
+    if !current_user.root? && !current_user.premium?
+      @periodo = 'semanal' if params[:periodo].blank?
+    end
+
+    case @periodo
+    when 'diario'
+      start_date = Time.current.beginning_of_day
+      end_date = Time.current.end_of_day
+    when 'semanal'
+      start_date = Time.current.beginning_of_week
+      end_date = Time.current.end_of_week
+    end
+
+    if @periodo == 'global'
+      if current_user.root? || current_user.premium?
+        @usuarios_ranking = User
+                          .joins("LEFT JOIN (SELECT user_id, SUM(pontos) as total_points FROM user_points GROUP BY user_id) points_summary ON points_summary.user_id = users.id")
+                          .joins("LEFT JOIN (SELECT user_id, COUNT(id) as total_palpites FROM palpites GROUP BY user_id) palpites_summary ON palpites_summary.user_id = users.id")
+                          .select("users.*, 
+                                   COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
+                                   COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
+                          .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                          .to_a
+      else
+        @usuarios_ranking = []
+      end
+    else
+      points_subquery_sql = UserPoint.joins(:jogo)
+                                     .where(jogos: { data: start_date..end_date })
+                                     .select(:user_id, "SUM(user_points.pontos) as total_points")
+                                     .group(:user_id)
+                                     .to_sql
+
+      palpites_subquery_sql = Palpite.joins(:jogo)
+                                     .where(jogos: { data: start_date..end_date })
+                                     .select(:user_id, "COUNT(palpites.id) as total_palpites")
+                                     .group(:user_id)
+                                     .to_sql
+
+      @usuarios_ranking = User
+                        .joins("LEFT JOIN (#{points_subquery_sql}) points_summary ON points_summary.user_id = users.id")
+                        .joins("LEFT JOIN (#{palpites_subquery_sql}) palpites_summary ON palpites_summary.user_id = users.id")
+                        .select("users.*, 
+                                 COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
+                                 COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
+                        .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                        .to_a
+    end
 
     @current_user_ranking_index = @usuarios_ranking.index { |u| u.id == current_user.id }
     @current_user_rank = @current_user_ranking_index ? @current_user_ranking_index + 1 : nil
