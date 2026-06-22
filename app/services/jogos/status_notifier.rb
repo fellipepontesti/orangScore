@@ -35,7 +35,13 @@ module Jogos
     def notification_text
       case jogo.status
       when 'em_andamento'
-        "O jogo #{game_title} começou! Acompanhe seu palpite e fique por dentro do placar."
+        if jogo.status_before_last_save == 'suspenso'
+          "O jogo #{game_title} foi retomado! Acompanhe seu palpite e fique por dentro do placar."
+        else
+          "O jogo #{game_title} começou! Acompanhe seu palpite e fique por dentro do placar."
+        end
+      when 'suspenso'
+        "O jogo #{game_title} foi suspenso! A pontuação oficial só será aplicada quando o jogo for concluído."
       when 'finalizado'
         "O jogo #{game_title} terminou em #{score_label}. Confira a sua pontuação e veja se acertou o resultado."
       when 'times_a_definir'

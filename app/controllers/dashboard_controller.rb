@@ -8,10 +8,8 @@ class DashboardController < ApplicationController
   def index 
     if current_user.semi_root?
       @jogos_em_andamento = Jogo.em_andamento.order(data: :asc)
-      @jogos_de_hoje = Jogo.programado
-                            .where(definir: false)
-                            .where(data: Time.current.beginning_of_day..Time.current.end_of_day)
-                            .order(data: :asc)
+      @jogos_suspensos = Jogo.where(status: :suspenso).order(data: :asc)
+      @jogos_de_hoje = Jogo.where(status: :programado, definir: false, data: Time.zone.today.beginning_of_day..Time.zone.today.end_of_day).order(data: :asc)
       return render :semi_root_index
     end
 
@@ -25,10 +23,8 @@ class DashboardController < ApplicationController
       @total_ligas = Liga.count
       @ultimos_usuarios = User.includes(:palpites).order(created_at: :desc).limit(5)
       @jogos_em_andamento = Jogo.em_andamento.order(data: :asc).limit(10)
-      @jogos_programados = Jogo.programado
-                                .where(definir: false)
-                                .where(data: Time.current.beginning_of_day..Time.current.end_of_day)
-                                .order(data: :asc)
+      @jogos_suspensos = Jogo.where(status: :suspenso).order(data: :asc)
+      @jogos_programados = Jogo.where(status: :programado, definir: false, data: Time.zone.today.beginning_of_day..Time.zone.today.end_of_day).order(data: :asc)
       @next_jogo_rapido = next_jogo_rapido(current_user)
       @jogos_pendentes = jogos_pendentes_count(current_user)
       return render :root_index
@@ -38,15 +34,14 @@ class DashboardController < ApplicationController
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
     hoje = Time.zone.today
     periodo_hoje = hoje.beginning_of_day..hoje.end_of_day
-    @jogos_de_hoje = Jogo
-      .includes(:mandante, :visitante, :palpites)
-      .where(status: :em_andamento)
-      .or(
-        Jogo.includes(:mandante, :visitante, :palpites)
-            .where(status: [:programado, :finalizado], definir: false, data: periodo_hoje)
-      )
-      .order(Arel.sql("CASE jogos.status WHEN #{Jogo.statuses[:em_andamento]} THEN 0 WHEN #{Jogo.statuses[:programado]} THEN 1 ELSE 2 END"), :data)
-    @palpites_por_jogo_id = current_user.palpites.where(jogo_id: @jogos_de_hoje.map(&:id)).index_by(&:jogo_id)
+    
+    @jogos_em_andamento = Jogo.includes(:mandante, :visitante, :palpites).em_andamento.order(data: :asc)
+    @jogos_suspensos = Jogo.includes(:mandante, :visitante, :palpites).where(status: :suspenso).order(data: :asc)
+    @jogos_de_hoje = Jogo.includes(:mandante, :visitante, :palpites)
+                          .where(status: [:programado, :finalizado], definir: false, data: periodo_hoje)
+                          .order(Arel.sql("CASE jogos.status WHEN #{Jogo.statuses[:programado]} THEN 0 ELSE 1 END"), :data)
+    
+    @palpites_por_jogo_id = current_user.palpites.where(jogo_id: (@jogos_em_andamento.map(&:id) + @jogos_suspensos.map(&:id) + @jogos_de_hoje.map(&:id))).index_by(&:jogo_id)
     @proximos_jogos = Jogo.where("data >= ?", Time.current).order(data: :asc).limit(5)
     
     @liga_principal = current_user.ligas_participadas.first

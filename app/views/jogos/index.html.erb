@@ -150,6 +150,9 @@
                       <% elsif jogo.em_andamento? %>
                         <div class="status status-success animate-ping"></div>
                         <div class="status status-success"></div>
+                      <% elsif jogo.suspenso? %>
+                        <div class="status status-warning animate-ping"></div>
+                        <div class="status status-warning"></div>
                       <% elsif jogo.finalizado? %>
                         <div class="status status-error animate-ping"></div>
                         <div class="status status-error"></div>
@@ -160,7 +163,7 @@
                     </div>
                     
                     <span>
-                      <%= jogo.status.humanize %>
+                      <%= jogo.status&.humanize %>
                     </span>
                   </div>
                 </div>
@@ -237,7 +240,7 @@
                   </div>
                 <% end %>
 
-                <% if jogo.finalizado? || jogo.em_andamento? %>
+                <% if jogo.finalizado? || jogo.em_andamento? || jogo.suspenso? %>
                   <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Fechado</span>
                 <% elsif jogo.times_a_definir? || jogo.definir? %>
                   <span class="badge badge-neutral p-3 sm:p-4 font-bold w-full">Indisponível</span>

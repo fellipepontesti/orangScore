@@ -30,152 +30,303 @@
     <% end %>
   </div>
 
-  <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>
-  
-  <!-- Jogos de Hoje -->
-  <section class="space-y-4">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <h2 class="text-2xl font-bold flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Jogos de hoje
-        </h2>
-        <p class="text-sm opacity-70 mt-1">Partidas em andamento e próximas para você acompanhar ou palpitar.</p>
-      </div>
+  <%= render "shared/quick_bet_banner", next_jogo: @next_jogo_rapido, pendentes: @jogos_pendentes %>  <!-- Partidas do Dia -->
+  <div class="space-y-8">
+    
+    <!-- Seção 1: Jogos em Andamento -->
+    <% if @jogos_em_andamento.any? %>
+      <section class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+              Jogos em Andamento
+            </h2>
+            <p class="text-sm opacity-70 mt-1">Partidas acontecendo agora em tempo real.</p>
+          </div>
+        </div>
 
-      <%= link_to "Ver todos os jogos", jogos_path(data: Time.zone.today), class: "btn btn-ghost bg-base-100 w-full sm:w-auto" %>
-    </div>
-
-    <% if @jogos_de_hoje.any? %>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <% @jogos_de_hoje.each do |jogo| %>
-          <% palpite = @palpites_por_jogo_id[jogo.id] %>
-          <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-4 overflow-hidden hover:shadow-2xl hover:border-primary/20 transition cursor-pointer"
-               onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
-            <div class="flex items-center justify-between gap-3 mb-4">
-              <div class="min-w-0">
-                <p class="text-[10px] uppercase font-black opacity-50">
-                  <% if jogo.data.to_date == Time.zone.today %>
-                    Hoje às <%= horario_jogo(jogo, "%H:%M") %>
-                  <% else %>
-                    Início: <%= horario_jogo(jogo, "%d/%m %H:%M") %>
-                  <% end %>
-                </p>
-                <p class="text-xs opacity-60 truncate"><%= jogo.estadio.presence || "Estádio não definido" %></p>
-              </div>
-
-              <div class="badge <%= if jogo.finalizado?
-                                      'badge-error'
-                                    elsif jogo.em_andamento?
-                                      'badge-success'
-                                    else
-                                      'badge-info'
-                                    end %> badge-outline shrink-0 font-bold">
-                <%= if jogo.finalizado?
-                      "Finalizado"
-                    elsif jogo.em_andamento?
-                      "Em andamento"
-                    else
-                      "Programado"
-                    end %>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3 rounded-box bg-base-200/50 p-3">
+        <div class="grid grid-cols-1 gap-4">
+          <% @jogos_em_andamento.each do |jogo| %>
+            <% palpite = @palpites_por_jogo_id[jogo.id] %>
+            <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
+                 onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
               
-              <!-- MANDANTE (JOGOS DE HOJE) -->
-              <div class="flex flex-col items-center text-center min-w-0">
-                <div class="avatar mb-2">
-                  <div class="mask mask-squircle h-10 w-10 bg-base-200 flex items-center justify-center overflow-hidden">
-                    <% if jogo.mandante&.logo.present? %>
-                      <%= link_to selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                <!-- Esquerda: AO VIVO -->
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                  <p class="text-success font-black uppercase tracking-wider animate-pulse">AO VIVO</p>
+                </div>
+
+                <!-- Meio: Confronto com Placar -->
+                <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                  <!-- Mandante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                    <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                      <% if jogo.mandante.present? %>
+                        <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                      <% end %>
+                    </span>
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.mandante&.logo.present? %>
                         <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
                       <% end %>
-                    <% else %>
-                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
-                    <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Placar -->
+                  <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
+                    <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                      <%= jogo.gols_mandante.to_i %>
+                    </span>
+                    <span class="opacity-30 text-xs font-black">x</span>
+                    <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                      <%= jogo.gols_visitante.to_i %>
+                    </span>
+                  </div>
+
+                  <!-- Visitante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.visitante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                    <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                      <% if jogo.visitante.present? %>
+                        <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                      <% end %>
+                    </span>
                   </div>
                 </div>
-                <span class="font-bold text-sm break-words max-w-full">
-                  <% if jogo.mandante.present? %>
-                    <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                  <% else %>
-                    <%= jogo.nome_provisorio_mandante || "A definir" %>
-                  <% end %>
-                </span>
               </div>
 
-              <div class="flex flex-col items-center min-w-[92px]">
-                <% if jogo.finalizado? %>
-                  <span class="text-[10px] uppercase font-black text-error mb-1">Finalizado</span>
-                  <span class="text-2xl font-black font-mono whitespace-nowrap">
-                    <%= jogo.gols_mandante.to_i %> - <%= jogo.gols_visitante.to_i %>
-                  </span>
-                <% elsif jogo.em_andamento? %>
-                  <span class="text-[10px] uppercase font-black text-success mb-1">Placar</span>
-                  <span class="text-2xl font-black font-mono whitespace-nowrap">
-                    <%= jogo.gols_mandante.to_i %> - <%= jogo.gols_visitante.to_i %>
-                  </span>
-                <% else %>
-                  <span class="text-[10px] uppercase font-black opacity-50 mb-1">Início</span>
-                  <span class="text-xl font-black font-mono whitespace-nowrap"><%= horario_jogo(jogo, "%H:%M") %></span>
-                <% end %>
-
+              <!-- Direita: Ações -->
+              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
-                  <span class="mt-2 text-[10px] font-bold text-primary whitespace-nowrap">
+                  <span class="text-[10px] font-bold text-slate-400">
                     Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
                   </span>
                 <% end %>
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                  <%= link_to "Ver Palpites", palpites_jogo_path(jogo), class: "btn btn-sm btn-success text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                </div>
               </div>
 
-              <!-- VISITANTE (JOGOS DE HOJE) -->
-              <div class="flex flex-col items-center text-center min-w-0">
-                <div class="avatar mb-2">
-                  <div class="mask mask-squircle h-10 w-10 bg-base-200 flex items-center justify-center overflow-hidden">
-                    <% if jogo.visitante&.logo.present? %>
-                      <%= link_to selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "w-full h-full flex items-center justify-center hover:opacity-80 transition" do %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <!-- Seção 2: Jogos Pendentes (Suspensos) -->
+    <% if @jogos_suspensos.any? %>
+      <section class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-bold flex items-center gap-2 text-warning">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+              </svg>
+              Jogos Pendentes
+            </h2>
+            <p class="text-sm opacity-70 mt-1">Partidas atualmente suspensas — acompanhe os placares parciais.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <% @jogos_suspensos.each do |jogo| %>
+            <% palpite = @palpites_por_jogo_id[jogo.id] %>
+            <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
+                 onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
+              
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                <!-- Esquerda: SUSPENSO -->
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                  <p class="text-warning font-black uppercase tracking-wider">SUSPENSO</p>
+                </div>
+
+                <!-- Meio: Confronto com Placar -->
+                <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                  <!-- Mandante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                    <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                      <% if jogo.mandante.present? %>
+                        <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                      <% end %>
+                    </span>
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.mandante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Placar -->
+                  <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
+                    <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                      <%= jogo.gols_mandante.to_i %>
+                    </span>
+                    <span class="opacity-30 text-xs font-black">x</span>
+                    <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                      <%= jogo.gols_visitante.to_i %>
+                    </span>
+                  </div>
+
+                  <!-- Visitante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.visitante&.logo.present? %>
                         <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
                       <% end %>
-                    <% else %>
-                      <div class="w-full h-full bg-base-300 flex items-center justify-center font-bold text-xs">?</div>
-                    <% end %>
+                    </div>
+                    <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                      <% if jogo.visitante.present? %>
+                        <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                      <% end %>
+                    </span>
                   </div>
                 </div>
-                <span class="font-bold text-sm break-words max-w-full">
-                  <% if jogo.visitante.present? %>
-                    <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                  <% else %>
-                    <%= jogo.nome_provisorio_visitante || "A definir" %>
-                  <% end %>
-                </span>
               </div>
-            </div>
 
-            <div class="flex flex-wrap justify-end gap-2 mt-4">
-              <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200" %>
+              <!-- Direita: Ações -->
+              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+                <% if palpite.present? %>
+                  <span class="text-[10px] font-bold text-slate-400">
+                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                  </span>
+                <% end %>
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                  <%= link_to "Ver Palpites", palpites_jogo_path(jogo), class: "btn btn-sm btn-success text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                </div>
+              </div>
 
-              <% if jogo.finalizado? %>
-                <% # Sem opções de palpites quando finalizado %>
-              <% elsif jogo.em_andamento? %>
-                <%= link_to "Ver todos os palpites", palpites_jogo_path(jogo), class: "btn btn-sm btn-success btn-outline" %>
-              <% elsif palpite.present? %>
-                <%= link_to "Editar palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white" %>
-              <% else %>
-                <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary" %>
-              <% end %>
             </div>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-6 text-center">
-        <p class="font-bold">Nenhum jogo em andamento ou programado para hoje.</p>
-        <p class="text-sm opacity-70 mt-1">Quando houver partida no dia, ela aparece aqui primeiro.</p>
-      </div>
+          <% end %>
+        </div>
+      </section>
     <% end %>
-  </section>
+
+    <!-- Seção 3: Jogos de Hoje -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Jogos de hoje
+          </h2>
+          <p class="text-sm opacity-70 mt-1">Partidas programadas e finalizadas para o dia de hoje.</p>
+        </div>
+
+        <%= link_to "Ver todos os jogos", jogos_path(data: Time.zone.today), class: "btn btn-ghost bg-base-100 w-full sm:w-auto" %>
+      </div>
+
+      <% if @jogos_de_hoje.any? %>
+        <div class="grid grid-cols-1 gap-4">
+          <% @jogos_de_hoje.each do |jogo| %>
+            <% palpite = @palpites_por_jogo_id[jogo.id] %>
+            <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
+                 onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
+              
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                <!-- Esquerda: Horário -->
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                  <p class="opacity-50">Horário</p>
+                  <p class="text-warning font-black text-sm">
+                    <%= jogo.data.strftime('%H:%M') %>
+                  </p>
+                </div>
+
+                <!-- Meio: Confronto com Placar/VS -->
+                <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                  <!-- Mandante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                    <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                      <% if jogo.mandante.present? %>
+                        <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                      <% end %>
+                    </span>
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.mandante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Placar ou VS -->
+                  <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
+                    <% if jogo.finalizado? %>
+                      <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                        <%= jogo.gols_mandante.to_i %>
+                      </span>
+                      <span class="opacity-30 text-xs font-black">x</span>
+                      <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                        <%= jogo.gols_visitante.to_i %>
+                      </span>
+                    <% else %>
+                      <span class="opacity-30 text-xs font-black">x</span>
+                    <% end %>
+                  </div>
+
+                  <!-- Visitante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.visitante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                    <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                      <% if jogo.visitante.present? %>
+                        <%= link_to jogo.visitante.nome, selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                      <% else %>
+                        <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                      <% end %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direita: Ações -->
+              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+                <% if palpite.present? %>
+                  <span class="text-[10px] font-bold text-slate-400">
+                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                  </span>
+                <% end %>
+
+                <div class="flex gap-2 w-full sm:w-auto justify-end">
+                  <% if jogo.finalizado? %>
+                    <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200 font-bold px-4" %>
+                  <% elsif palpite.present? %>
+                    <%= link_to "Editar Palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                  <% else %>
+                    <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                  <% end %>
+                </div>
+              </div>
+
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="rounded-box bg-base-100 border border-base-200 shadow-xl p-6 text-center">
+          <p class="font-bold">Nenhum jogo programado ou finalizado para hoje.</p>
+        </div>
+      <% end %>
+    </section>
+  </div>
 
   <!-- Cards de Resumo -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">

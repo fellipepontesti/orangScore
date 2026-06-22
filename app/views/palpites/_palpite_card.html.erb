@@ -122,6 +122,9 @@
               <% elsif palpite.jogo.em_andamento? %>
                 <div class="status status-success animate-ping"></div>
                 <div class="status status-success"></div>
+              <% elsif palpite.jogo.suspenso? %>
+                <div class="status status-warning animate-ping"></div>
+                <div class="status status-warning"></div>
               <% elsif palpite.jogo.finalizado? %>
                 <div class="status status-error animate-ping"></div>
                 <div class="status status-error"></div>
@@ -130,7 +133,7 @@
                 <div class="status status-primary"></div>
               <% end %>
             </div>
-            <span><%= palpite.jogo.status.humanize %></span>
+            <span><%= palpite.jogo.status&.humanize %></span>
           </div>
         </div>
       </div>
@@ -176,7 +179,7 @@
   </div>
 
   <div class="flex justify-center gap-3 pt-6 border-t border-dashed border-base-300 mt-4">
-    <% if palpite.jogo.programado? || palpite.jogo.times_a_definir? %>
+    <% if palpite.jogo.palpitavel? %>
       <%= link_to "Editar",
         edit_palpite_path(palpite),
         class: "btn btn-warning text-white btn-sm sm:btn-md font-bold" %>

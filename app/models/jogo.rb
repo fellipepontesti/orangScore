@@ -9,7 +9,11 @@ class Jogo < ApplicationRecord
   has_one :informacao_jogo, class_name: 'InformacaoJogo', dependent: :destroy
 
   enum :tipo, { grupo: 0, segunda_fase: 1, oitavas: 2, quartas: 3, semi: 4, final: 5, terceiro_lugar: 6 }
-  enum :status, { programado: 0, em_andamento: 1, finalizado: 2, times_a_definir: 3 }
+  enum :status, { programado: 0, em_andamento: 1, finalizado: 2, times_a_definir: 3, suspenso: 4 }
+
+  def palpitavel?
+    programado?
+  end
 
   validates :data, presence: true
   validates :tipo, presence: true

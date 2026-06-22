@@ -46,7 +46,7 @@ class JogosController < ApplicationController
     @palpites.each do |p|
       pontos = if @jogo.finalizado? && @user_points_by_user[p.user_id]
         @user_points_by_user[p.user_id].pontos.to_i
-      elsif @jogo.em_andamento? || @jogo.finalizado?
+      elsif @jogo.em_andamento? || @jogo.suspenso? || @jogo.finalizado?
         Jogos::CalculaPontuacao.calcular_pontos_em_memoria(p, @jogo.gols_mandante, @jogo.gols_visitante)
       else
         0

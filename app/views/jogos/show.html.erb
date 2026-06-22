@@ -102,6 +102,11 @@
           <span class="w-2 h-2 rounded-full bg-white"></span>
           Em Andamento
         </span>
+      <% elsif @jogo.suspenso? %>
+        <span class="badge badge-warning gap-1.5 font-bold text-white animate-pulse">
+          <span class="w-2 h-2 rounded-full bg-white"></span>
+          Suspenso
+        </span>
       <% elsif @jogo.finalizado? %>
         <span class="badge badge-error gap-1.5 font-bold text-white">
           Finalizado
@@ -199,7 +204,7 @@
       </div>
     <% end %>
 
-    <% if @jogo.em_andamento? || @jogo.finalizado? %>
+    <% if @jogo.em_andamento? || @jogo.suspenso? || @jogo.finalizado? %>
       <div class="border-t border-base-200 pt-4 flex justify-center">
         <%= link_to palpites_jogo_path(@jogo), class: "btn btn-outline btn-primary btn-sm w-full sm:w-auto font-bold gap-2" do %>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4.5 h-4.5">

@@ -50,8 +50,8 @@ class PalpitesController < ApplicationController
       return
     end
 
-    if @jogo.finalizado? || @jogo.em_andamento?
-      redirect_to jogos_path, alert: "Não é possível palpitar em jogos em andamento ou finalizados."
+    unless @jogo.palpitavel?
+      redirect_to jogos_path, alert: "Não é possível palpitar neste jogo."
       return
     end
 
@@ -72,8 +72,8 @@ class PalpitesController < ApplicationController
   def update
     @jogo = @palpite.jogo
 
-    if @jogo.finalizado? || @jogo.em_andamento?
-      redirect_to jogos_path, alert: "Não é possível editar palpites de jogos em andamento ou finalizados."
+    unless @jogo.palpitavel?
+      redirect_to jogos_path, alert: "Não é possível editar palpites deste jogo."
       return
     end
 
