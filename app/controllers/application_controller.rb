@@ -58,9 +58,13 @@ class ApplicationController < ActionController::Base
 
     allowed_routes = [
       { controller: "dashboard", action: "index" },
+      { controller: "jogos", action: "index" },
+      { controller: "jogos", action: "show" },
       { controller: "jogos", action: "start" },
       { controller: "jogos", action: "update" },
       { controller: "jogos", action: "finish" },
+      { controller: "jogos", action: "palpites" },
+      { controller: "jogos", action: "sync_statistics" },
       { controller: "users", action: "update_password" },
       { controller: "devise/sessions", action: "destroy" }
     ]
