@@ -42,6 +42,7 @@ class DashboardController < ApplicationController
                           .order(Arel.sql("CASE jogos.status WHEN #{Jogo.statuses[:programado]} THEN 0 ELSE 1 END"), :data)
     
     @palpites_por_jogo_id = current_user.palpites.where(jogo_id: (@jogos_em_andamento.map(&:id) + @jogos_suspensos.map(&:id) + @jogos_de_hoje.map(&:id))).index_by(&:jogo_id)
+    @pontos_por_jogo_id = current_user.user_points.where(jogo_id: (@jogos_em_andamento.map(&:id) + @jogos_suspensos.map(&:id) + @jogos_de_hoje.map(&:id))).index_by(&:jogo_id)
     @proximos_jogos = Jogo.where("data >= ?", Time.current).order(data: :asc).limit(5)
     
     @liga_principal = current_user.ligas_participadas.first

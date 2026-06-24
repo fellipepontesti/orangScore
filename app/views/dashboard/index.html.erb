@@ -303,6 +303,12 @@
                 <% if palpite.present? %>
                   <span class="text-[10px] font-bold text-slate-400">
                     Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                    <% if jogo.finalizado? %>
+                      <% user_point = @pontos_por_jogo_id[jogo.id] %>
+                      <span class="badge badge-warning badge-xs font-black ml-1 text-white py-2 px-1.5" title="Pontos obtidos com o palpite">
+                        <%= user_point ? "+#{user_point.pontos} pts" : "0 pts" %>
+                      </span>
+                    <% end %>
                   </span>
                 <% end %>
 
