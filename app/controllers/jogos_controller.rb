@@ -7,11 +7,18 @@ class JogosController < ApplicationController
 
   def index
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
+    @view_mode = params[:view_mode].presence || 'grupo'
+    
     @tipo_ativo = params[:tipo].presence
-    @tipo_ativo ||= 'grupo' unless filtro_por_data
+    if @view_mode == 'grupo'
+      @tipo_ativo ||= 'grupo' unless filtro_por_data
+    else
+      @tipo_ativo = nil if params[:tipo].blank?
+    end
+
     @grupos = Grupo.order(:nome)
 
-    @grupo_ativo = if @tipo_ativo == 'grupo'
+    @grupo_ativo = if @tipo_ativo == 'grupo' && @view_mode == 'grupo'
       params[:grupo].presence || @grupos.first&.uuid
     end
     

@@ -54,7 +54,7 @@
               
               <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
                 <!-- Esquerda: AO VIVO -->
-                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
                   <p class="text-success font-black uppercase tracking-wider animate-pulse">AO VIVO</p>
                 </div>
 
@@ -106,7 +106,7 @@
               </div>
 
               <!-- Direita: Ações -->
-              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+              <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
                   <span class="text-[10px] font-bold text-slate-400">
                     Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
@@ -146,7 +146,7 @@
               
               <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
                 <!-- Esquerda: SUSPENSO -->
-                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
                   <p class="text-warning font-black uppercase tracking-wider">SUSPENSO</p>
                 </div>
 
@@ -198,7 +198,7 @@
               </div>
 
               <!-- Direita: Ações -->
-              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+              <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
                   <span class="text-[10px] font-bold text-slate-400">
                     Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
@@ -240,7 +240,7 @@
               
               <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
                 <!-- Esquerda: Horário -->
-                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[65px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
                   <p class="opacity-50">Horário</p>
                   <p class="text-warning font-black text-sm">
                     <%= jogo.data.strftime('%H:%M') %>
@@ -299,14 +299,21 @@
               </div>
 
               <!-- Direita: Ações -->
-              <div class="shrink-0 w-full sm:w-auto flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+              <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
-                  <span class="text-[10px] font-bold text-slate-400">
-                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                  <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap shrink-0">
+                    Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %></strong>
                     <% if jogo.finalizado? %>
                       <% user_point = @pontos_por_jogo_id[jogo.id] %>
-                      <span class="badge badge-warning badge-xs font-black ml-1 text-white py-2 px-1.5" title="Pontos obtidos com o palpite">
-                        <%= user_point ? "+#{user_point.pontos} pts" : "0 pts" %>
+                      <% pontos = user_point ? user_point.pontos.to_i : 0 %>
+                      <% badge_class = case pontos
+                         when 10 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black animate-pulse hover:scale-105 transition-all duration-300 cursor-default"
+                         when 7, 5, 2 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black hover:scale-105 transition-all duration-300 cursor-default"
+                         else "bg-slate-800 text-slate-400 font-medium hover:scale-105 transition-all duration-300 cursor-default"
+                         end
+                      %>
+                      <span class="badge <%= badge_class %> badge-sm py-2 px-2 ml-1 border-none shadow-sm rounded-md font-mono whitespace-nowrap shrink-0" title="<%= user_point&.motivo || 'Nenhum ponto obtido' %>">
+                        <%= pontos > 0 ? "+#{pontos} pts" : "0 pts" %>
                       </span>
                     <% end %>
                   </span>

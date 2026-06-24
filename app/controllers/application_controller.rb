@@ -55,6 +55,7 @@ class ApplicationController < ActionController::Base
 
   def restrict_semi_root_access
     return unless current_user.semi_root?
+    return if devise_controller?
 
     allowed_routes = [
       { controller: "dashboard", action: "index" },

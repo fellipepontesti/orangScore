@@ -10,6 +10,7 @@ one:
   grupo: one
   uuid: "00000000-0000-0000-0000-000000000041"
   definir: false
+  status: programado
 
 two:
   mandante: two
@@ -21,3 +22,4 @@ two:
   grupo: one
   uuid: "00000000-0000-0000-0000-000000000042"
   definir: false
+  status: programado

@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nome: Selecao Um
+  pontos: 1
+  qtd_jogos: 1
+  vitorias: 1
+  derrotas: 1
+  empates: 1
+  logo: sem-escudo.png
+  grupo: one
+  uuid: "00000000-0000-0000-0000-000000000010"
+  gols: 0
+  gols_sofridos: 0
+
+two:
+  nome: Selecao Dois
+  pontos: 1
+  qtd_jogos: 1
+  vitorias: 1
+  derrotas: 1
+  empates: 1
+  logo: sem-escudo.png
+  grupo: one
+  uuid: "00000000-0000-0000-0000-000000000020"
+  gols: 0
+  gols_sofridos: 0

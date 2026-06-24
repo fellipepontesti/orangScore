@@ -5,10 +5,20 @@ module Jogos
     end
 
     def call
-      query = ::Jogo.all.includes(:palpites)
+      query = ::Jogo.all.includes(:palpites, :user_points).where(definir: false).where.not(status: :times_a_definir)
 
       query = filtered_query(query)
-      query.order(:data)
+      
+      if params[:tipo] == 'grupo' && params[:grupo].present?
+        query.order(Arel.sql("CASE WHEN status = #{::Jogo.statuses[:finalizado]} THEN 1 ELSE 0 END"), :data)
+      else
+        ordem_sql = "CASE 
+          WHEN status IN (#{::Jogo.statuses[:em_andamento]}, #{::Jogo.statuses[:suspenso]}) THEN 0
+          WHEN status IN (0, 3) THEN 1
+          ELSE 2
+        END"
+        query.order(Arel.sql(ordem_sql), :data)
+      end
     end
 
     private

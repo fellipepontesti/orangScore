@@ -123,7 +123,7 @@
             <h2 class="text-xl font-bold text-slate-300">Premium</h2>
             <div class="my-6">
               <span class="text-4xl font-black text-white">
-                <%= is_fellipe ? "R$ 0" : "R$ 9" %><span class="text-lg"><%= is_fellipe ? ",50" : ",99" %></span>
+                <%= is_fellipe ? "R$ 0" : "R$ 4" %><span class="text-lg"><%= is_fellipe ? ",50" : ",99" %></span>
               </span>
               <% if is_fellipe %>
                 <span class="block text-xs text-yellow-500 font-bold mt-1">Desconto de Teste Aplicado</span>
@@ -160,7 +160,7 @@
         Gerar Pix para Upgrade
       </h2>
       <p class="text-xs opacity-60 mb-6">
-        Insira seu CPF para que o Mercado Pago gere o QR Code Pix de <%= is_fellipe ? "R$ 0,50" : "R$ 9,99" %> com segurança.
+        Insira seu CPF para que o Mercado Pago gere o QR Code Pix de <%= is_fellipe ? "R$ 0,50" : "R$ 4,99" %> com segurança.
       </p>
 
       <button id="close-payment-modal" type="button" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
