@@ -90,4 +90,38 @@ RSpec.describe "Users", type: :request do
     get ranking_users_path
     expect(response).to have_http_status(:success)
   end
+
+  it "displays the daily ranking of the last day that had a match" do
+    # Garante que temos um jogo de ontem e nenhum hoje ou no futuro (menor que agora)
+    Jogo.destroy_all
+    UserPoint.destroy_all
+
+    grupo = Grupo.create!(nome: "Grupo de Teste")
+    selecao_a = Selecao.create!(nome: "Brasil", logo: "br.png", grupo: grupo)
+    selecao_b = Selecao.create!(nome: "Croácia", logo: "cro.png", grupo: grupo)
+
+    # Jogo de ontem
+    data_ontem = 1.day.ago.beginning_of_day + 15.hours
+    jogo_ontem = Jogo.create!(
+      mandante: selecao_a,
+      visitante: selecao_b,
+      data: data_ontem,
+      tipo: :grupo,
+      status: :finalizado,
+      grupo: grupo,
+      definir: false
+    )
+
+    # Usuário ganha pontos nesse jogo
+    UserPoint.create!(user: user, jogo: jogo_ontem, pontos: 12)
+
+    sign_in user
+    get ranking_users_path, params: { periodo: "diario" }
+    
+    expect(response).to have_http_status(:success)
+    # Deve indicar a data de ontem formatada no cabeçalho
+    expect(response.body).to include("Ranking do dia #{data_ontem.in_time_zone.to_date.strftime('%d/%m/%Y')}")
+    # O usuário logado deve ter os 12 pontos computados
+    expect(response.body).to include("12")
+  end
 end

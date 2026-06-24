@@ -353,6 +353,7 @@ module Jogos
             Jogos::SyncSquads.names_match?(p['player'], scorer)
           end
 
+          jogador_local = nil
           if player_in_lineup
             jogador_local = selecao_local.jogadores.find_by(numero: player_in_lineup['number'])
             unless jogador_local
@@ -360,14 +361,21 @@ module Jogos
                 Jogos::SyncSquads.names_match?(j.nome, player_in_lineup['player'])
               end
             end
-
-            if jogador_local
-              jogador_local.increment!(:gols)
-            else
-              @warnings << "Jogador '#{scorer}' (número #{player_in_lineup['number']} / nome API '#{player_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
-            end
           else
-            @warnings << "Jogador '#{scorer}' marcado no gol não foi encontrado na escalação (lineup) do time '#{team_name}'."
+            # Tenta encontrar diretamente no elenco pelo nome do scorer
+            jogador_local = selecao_local.jogadores.find do |j|
+              Jogos::SyncSquads.names_match?(j.nome, scorer)
+            end
+          end
+
+          if jogador_local
+            jogador_local.increment!(:gols)
+          else
+            if player_in_lineup
+              @warnings << "Jogador '#{scorer}' (número #{player_in_lineup['number']} / nome API '#{player_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
+            else
+              @warnings << "Jogador '#{scorer}' marcado no gol não foi encontrado na escalação (lineup) nem no elenco local do time '#{team_name}'."
+            end
           end
 
           # Assistência
@@ -377,6 +385,7 @@ module Jogos
               Jogos::SyncSquads.names_match?(p['player'], assist)
             end
 
+            jogador_assist = nil
             if assist_in_lineup
               jogador_assist = selecao_local.jogadores.find_by(numero: assist_in_lineup['number'])
               unless jogador_assist
@@ -384,14 +393,21 @@ module Jogos
                   Jogos::SyncSquads.names_match?(j.nome, assist_in_lineup['player'])
                 end
               end
-
-              if jogador_assist
-                jogador_assist.increment!(:assistencias)
-              else
-                @warnings << "Jogador de assistência '#{assist}' (número #{assist_in_lineup['number']} / nome API '#{assist_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
-              end
             else
-              @warnings << "Jogador da assistência '#{assist}' não foi encontrado na escalação (lineup) do time '#{team_name}'."
+              # Tenta encontrar diretamente no elenco pelo nome da assistencia
+              jogador_assist = selecao_local.jogadores.find do |j|
+                Jogos::SyncSquads.names_match?(j.nome, assist)
+              end
+            end
+
+            if jogador_assist
+              jogador_assist.increment!(:assistencias)
+            else
+              if assist_in_lineup
+                @warnings << "Jogador de assistência '#{assist}' (número #{assist_in_lineup['number']} / nome API '#{assist_in_lineup['player']}') da seleção '#{selecao_local.nome}' não foi encontrado no elenco local."
+              else
+                @warnings << "Jogador da assistência '#{assist}' não foi encontrado na escalação (lineup) nem no elenco local do time '#{team_name}'."
+              end
             end
           end
         end

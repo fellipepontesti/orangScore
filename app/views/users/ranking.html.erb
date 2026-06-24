@@ -1,13 +1,13 @@
 <% 
   titulo_periodo = case @periodo
                    when 'semanal' then 'Ranking Semanal'
-                   when 'diario' then 'Ranking Diário'
+                   when 'diario' then "Ranking do dia #{@data_ranking.strftime('%d/%m/%Y')}"
                    else 'Ranking Geral'
                    end
 
   descr_periodo = case @periodo
                   when 'semanal' then 'Os maiores pontuadores da semana atual'
-                  when 'diario' then 'Quem mais pontuou com os jogos de hoje'
+                  when 'diario' then "Quem mais pontuou com os jogos do dia #{@data_ranking.strftime('%d/%m/%Y')}"
                   else 'Os melhores palpiteiros da Copa 2026'
                   end
 %>
