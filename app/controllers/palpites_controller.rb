@@ -3,23 +3,49 @@ class PalpitesController < ApplicationController
 
   # GET /palpites or /palpites.json
   def index
-    @order_options = {
-      "recentes" => "Mais recentes",
-      "antigos" => "Mais antigos",
-      "pontuacao" => "Maior pontuação"
-    }
-    @points_options = {
-      "" => "Todas as pontuações",
-      "sem_pontos" => "Sem pontuação",
-      "10" => "10 pontos - Placar Exato",
-      "7" => "7 pontos - Vencedor/Empate + Gols de um time",
-      "5" => "5 pontos - Apenas Vencedor/Empate",
-      "2" => "2 pontos - Participação"
-    }
-    @usuarios_filter = User.order(:name) if current_user.root?
+    @admin_view = current_user.root? && (params[:admin_view] == 'true' || params[:user_id].present? || params[:status].present? || params[:pontos].present? || params[:order].present?)
 
-    @palpites = filtered_palpites.to_a
-    @points_by_palpite_id = points_by_palpite_id(@palpites)
+    if @admin_view
+      @order_options = {
+        "recentes" => "Mais recentes",
+        "antigos" => "Mais antigos",
+        "pontuacao" => "Maior pontuação"
+      }
+      @points_options = {
+        "" => "Todas as pontuações",
+        "sem_pontos" => "Sem pontuação",
+        "10" => "10 pontos - Placar Exato",
+        "7" => "7 pontos - Vencedor/Empate + Gols de um time",
+        "5" => "5 pontos - Apenas Vencedor/Empate",
+        "2" => "2 pontos - Participação"
+      }
+      @usuarios_filter = User.order(:name)
+      @palpites = filtered_palpites.to_a
+      @points_by_palpite_id = points_by_palpite_id(@palpites)
+    else
+      @aba_ativa = params[:aba].presence || 'nao_palpitados'
+      
+      # Jogos não palpitados
+      @jogos_nao_palpitados = Jogo.includes(:mandante, :visitante)
+                                  .where(status: :programado, definir: false)
+                                  .where.not(id: current_user.palpites.select(:jogo_id))
+                                  .order(data: :asc)
+
+      # Palpites ativos (programados, em andamento, suspensos)
+      @palpites_ativos = current_user.palpites.includes(jogo: [:mandante, :visitante])
+                                     .joins(:jogo)
+                                     .where(jogos: { status: [:programado, :em_andamento, :suspenso] })
+                                     .order("jogos.data ASC")
+
+      # Palpites finalizados
+      @palpites_finalizados = current_user.palpites.includes(jogo: [:mandante, :visitante])
+                                         .joins(:jogo)
+                                         .where(jogos: { status: :finalizado })
+                                         .order("jogos.data DESC")
+
+      todos_palpites = @palpites_ativos.to_a + @palpites_finalizados.to_a
+      @points_by_palpite_id = points_by_palpite_id(todos_palpites)
+    end
   end
 
   # GET /palpites/1 or /palpites/1.json

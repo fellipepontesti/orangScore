@@ -1,4 +1,4 @@
-<% content_for :title, current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
+<% content_for :title, @admin_view ? "Todos os Palpites" : "Meus Palpites" %>
 
 <div class="flex-1 flex flex-col w-full max-w-7xl mx-auto overflow-x-hidden">
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-6 mb-6 px-4 sm:px-8 pt-8">
@@ -6,25 +6,42 @@
       <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
         <span>Palpites</span>
         <span>/</span>
-        <span><%= current_user.root? ? "Todos" : "Meus Palpites" %></span>
+        <span><%= @admin_view ? "Todos (Admin)" : "Meus Palpites" %></span>
       </div>
       <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
-        <%= current_user.root? ? "Todos os Palpites" : "Meus Palpites" %>
+        <%= @admin_view ? "Todos os Palpites" : "Meus Palpites" %>
       </h1>
       <p class="opacity-70 text-slate-400 text-sm sm:text-base">
-        <%= current_user.root? ? "Acompanhe os palpites de todos os usuários." : "Acompanhe todos os palpites que você já fez." %>
+        <%= @admin_view ? "Acompanhe os palpites de todos os usuários." : "Acompanhe todos os palpites que você já fez e os jogos restantes." %>
       </p>
     </div>
 
-    <%= link_to "Criar palpite",
-      jogos_path,
-      class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl w-full sm:w-auto" %>
+    <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto shrink-0">
+      <% if current_user.root? %>
+        <% if @admin_view %>
+          <%= link_to "Ver Meus Palpites",
+            palpites_path,
+            class: "btn btn-outline btn-warning btn-sm sm:btn-md font-bold rounded-2xl w-full sm:w-auto" %>
+        <% else %>
+          <%= link_to "Ver Todos os Palpites (Admin)",
+            palpites_path(admin_view: true),
+            class: "btn btn-outline btn-secondary btn-sm sm:btn-md font-bold rounded-2xl w-full sm:w-auto" %>
+        <% end %>
+      <% end %>
+      
+      <%= link_to "Criar palpite",
+        jogos_path,
+        class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl w-full sm:w-auto" %>
+    </div>
   </div>
 
-  <div class="w-full px-4 sm:px-8 pb-4">
-    <% grid_cols = current_user.root? ? "md:grid-cols-5" : "md:grid-cols-4" %>
-    <%= form_with url: palpites_path, method: :get, class: "rounded-box bg-base-100 border border-base-200 shadow-lg p-4 grid grid-cols-1 #{grid_cols} gap-3", data: { turbo_frame: "_top" } do %>
-      <% if current_user.root? %>
+  <% if @admin_view %>
+    <!-- Interface de Administrador (Filtros e Grid de Todos os Palpites) -->
+    <div class="w-full px-4 sm:px-8 pb-4">
+      <% grid_cols = "md:grid-cols-5" %>
+      <%= form_with url: palpites_path, method: :get, class: "rounded-box bg-base-100 border border-base-200 shadow-lg p-4 grid grid-cols-1 #{grid_cols} gap-3", data: { turbo_frame: "_top" } do %>
+        <%= hidden_field_tag :admin_view, 'true' %>
+        
         <div class="form-control">
           <label class="label py-1">
             <span class="label-text font-bold">Usuário</span>
@@ -34,61 +51,202 @@
             include_blank: "Todos os usuários",
             class: "select select-bordered w-full" %>
         </div>
+
+        <div class="form-control">
+          <label class="label py-1">
+            <span class="label-text font-bold">Status do jogo</span>
+          </label>
+          <%= select_tag :status,
+            options_for_select(Jogo.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
+            include_blank: "Todos os status",
+            class: "select select-bordered w-full" %>
+        </div>
+
+        <div class="form-control">
+          <label class="label py-1">
+            <span class="label-text font-bold">Pontuação</span>
+          </label>
+          <%= select_tag :pontos,
+            options_for_select(@points_options.map { |value, label| [label, value] }, params[:pontos]),
+            class: "select select-bordered w-full" %>
+        </div>
+
+        <div class="form-control">
+          <label class="label py-1">
+            <span class="label-text font-bold">Ordenação</span>
+          </label>
+          <%= select_tag :order,
+            options_for_select(@order_options.map { |value, label| [label, value] }, params[:order].presence || "recentes"),
+            class: "select select-bordered w-full" %>
+        </div>
+
+        <div class="flex flex-col sm:flex-row md:flex-col xl:flex-row gap-2 md:self-end">
+          <button type="submit" class="btn btn-primary flex-1">Filtrar</button>
+          <%= link_to "Limpar", palpites_path(admin_view: true), class: "btn btn-ghost flex-1" %>
+        </div>
       <% end %>
+    </div>
 
-      <div class="form-control">
-        <label class="label py-1">
-          <span class="label-text font-bold">Status do jogo</span>
-        </label>
-        <%= select_tag :status,
-          options_for_select(Jogo.statuses.keys.map { |status| [status.humanize, status] }, params[:status]),
-          include_blank: "Todos os status",
-          class: "select select-bordered w-full" %>
-      </div>
+    <div class="w-full px-4 sm:px-8 pb-8">
+      <% if @palpites.any? %>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <% @palpites.each do |palpite| %>
+            <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
+          <h2 class="text-2xl font-bold mb-2">Nenhum palpite encontrado</h2>
+          <p class="opacity-70 mb-6">Nenhum palpite combina com os filtros selecionados.</p>
+          <%= link_to "Ir para jogos", jogos_path, class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-bold text-white" %>
+        </div>
+      <% end %>
+    </div>
 
-      <div class="form-control">
-        <label class="label py-1">
-          <span class="label-text font-bold">Pontuação</span>
-        </label>
-        <%= select_tag :pontos,
-          options_for_select(@points_options.map { |value, label| [label, value] }, params[:pontos]),
-          class: "select select-bordered w-full" %>
+  <% else %>
+    <!-- Interface de Usuário Comum com Abas Rápidas -->
+    <div class="w-full px-4 sm:px-8 pb-6">
+      <div role="tablist" class="tabs tabs-boxed bg-base-200/50 p-1 border border-base-200/60 rounded-2xl grid grid-cols-3">
+        <a role="tab" id="tab_nao_palpitados" class="tab tab-active bg-primary text-white font-extrabold transition-all duration-300 rounded-xl py-2.5 h-auto text-xs sm:text-sm flex items-center justify-center gap-1.5" onclick="changeTab('nao_palpitados')">
+          Não Palpitados
+          <span class="badge badge-sm badge-ghost text-[10px]"><%= @jogos_nao_palpitados.size %></span>
+        </a>
+        <a role="tab" id="tab_palpitados" class="tab font-extrabold opacity-75 hover:opacity-100 transition-all duration-300 rounded-xl py-2.5 h-auto text-xs sm:text-sm flex items-center justify-center gap-1.5" onclick="changeTab('palpitados')">
+          Palpitados
+          <span class="badge badge-sm badge-ghost text-[10px]"><%= @palpites_ativos.size %></span>
+        </a>
+        <a role="tab" id="tab_finalizados" class="tab font-extrabold opacity-75 hover:opacity-100 transition-all duration-300 rounded-xl py-2.5 h-auto text-xs sm:text-sm flex items-center justify-center gap-1.5" onclick="changeTab('finalizados')">
+          Finalizados
+          <span class="badge badge-sm badge-ghost text-[10px]"><%= @palpites_finalizados.size %></span>
+        </a>
       </div>
+    </div>
 
-      <div class="form-control">
-        <label class="label py-1">
-          <span class="label-text font-bold">Ordenação</span>
-        </label>
-        <%= select_tag :order,
-          options_for_select(@order_options.map { |value, label| [label, value] }, params[:order].presence || "recentes"),
-          class: "select select-bordered w-full" %>
-      </div>
+    <!-- Container Aba: Não Palpitados -->
+    <div id="container_nao_palpitados" class="w-full px-4 sm:px-8 pb-8 space-y-4">
+      <% if @jogos_nao_palpitados.any? %>
+        <div class="grid grid-cols-1 gap-4">
+          <% @jogos_nao_palpitados.each do |jogo| %>
+            <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
+                 onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= new_palpite_path(jogo_id: jogo.uuid) %>'">
+              
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                <!-- Esquerda: Informações Gerais -->
+                <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 min-w-[75px] w-full sm:w-auto flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                  <p class="opacity-50">Horário</p>
+                  <p class="text-warning font-black text-sm">
+                    <%= jogo.data.strftime('%H:%M') %>
+                  </p>
+                  <p class="text-[10px] opacity-40 font-semibold mt-0.5"><%= jogo.data.strftime('%d/%m') %></p>
+                </div>
 
-      <div class="flex flex-col sm:flex-row md:flex-col xl:flex-row gap-2 md:self-end">
-        <button type="submit" class="btn btn-primary flex-1">Filtrar</button>
-        <%= link_to "Limpar", palpites_path, class: "btn btn-ghost flex-1" %>
-      </div>
-    <% end %>
-  </div>
+                <!-- Meio: Confronto -->
+                <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                  <!-- Mandante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                    <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                      <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>
+                    </span>
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.mandante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                  </div>
+                  
+                  <span class="opacity-30 text-xs font-black">x</span>
 
-  <div class="w-full px-4 sm:px-8 pb-8">
-    <% if @palpites.any? %>
-      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <% @palpites.each do |palpite| %>
-          <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
-        <h2 class="text-2xl font-bold mb-2">Nenhum palpite encontrado</h2>
-        <p class="opacity-70 mb-6">
-          <%= current_user.root? ? "Nenhum palpite combina com os filtros selecionados." : "Você ainda não fez nenhum palpite." %>
-        </p>
+                  <!-- Visitante -->
+                  <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                    <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                      <% if jogo.visitante&.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                      <% end %>
+                    </div>
+                    <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                      <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-        <%= link_to "Ir para jogos",
-          jogos_path,
-          class: "rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-bold text-white" %>
-      </div>
-    <% end %>
-  </div>
+              <!-- Direita: Ação de Palpitar -->
+              <div class="shrink-0 w-full sm:w-auto flex justify-end">
+                <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-5 py-2 hover:scale-105 transition w-full sm:w-auto" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
+          <span class="text-4xl block mb-2">🎉</span>
+          <h2 class="text-2xl font-bold mb-2">Nenhum palpite pendente!</h2>
+          <p class="opacity-70 mb-4">Você já palpitou em todos os jogos disponíveis no momento. Bom trabalho!</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Container Aba: Palpitados -->
+    <div id="container_palpitados" class="w-full px-4 sm:px-8 pb-8 space-y-4 hidden">
+      <% if @palpites_ativos.any? %>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <% @palpites_ativos.each do |palpite| %>
+            <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
+          <span class="text-4xl block mb-2">🤷‍♂️</span>
+          <h2 class="text-2xl font-bold mb-2">Nenhum palpite cadastrado</h2>
+          <p class="opacity-70 mb-6">Você ainda não possui palpites em jogos futuros.</p>
+          <button class="rounded-md px-5 py-3 bg-primary hover:bg-primary/80 font-bold text-white" onclick="changeTab('nao_palpitados')">
+            Ver jogos pendentes
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Container Aba: Finalizados -->
+    <div id="container_finalizados" class="w-full px-4 sm:px-8 pb-8 space-y-4 hidden">
+      <% if @palpites_finalizados.any? %>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <% @palpites_finalizados.each do |palpite| %>
+            <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="rounded-box shadow-lg bg-base-100 p-10 text-center">
+          <span class="text-4xl block mb-2">⏳</span>
+          <h2 class="text-2xl font-bold mb-2">Nenhum palpite finalizado</h2>
+          <p class="opacity-70">Seus palpites em jogos encerrados aparecerão aqui assim que as partidas forem finalizadas.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Scripts de Alternância das Abas -->
+    <script>
+      function changeTab(abaName) {
+        // Esconder todos os blocos
+        document.getElementById('container_nao_palpitados').classList.add('hidden');
+        document.getElementById('container_palpitados').classList.add('hidden');
+        document.getElementById('container_finalizados').classList.add('hidden');
+        
+        // Resetar classes das abas
+        const tabs = ['nao_palpitados', 'palpitados', 'finalizados'];
+        tabs.forEach(tab => {
+          const tabEl = document.getElementById('tab_' + tab);
+          tabEl.classList.remove('tab-active', 'bg-primary', 'text-white');
+          tabEl.classList.add('opacity-75');
+        });
+        
+        // Exibir o bloco correspondente
+        document.getElementById('container_' + abaName).classList.remove('hidden');
+        
+        // Marcar a aba ativa
+        const activeTab = document.getElementById('tab_' + abaName);
+        activeTab.classList.add('tab-active', 'bg-primary', 'text-white');
+        activeTab.classList.remove('opacity-75');
+      }
+    </script>
+  <% end %>
 </div>
