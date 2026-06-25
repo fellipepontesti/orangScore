@@ -67,6 +67,7 @@ class DashboardController < ApplicationController
 
     @ranking_global = todos_usuarios.first(5)
     @user_global_rank = todos_usuarios.index(current_user) ? todos_usuarios.index(current_user) + 1 : "-"
+    @dados_grafico = Users::RankingHistoryService.new(user: current_user).call
   end
 
   def detalhamento_jogos

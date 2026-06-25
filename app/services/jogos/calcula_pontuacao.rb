@@ -35,6 +35,8 @@ module Jogos
           pontos: pontos,
           motivo: motivo
         )
+
+        Users::AwardAchievements.check_match_finished_achievements(palpite.user, @jogo)
       end
 
       atribuir_bonus_campeao if @jogo.tipo == 'final'
@@ -80,6 +82,7 @@ module Jogos
           pontos: 25,
           motivo: "Campeão do Torneio"
         )
+        Users::AwardAchievements.award(user, 'pontos_25', @jogo)
       end
     end
 

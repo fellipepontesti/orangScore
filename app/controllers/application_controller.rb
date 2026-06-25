@@ -5,6 +5,8 @@ class ApplicationController < ActionController::Base
   before_action :store_referral_id
   before_action :restrict_semi_root_access, if: -> { user_signed_in? }
   before_action :update_last_seen_at, if: -> { user_signed_in? && (current_user.last_seen_at.nil? || current_user.last_seen_at < 5.minutes.ago) }
+  before_action :check_retroactive_achievements, if: -> { user_signed_in? && !devise_controller? }
+  before_action :check_new_achievements, if: -> { user_signed_in? && !devise_controller? }
   
   protected
 
@@ -85,5 +87,28 @@ class ApplicationController < ActionController::Base
 
   def update_last_seen_at
     current_user.update_columns(last_seen_at: Time.current)
+  end
+
+  def check_new_achievements
+    session[:shown_achievement_ids] ||= []
+    
+    # Busca conquistas desbloqueadas nos últimos 15 segundos que não foram exibidas nesta sessão
+    new_conquistas = current_user.user_conquistas
+                                 .includes(:conquista)
+                                 .where("user_conquistas.created_at > ?", 15.seconds.ago)
+                                 .where.not(id: session[:shown_achievement_ids])
+                                 .to_a
+
+    if new_conquistas.any?
+      @new_achievements_to_show = new_conquistas.map(&:conquista)
+      session[:shown_achievement_ids] += new_conquistas.map(&:id)
+    end
+  end
+
+  def check_retroactive_achievements
+    unless session[:retroactive_checked]
+      Users::AwardAchievements.check_retroactive_achievements(current_user)
+      session[:retroactive_checked] = true
+    end
   end
 end

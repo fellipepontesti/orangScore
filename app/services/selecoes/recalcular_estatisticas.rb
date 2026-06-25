@@ -20,10 +20,9 @@ module Selecoes
 
       # Jogos como mandante na fase de grupos
       Jogo.grupo.where(mandante_id: selecao.id).find_each do |jogo|
-        gols += jogo.gols_mandante || 0
-        gols_sofridos += jogo.gols_visitante || 0
-
         if jogo.finalizado?
+          gols += jogo.gols_mandante || 0
+          gols_sofridos += jogo.gols_visitante || 0
           qtd_jogos += 1
           if (jogo.gols_mandante || 0) > (jogo.gols_visitante || 0)
             vitorias += 1
@@ -39,10 +38,9 @@ module Selecoes
 
       # Jogos como visitante na fase de grupos
       Jogo.grupo.where(visitante_id: selecao.id).find_each do |jogo|
-        gols += jogo.gols_visitante || 0
-        gols_sofridos += jogo.gols_mandante || 0
-
         if jogo.finalizado?
+          gols += jogo.gols_visitante || 0
+          gols_sofridos += jogo.gols_mandante || 0
           qtd_jogos += 1
           if (jogo.gols_visitante || 0) > (jogo.gols_mandante || 0)
             vitorias += 1

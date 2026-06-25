@@ -3,6 +3,7 @@ class Liga < ApplicationRecord
 
   belongs_to :owner, class_name: 'User'
   before_create :generate_invite_token
+  after_create :award_owner_achievement
 
   has_many :liga_membros, dependent: :destroy
   has_many :users, through: :liga_membros
@@ -59,6 +60,10 @@ class Liga < ApplicationRecord
   end
   
   private
+
+  def award_owner_achievement
+    Users::AwardAchievements.award(owner, 'criador_de_ligas')
+  end
 
   def generate_invite_token
     self.invite_token = SecureRandom.hex(10)

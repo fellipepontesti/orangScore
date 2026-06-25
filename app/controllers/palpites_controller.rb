@@ -85,6 +85,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.save
+        Users::AwardAchievements.check_palpite_achievements(current_user)
         format.html { handle_quick_mode_redirect("Palpite criado com sucesso!") }
         format.json { render :show, status: :created, location: @palpite }
       else
@@ -105,6 +106,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.update(palpite_params.except(:jogo_id))
+        Users::AwardAchievements.check_palpite_achievements(current_user)
         format.html { handle_quick_mode_redirect("Palpite atualizado com sucesso!") }
         format.json { render :show, status: :ok, location: @palpite }
       else

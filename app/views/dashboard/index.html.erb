@@ -369,6 +369,101 @@
     </div>
   </div>
 
+  <!-- Gráfico de Evolução no Ranking -->
+  <% if @dados_grafico.present? && @dados_grafico.any? %>
+    <div class="bg-base-100 shadow-xl border border-base-200 rounded-3xl p-6 sm:p-8">
+      <h3 class="text-xl font-bold mb-1 flex items-center gap-2 text-white">
+        📈 Sua Evolução no Ranking
+      </h3>
+      <p class="text-xs opacity-60 mb-6">Acompanhe a sua posição no ranking geral após cada um dos seus palpites finalizados.</p>
+      
+      <div class="w-full h-[300px] relative">
+        <canvas id="rankingHistoryChart"></canvas>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      (function() {
+        function renderChart() {
+          const ctx = document.getElementById('rankingHistoryChart');
+          if (!ctx) return;
+
+          const chartData = <%= raw @dados_grafico.to_json %>;
+          const labels = chartData.map(d => d.data);
+          const positions = chartData.map(d => d.posicao);
+          const points = chartData.map(d => d.pontos);
+
+          if (window.myRankingChart) {
+            window.myRankingChart.destroy();
+          }
+
+          window.myRankingChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Posição no Ranking',
+                data: positions,
+                borderColor: '#f97316',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true,
+                pointBackgroundColor: '#f97316',
+                pointRadius: 4,
+                pointHoverRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  reverse: true,
+                  ticks: {
+                    stepSize: 1,
+                    precision: 0,
+                    color: 'rgba(255, 255, 255, 0.6)'
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                  }
+                },
+                x: {
+                  ticks: {
+                    color: 'rgba(255, 255, 255, 0.6)'
+                  },
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.05)'
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      const index = context.dataIndex;
+                      return `Posição: ${context.raw}º | Pontos: ${points[index]} pts`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        document.addEventListener("turbo:load", renderChart);
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          renderChart();
+        }
+      })();
+    </script>
+  <% end %>
+
   <!-- Conteúdo Principal em 3 Colunas -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
     

@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   get "/perfil", to: "users#perfil", as: :perfil
   get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
   patch "/perfil", to: "users#update_perfil"
+  patch "/perfil/conquistas", to: "users#update_conquistas", as: :update_perfil_conquistas
   patch "/perfil/alterar_senha", to: "users#update_password", as: :update_password
   patch "/toggle_odds", to: "users#toggle_odds", as: :toggle_odds
 

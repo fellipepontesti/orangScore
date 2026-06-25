@@ -39,6 +39,8 @@ class User < ApplicationRecord
   has_many :user_points, dependent: :destroy
   has_many :pagamentos
   has_many :cobrancas
+  has_many :user_conquistas, dependent: :destroy
+  has_many :conquistas, through: :user_conquistas
 
   has_one :assinatura,
         class_name: 'Assinatura',

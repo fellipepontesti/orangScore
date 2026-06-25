@@ -338,6 +338,18 @@
                   <span class="truncate" title="<%= liga_membro.user.name %>">
                     <%= liga_membro.user.name %>
                   </span>
+                  
+                  <!-- Conquistas Destacadas -->
+                  <div class="flex items-center gap-1 shrink-0 ml-1">
+                    <% liga_membro.user.user_conquistas.select(&:destacada?).each do |uc| %>
+                      <button type="button" 
+                              class="badge <%= uc.conquista.cor %> border-none p-1 h-6 w-6 text-sm flex items-center justify-center rounded-lg shadow-sm hover:scale-110 active:scale-95 transition-transform cursor-pointer"
+                              onclick="mostrarDetalheConquista('<%= j uc.conquista.nome %>', '<%= j uc.conquista.descricao %>', '<%= j uc.conquista.icon %>', '<%= j uc.conquista.cor %>')"
+                              title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                        <%= uc.conquista.icon %>
+                      </button>
+                    <% end %>
+                  </div>
                   <% icon = role_icon(liga_membro.role) %>
                   <% if icon.present? %>
                     <span class="shrink-0 scale-90">
@@ -544,6 +556,41 @@
       setTimeout(() => {
         alert.classList.add('hidden')
       }, 2500)
+    }
+  </script>
+
+  <%# MODAL DETALHE DA CONQUISTA %>
+  <dialog id="modal_detalhe_conquista" class="modal">
+    <div class="modal-box max-w-sm bg-base-100 border border-base-300 shadow-2xl rounded-2xl p-6 text-center">
+      <div id="conquista_detalhe_badge" class="w-16 h-16 rounded-2xl text-4xl flex items-center justify-center mx-auto mb-4 shadow-md">
+        <!-- Ícone -->
+      </div>
+      <h3 id="conquista_detalhe_nome" class="font-black text-white text-xl mb-2">
+        <!-- Nome -->
+      </h3>
+      <p id="conquista_detalhe_descricao" class="text-sm text-base-content/70 leading-relaxed mb-6">
+        <!-- Descrição -->
+      </p>
+      <div class="modal-action justify-center">
+        <button type="button" class="btn btn-primary font-bold text-white px-8 rounded-xl" onclick="modal_detalhe_conquista.close()">Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    function mostrarDetalheConquista(nome, descricao, icon, cor) {
+      const badgeDiv = document.getElementById('conquista_detalhe_badge');
+      const nomeEl = document.getElementById('conquista_detalhe_nome');
+      const descEl = document.getElementById('conquista_detalhe_descricao');
+      
+      // Atualizar classe de cor, mantendo as demais classes
+      badgeDiv.className = `w-16 h-16 rounded-2xl text-4xl flex items-center justify-center mx-auto mb-4 shadow-md ${cor}`;
+      badgeDiv.innerHTML = icon;
+      nomeEl.textContent = nome;
+      descEl.textContent = descricao;
+      
+      // Abrir modal
+      document.getElementById('modal_detalhe_conquista').showModal();
     }
   </script>
 </div>
