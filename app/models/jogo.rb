@@ -96,6 +96,21 @@ class Jogo < ApplicationRecord
   def atualizar_chaves_torneio
     return unless finalizado?
 
+    if grupo?
+      # Se a seleção mandante ou visitante ainda tem jogo não finalizado na fase de grupos, não faz nada
+      mandante_tem_jogos = Jogo.where(grupo_id: grupo_id)
+                               .where.not(status: :finalizado)
+                               .where("mandante_id = ? OR visitante_id = ?", mandante_id, mandante_id)
+                               .exists?
+
+      visitante_tem_jogos = Jogo.where(grupo_id: grupo_id)
+                                .where.not(status: :finalizado)
+                                .where("mandante_id = ? OR visitante_id = ?", visitante_id, visitante_id)
+                                .exists?
+
+      return if mandante_tem_jogos || visitante_tem_jogos
+    end
+
     Jogos::BracketManager.atualizar
   end
 

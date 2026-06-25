@@ -25,8 +25,8 @@ class UsersController < ApplicationController
 
     case @periodo
     when 'diario'
-      ultimo_jogo_data = Jogo.where("data <= ?", Time.current).order(data: :desc).pick(:data)
-      @data_ranking = ultimo_jogo_data ? ultimo_jogo_data.in_time_zone.to_date : Time.current.in_time_zone.to_date
+      ultimo_jogo_data = Jogo.where("data < ?", Time.current.beginning_of_day).order(data: :desc).pick(:data)
+      @data_ranking = ultimo_jogo_data ? ultimo_jogo_data.in_time_zone.to_date : (Time.current.in_time_zone.to_date - 1.day)
       
       start_date = @data_ranking.beginning_of_day
       end_date = @data_ranking.end_of_day
