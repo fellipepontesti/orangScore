@@ -5,7 +5,14 @@ module Jogos
     end
 
     def call
-      query = ::Jogo.all.includes(:palpites, :user_points).where(definir: false).where.not(status: :times_a_definir)
+      query = ::Jogo.all.includes(:palpites, :user_points)
+
+      # Se estivermos listando uma fase específica do mata-mata, permitimos a exibição
+      # de jogos com confrontos ainda pendentes/parciais (definir: true ou times_a_definir).
+      # Caso contrário (listagem geral ou grupos), mostramos apenas jogos já definidos.
+      if params[:tipo].blank? || params[:tipo] == 'grupo'
+        query = query.where(definir: false).where.not(status: :times_a_definir)
+      end
 
       query = filtered_query(query)
       

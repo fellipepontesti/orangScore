@@ -43,10 +43,16 @@ class Jogo < ApplicationRecord
   ]
 
   after_save :recalcular_estatisticas_selecoes, if: :saved_changes_para_grupo?
-  after_save :atualizar_chaves_torneio, if: :saved_change_to_status?
+  after_save :atualizar_chaves_torneio, if: :saved_changes_necessitam_atualizar_chaves?
   after_destroy :recalcular_estatisticas_selecoes_apos_destruicao, if: :grupo?
 
   private
+
+  def saved_changes_necessitam_atualizar_chaves?
+    # Dispara se o status mudou (por exemplo, finalizou agora)
+    # OU se é um jogo de grupo finalizado e mudaram os gols (placar atualizado)
+    saved_change_to_status? || (grupo? && finalizado? && (saved_change_to_gols_mandante? || saved_change_to_gols_visitante?))
+  end
 
   def saved_changes_para_grupo?
     grupo? && (saved_change_to_gols_mandante? || saved_change_to_gols_visitante? || saved_change_to_status? || saved_change_to_mandante_id? || saved_change_to_visitante_id?)

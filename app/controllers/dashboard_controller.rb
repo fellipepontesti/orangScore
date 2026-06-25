@@ -425,8 +425,22 @@ class DashboardController < ApplicationController
   end
 
   def preencher_mata_mata
+    # 1. Sincroniza da API oficial (não-destrutivo)
+    api_sync = Jogos::SyncKnockoutBracket.new.call
+    
+    # 2. Atualiza via lógica esportiva local (não-destrutivo)
     Jogos::BracketManager.atualizar
-    redirect_to authenticated_root_path, notice: "Chaveamento de mata-mata preenchido e atualizado com sucesso!"
+
+    notice_msg = "Chaveamento de mata-mata atualizado com sucesso!"
+    if api_sync[:success]
+      if api_sync[:updated_count].to_i > 0
+        notice_msg += " Sincronizados #{api_sync[:updated_count]} confronto(s) oficial(is) da API."
+      end
+    else
+      notice_msg += " (Nota: Não foi possível conectar na API de chaves: #{api_sync[:error]})"
+    end
+
+    redirect_to authenticated_root_path, notice: notice_msg
   end
 
   def resetar_mata_mata

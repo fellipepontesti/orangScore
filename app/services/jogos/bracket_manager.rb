@@ -129,6 +129,9 @@ module Jogos
         jogo = Jogo.find_by(id: jogo_id)
         next unless jogo
 
+        # Proteção não-destrutiva: se o jogo já tem times definidos manualmente, pula
+        next if !jogo.definir? && jogo.mandante_id.present? && jogo.visitante_id.present?
+
         mudou = false
 
         # Preenche Mandante
@@ -138,7 +141,7 @@ module Jogos
           g = grupos[letra_grupo]
           if g && grupo_finalizado?(g)
             selecao = g.selecoes.ordenadas[pos]
-            if selecao && jogo.mandante_id != selecao.id
+            if selecao && (jogo.definir? || jogo.mandante_id.nil?) && jogo.mandante_id != selecao.id
               jogo.mandante = selecao
               jogo.nome_provisorio_mandante = nil
               mudou = true
@@ -153,7 +156,7 @@ module Jogos
           g = grupos[letra_grupo]
           if g && grupo_finalizado?(g)
             selecao = g.selecoes.ordenadas[pos]
-            if selecao && jogo.visitante_id != selecao.id
+            if selecao && (jogo.definir? || jogo.visitante_id.nil?) && jogo.visitante_id != selecao.id
               jogo.visitante = selecao
               jogo.nome_provisorio_visitante = nil
               mudou = true
@@ -187,7 +190,12 @@ module Jogos
         if atribuicoes
           atribuicoes.each do |jogo_id, terceiro|
             jogo = Jogo.find_by(id: jogo_id)
-            if jogo && jogo.visitante_id != terceiro.id
+            next unless jogo
+
+            # Proteção não-destrutiva: se o visitante já foi definido e não é para definir
+            next if !jogo.definir? && jogo.visitante_id.present?
+
+            if jogo.visitante_id != terceiro.id
               jogo.visitante = terceiro
               jogo.nome_provisorio_visitante = nil
               jogo.definir = false if jogo.mandante_id.present?
@@ -219,13 +227,16 @@ module Jogos
         jogo = Jogo.find_by(id: jogo_id)
         next unless jogo
 
+        # Proteção não-destrutiva: se o jogo já tem times definidos manualmente, pula
+        next if !jogo.definir? && jogo.mandante_id.present? && jogo.visitante_id.present?
+
         mudou = false
 
         # Mandante
         j_m_fonte = Jogo.find_by(id: fontes[:mandante][:jogo])
         if j_m_fonte&.finalizado?
           selecao_m = fontes[:mandante][:tipo] == :vencedor ? determinar_vencedor(j_m_fonte) : determinar_perdedor(j_m_fonte)
-          if selecao_m && jogo.mandante_id != selecao_m.id
+          if selecao_m && (jogo.definir? || jogo.mandante_id.nil?) && jogo.mandante_id != selecao_m.id
             jogo.mandante = selecao_m
             jogo.nome_provisorio_mandante = nil
             mudou = true
@@ -236,7 +247,7 @@ module Jogos
         j_v_fonte = Jogo.find_by(id: fontes[:visitante][:jogo])
         if j_v_fonte&.finalizado?
           selecao_v = fontes[:visitante][:tipo] == :vencedor ? determinar_vencedor(j_v_fonte) : determinar_perdedor(j_v_fonte)
-          if selecao_v && jogo.visitante_id != selecao_v.id
+          if selecao_v && (jogo.definir? || jogo.visitante_id.nil?) && jogo.visitante_id != selecao_v.id
             jogo.visitante = selecao_v
             jogo.nome_provisorio_visitante = nil
             mudou = true
@@ -261,13 +272,16 @@ module Jogos
       jogo = Jogo.find_by(id: jogo_id)
       return unless jogo
 
+      # Proteção não-destrutiva: se o jogo já tem times definidos manualmente, pula
+      return if !jogo.definir? && jogo.mandante_id.present? && jogo.visitante_id.present?
+
       mudou = false
       jogo_mandante = Jogo.find_by(id: fonte_mandante_id)
       jogo_visitante = Jogo.find_by(id: fonte_visitante_id)
 
       if jogo_mandante&.finalizado?
         vencedor_m = determinar_vencedor(jogo_mandante)
-        if vencedor_m && jogo.mandante_id != vencedor_m.id
+        if vencedor_m && (jogo.definir? || jogo.mandante_id.nil?) && jogo.mandante_id != vencedor_m.id
           jogo.mandante = vencedor_m
           jogo.nome_provisorio_mandante = nil
           mudou = true
@@ -276,7 +290,7 @@ module Jogos
 
       if jogo_visitante&.finalizado?
         vencedor_v = determinar_vencedor(jogo_visitante)
-        if vencedor_v && jogo.visitante_id != vencedor_v.id
+        if vencedor_v && (jogo.definir? || jogo.visitante_id.nil?) && jogo.visitante_id != vencedor_v.id
           jogo.visitante = vencedor_v
           jogo.nome_provisorio_visitante = nil
           mudou = true
