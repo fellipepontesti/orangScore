@@ -90,18 +90,16 @@ class ApplicationController < ActionController::Base
   end
 
   def check_new_achievements
-    session[:shown_achievement_ids] ||= []
-    
-    # Busca conquistas desbloqueadas nos últimos 15 segundos que não foram exibidas nesta sessão
+    # Busca conquistas desbloqueadas que ainda não foram exibidas/visualizadas
     new_conquistas = current_user.user_conquistas
                                  .includes(:conquista)
-                                 .where("user_conquistas.created_at > ?", 15.seconds.ago)
-                                 .where.not(id: session[:shown_achievement_ids])
+                                 .where(visualizada: false)
                                  .to_a
 
     if new_conquistas.any?
       @new_achievements_to_show = new_conquistas.map(&:conquista)
-      session[:shown_achievement_ids] += new_conquistas.map(&:id)
+      # Marca as conquistas como visualizadas no banco de dados para nunca mais exibir em modais
+      current_user.user_conquistas.where(id: new_conquistas.map(&:id)).update_all(visualizada: true)
     end
   end
 
@@ -109,22 +107,6 @@ class ApplicationController < ActionController::Base
     unless session[:retroactive_checked]
       Users::AwardAchievements.check_retroactive_achievements(current_user)
       session[:retroactive_checked] = true
-
-      # Recupera e celebra conquistas históricas já salvas no banco
-      unless session[:historical_achievements_checked]
-        all_user_conquistas = current_user.user_conquistas.includes(:conquista).to_a
-        if all_user_conquistas.any?
-          session[:shown_achievement_ids] ||= []
-          new_to_show = all_user_conquistas.reject { |uc| session[:shown_achievement_ids].include?(uc.id) }
-          
-          if new_to_show.any?
-            @new_achievements_to_show ||= []
-            @new_achievements_to_show += new_to_show.map(&:conquista)
-            session[:shown_achievement_ids] += new_to_show.map(&:id)
-          end
-        end
-        session[:historical_achievements_checked] = true
-      end
     end
   end
 end
