@@ -372,7 +372,7 @@
   <!-- Gráfico de Evolução no Ranking -->
   <% if current_user.premium? || current_user.root? %>
     <% if @dados_grafico.present? && @dados_grafico.any? %>
-      <div onclick="window.location='<%= ranking_path(periodo: 'global') %>'" 
+      <div onclick="window.location='<%= ranking_users_path(periodo: 'global') %>'" 
            class="bg-base-100 shadow-xl border border-base-200 hover:border-primary/40 rounded-3xl p-6 sm:p-8 cursor-pointer group transition-all duration-300 hover:shadow-2xl relative overflow-hidden">
         
         <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary">
