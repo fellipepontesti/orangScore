@@ -1,0 +1,66 @@
+name: Ruby on Rails CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: orang_score_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        # Aguarda o PostgreSQL estar totalmente ativo e saudável antes de iniciar os testes
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:password@localhost:5432/orang_score_test"
+      BUNDLE_PATH: vendor/bundle
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.10'
+          bundler-cache: true # Ativa cache automático para o bundle install acelerar as execuções
+
+      - name: Install Node.js and packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Ativa cache para dependências npm se houver package.json
+
+      - name: Install Node dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Set up database schema
+        run: |
+          bin/rails db:prepare
+
+      - name: Compile assets
+        run: |
+          bin/rails assets:precompile
+
+      - name: Run tests
+        run: |
+          bin/rails test
