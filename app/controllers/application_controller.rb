@@ -109,6 +109,22 @@ class ApplicationController < ActionController::Base
     unless session[:retroactive_checked]
       Users::AwardAchievements.check_retroactive_achievements(current_user)
       session[:retroactive_checked] = true
+
+      # Recupera e celebra conquistas históricas já salvas no banco
+      unless session[:historical_achievements_checked]
+        all_user_conquistas = current_user.user_conquistas.includes(:conquista).to_a
+        if all_user_conquistas.any?
+          session[:shown_achievement_ids] ||= []
+          new_to_show = all_user_conquistas.reject { |uc| session[:shown_achievement_ids].include?(uc.id) }
+          
+          if new_to_show.any?
+            @new_achievements_to_show ||= []
+            @new_achievements_to_show += new_to_show.map(&:conquista)
+            session[:shown_achievement_ids] += new_to_show.map(&:id)
+          end
+        end
+        session[:historical_achievements_checked] = true
+      end
     end
   end
 end
