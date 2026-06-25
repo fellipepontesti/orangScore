@@ -15,6 +15,7 @@
     </div>
 
     <div class="flex flex-wrap gap-2 items-center">
+      <button type="button" class="btn btn-outline btn-sm sm:btn-md rounded-2xl gap-1.5" onclick="modal_conquistas.showModal()">🏅 Conquistas</button>
       <%= link_to "Editar perfil", edit_perfil_path, class: "btn btn-primary btn-sm sm:btn-md font-bold text-white rounded-2xl" %>
       <button type="button" class="btn btn-outline btn-sm sm:btn-md rounded-2xl" onclick="modal_alterar_senha.showModal()">Alterar senha</button>
     </div>
@@ -27,7 +28,18 @@
       </div>
 
       <div>
-        <h2 class="text-2xl font-bold"><%= @usuario.name %></h2>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <h2 class="text-2xl font-bold"><%= @usuario.name %></h2>
+          
+          <!-- Conquistas em Destaque -->
+          <div class="flex items-center gap-1">
+            <% @usuario.user_conquistas.where(destacada: true).includes(:conquista).each do |uc| %>
+              <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-8 w-8 text-base flex items-center justify-center rounded-lg shadow-sm" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                <%= uc.conquista.icon %>
+              </div>
+            <% end %>
+          </div>
+        </div>
         <p class="text-base-content/60"><%= @usuario.email %></p>
       </div>
     </div>
@@ -121,4 +133,81 @@
       <% end %>
     </div>
   </dialog>
+
+  <%# MODAL GERENCIAR CONQUISTAS %>
+  <dialog id="modal_conquistas" class="modal">
+    <div class="modal-box max-w-2xl bg-base-100 border border-base-300 shadow-2xl">
+      <h3 class="font-bold text-2xl mb-2 text-center text-white">
+        🏅 Gerenciar Conquistas
+      </h3>
+      <p class="text-sm text-base-content/60 text-center mb-6">
+        Seu plano atual (<span class="font-bold uppercase text-primary"><%= @usuario.assinatura&.plano || "basic" %></span>) permite destacar até 
+        <span class="font-black text-white"><%= @usuario.premium? ? 3 : 1 %></span> 
+        <%= @usuario.premium? ? "conquistas" : "conquista" %> no seu perfil.
+      </p>
+
+      <%= form_with url: update_perfil_conquistas_path, method: :patch, local: true do |f| %>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 mb-6">
+          <% @todas_conquistas.each do |c| %>
+            <% user_conquista = @conquistas_desbloqueadas[c.id] %>
+            <% is_unlocked = user_conquista.present? %>
+            
+            <div class="flex items-center gap-3 p-3 rounded-xl border border-base-300 bg-base-200/50 <%= 'opacity-50 select-none' unless is_unlocked %>">
+              <!-- Ícone/Badge -->
+              <div class="flex items-center justify-center w-12 h-12 rounded-xl text-2xl shrink-0 <%= is_unlocked ? c.cor : 'bg-base-300 text-base-content/30 border border-dashed border-base-content/20' %>">
+                <%= is_unlocked ? c.icon : '🔒' %>
+              </div>
+              
+              <!-- Texto -->
+              <div class="flex-1 min-w-0">
+                <p class="font-bold text-sm text-white truncate"><%= c.nome %></p>
+                <p class="text-xs text-base-content/60 leading-tight"><%= c.descricao %></p>
+                <% if is_unlocked %>
+                  <p class="text-[9px] text-success font-semibold mt-1">Conquistado em <%= user_conquista.created_at.strftime("%d/%m/%y") %></p>
+                <% end %>
+              </div>
+              
+              <!-- Checkbox (apenas para desbloqueadas) -->
+              <% if is_unlocked %>
+                <div class="form-control">
+                  <label class="label cursor-pointer">
+                    <input type="checkbox" name="featured_ids[]" value="<%= user_conquista.id %>" <%= 'checked' if user_conquista.destacada? %> class="checkbox checkbox-primary checkbox-sm rounded-md" />
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="modal-action flex justify-between gap-2 border-t border-base-200 pt-4">
+          <button type="button" class="btn btn-ghost" onclick="modal_conquistas.close()">Cancelar</button>
+          <%= f.submit "Salvar Destaques", class: "btn btn-primary font-bold text-white px-6" %>
+        </div>
+      <% end %>
+    </div>
+  </dialog>
+
 </div>
+
+<script>
+  function setupAchievementCheckboxes() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="featured_ids[]"]');
+    const limit = <%= @usuario.premium? ? 3 : 1 %>;
+
+    checkboxes.forEach(cb => {
+      cb.removeEventListener("change", handleCheckboxChange);
+      cb.addEventListener("change", handleCheckboxChange);
+    });
+
+    function handleCheckboxChange(e) {
+      const checkedCount = document.querySelectorAll('input[type="checkbox"][name="featured_ids[]"]:checked').length;
+      if (checkedCount > limit) {
+        e.target.checked = false;
+        alert(`Você só pode destacar até ${limit} conquista(s) no seu plano.`);
+      }
+    }
+  }
+
+  document.addEventListener("turbo:load", setupAchievementCheckboxes);
+  document.addEventListener("DOMContentLoaded", setupAchievementCheckboxes);
+</script>

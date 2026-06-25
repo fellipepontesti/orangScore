@@ -86,9 +86,125 @@
         </div>
 
         <% @grupos.each do |grupo| %>
+          <%
+            # Projeção da classificação com jogos em andamento
+            selecoes_map = grupo.selecoes.index_by(&:id).transform_values do |s|
+              {
+                objeto: s,
+                nome: s.nome,
+                logo: s.logo,
+                pontos: s.pontos,
+                qtd_jogos: s.qtd_jogos,
+                vitorias: s.vitorias,
+                empates: s.empates,
+                derrotas: s.derrotas,
+                gols: s.gols.to_i,
+                gols_sofridos: s.gols_sofridos.to_i,
+                em_andamento: false
+              }
+            end
+
+            # Busca os jogos em andamento específicos deste grupo
+            jogos_em_andamento = Jogo.em_andamento.where(grupo_id: grupo.id)
+
+            jogos_em_andamento.each do |jogo|
+              mandante = selecoes_map[jogo.mandante_id]
+              visitante = selecoes_map[jogo.visitante_id]
+              next unless mandante && visitante
+
+              gm = jogo.gols_mandante.to_i
+              gv = jogo.gols_visitante.to_i
+
+              mandante[:em_andamento] = true
+              visitante[:em_andamento] = true
+
+              mandante[:qtd_jogos] += 1
+              visitante[:qtd_jogos] += 1
+              mandante[:gols] += gm
+              mandante[:gols_sofridos] += gv
+              visitante[:gols] += gv
+              visitante[:gols_sofridos] += gm
+
+              if gm > gv
+                mandante[:pontos] += 3
+                mandante[:vitorias] += 1
+                visitante[:derrotas] += 1
+              elsif gm < gv
+                visitante[:pontos] += 3
+                visitante[:vitorias] += 1
+                mandante[:derrotas] += 1
+              else
+                mandante[:pontos] += 1
+                mandante[:empates] += 1
+                visitante[:pontos] += 1
+                visitante[:empates] += 1
+              end
+            end
+
+            # Ordena as seleções conforme critérios oficiais de desempate
+            selecoes_ordenadas = selecoes_map.values.sort_by do |s|
+              [
+                -s[:pontos],
+                -(s[:gols] - s[:gols_sofridos]),
+                -s[:gols],
+                s[:nome]
+              ]
+            end
+          %>
+
+          <% if jogos_em_andamento.any? %>
+            <%# Alerta de pontuação parcial/provisória %>
+            <div class="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-4 rounded-xl flex items-start gap-3 mb-6 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5 text-amber-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+              <div class="text-xs sm:text-sm">
+                <p class="font-extrabold text-white mb-0.5">⚠️ Classificação Parcial e Provisória</p>
+                <p class="opacity-80">A tabela abaixo reflete as projeções com os jogos em andamento (Ao Vivo). A pontuação oficial das seleções só será creditada no campeonato de forma definitiva após a conclusão das partidas.</p>
+              </div>
+            </div>
+
+            <%# Listagem de jogos em andamento %>
+            <div class="mb-6 bg-base-200/30 p-4 rounded-xl border border-base-200">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/60 mb-3 flex items-center gap-1.5">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Jogos em Andamento do <%= grupo.nome %>
+              </h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <% jogos_em_andamento.each do |jogo| %>
+                  <div class="bg-base-100 border border-base-300 rounded-lg p-3 flex items-center justify-between gap-4 shadow-sm hover:border-emerald-500/30 transition">
+                    <div class="flex items-center gap-2 min-w-0 flex-1 justify-end">
+                      <span class="font-bold text-xs sm:text-sm truncate text-white"><%= juego_name = jogo.mandante.nome %></span>
+                      <% if jogo.mandante.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "w-5 h-5 object-cover rounded-md" %>
+                      <% end %>
+                    </div>
+                    
+                    <div class="flex items-center gap-1.5 shrink-0 bg-base-200 px-2 py-0.5 rounded border border-base-300">
+                      <span class="font-black text-sm text-primary"><%= jogo.gols_mandante %></span>
+                      <span class="opacity-30 text-[10px] font-bold">x</span>
+                      <span class="font-black text-sm text-primary"><%= jogo.gols_visitante %></span>
+                    </div>
+
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                      <% if jogo.visitante.logo.present? %>
+                        <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "w-5 h-5 object-cover rounded-md" %>
+                      <% end %>
+                      <span class="font-bold text-xs sm:text-sm truncate text-white"><%= jogo.visitante.nome %></span>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
           <div class="bg-base-100 shadow-xl rounded-box border border-base-200 overflow-hidden">
             <ul class="list w-full">
-              <% grupo.selecoes.ordenadas.each_with_index do |selecao, index| %>
+              <% selecoes_ordenadas.each_with_index do |selecao_data, index| %>
+                <% selecao = selecao_data[:objeto] %>
                 <li class="list-row flex flex-col sm:flex-row items-center justify-between p-4 gap-4 border-b last:border-b-0 border-base-200 hover:bg-base-200/50 transition cursor-pointer group" onclick="window.location='<%= selecao_path(selecao) %>'">
                   
                   <div class="flex items-center gap-4 w-full sm:w-auto">
@@ -104,7 +220,6 @@
                     </div>
                     
                     <div class="avatar">
-                      <% # AJUSTADO PARA GARANTIR PREENCHIMENTO E EFEITO DE HOVER IGUAL ÀS OUTRAS TELAS %>
                       <div class="mask mask-squircle h-12 w-12 bg-base-200 flex items-center justify-center overflow-hidden transition duration-300 group-hover:scale-105">
                         <% if selecao.logo.present? %>
                           <%= image_tag "selecoes/#{selecao.logo}", class: "object-cover w-full h-full" %>
@@ -114,8 +229,14 @@
                       </div>
                     </div>
                     
-                    <div class="font-bold text-lg group-hover:underline">
-                      <%= selecao.nome %>
+                    <div class="font-bold text-lg group-hover:underline flex items-center gap-2">
+                      <span><%= selecao_data[:nome] %></span>
+                      <% if selecao_data[:em_andamento] %>
+                        <span class="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase animate-pulse">
+                          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                          Ao Vivo
+                        </span>
+                      <% end %>
                     </div>
                   </div>
 
@@ -123,27 +244,27 @@
                     <div class="flex gap-4 sm:gap-6 text-center">
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70">Pts</span>
-                        <span class="font-bold text-lg text-primary"><%= selecao.pontos %></span>
+                        <span class="font-bold text-lg text-primary"><%= selecao_data[:pontos] %></span>
                       </div>
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70">J</span>
-                        <span class="font-semibold text-lg"><%= selecao.qtd_jogos %></span>
+                        <span class="font-semibold text-lg"><%= selecao_data[:qtd_jogos] %></span>
                       </div>
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70 text-success">V</span>
-                        <span class="font-semibold text-lg text-success"><%= selecao.vitorias %></span>
+                        <span class="font-semibold text-lg text-success"><%= selecao_data[:vitorias] %></span>
                       </div>
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70 text-warning">E</span>
-                        <span class="font-semibold text-lg text-warning"><%= selecao.empates %></span>
+                        <span class="font-semibold text-lg text-warning"><%= selecao_data[:empates] %></span>
                       </div>
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70 text-error">D</span>
-                        <span class="font-semibold text-lg text-error"><%= selecao.derrotas %></span>
+                        <span class="font-semibold text-lg text-error"><%= selecao_data[:derrotas] %></span>
                       </div>
                       <div class="flex flex-col">
                         <span class="text-[10px] uppercase font-bold opacity-70">SG</span>
-                        <span class="font-semibold text-lg"><%= selecao.gols.to_i - selecao.gols_sofridos.to_i %></span>
+                        <span class="font-semibold text-lg"><%= selecao_data[:gols] - selecao_data[:gols_sofridos] %></span>
                       </div>
                     </div>
                   </div>

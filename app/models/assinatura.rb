@@ -5,6 +5,14 @@ class Assinatura < ApplicationRecord
   belongs_to :usuario,
              class_name: 'User'
 
+  after_save :check_premium_achievement, if: :saved_change_to_plano?
+
+  def check_premium_achievement
+    if premium?
+      Users::AwardAchievements.award(usuario, 'premium_user')
+    end
+  end
+
   enum :plano, {
     basic: 0,
     plus: 1,

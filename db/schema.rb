@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_18_165359) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_24_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -42,6 +42,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_18_165359) do
     t.text "pix_qr_code_base64"
     t.string "gateway_status"
     t.uuid "uuid", null: false
+  end
+
+  create_table "conquistas", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "descricao", null: false
+    t.string "slug", null: false
+    t.string "icon", null: false
+    t.string "cor", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_conquistas_on_slug", unique: true
+    t.index ["uuid"], name: "index_conquistas_on_uuid", unique: true
   end
 
   create_table "grupos", force: :cascade do |t|
@@ -181,6 +194,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_18_165359) do
     t.uuid "uuid", null: false
   end
 
+  create_table "user_conquistas", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "conquista_id", null: false
+    t.bigint "jogo_id"
+    t.boolean "destacada", default: false, null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conquista_id"], name: "index_user_conquistas_on_conquista_id"
+    t.index ["jogo_id"], name: "index_user_conquistas_on_jogo_id"
+    t.index ["user_id", "conquista_id"], name: "index_user_conquistas_on_user_id_and_conquista_id", unique: true
+    t.index ["user_id"], name: "index_user_conquistas_on_user_id"
+    t.index ["uuid"], name: "index_user_conquistas_on_uuid", unique: true
+  end
+
   create_table "user_points", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "jogo_id", null: false
@@ -228,4 +256,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_18_165359) do
 
   add_foreign_key "informacao_jogos", "jogos"
   add_foreign_key "jogadores", "selecoes"
+  add_foreign_key "user_conquistas", "conquistas"
+  add_foreign_key "user_conquistas", "jogos"
+  add_foreign_key "user_conquistas", "users"
 end

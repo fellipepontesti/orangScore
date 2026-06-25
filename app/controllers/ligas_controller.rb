@@ -126,7 +126,7 @@ class LigasController < ApplicationController
     end
 
     @membros_ativos = @liga.liga_membros
-                          .includes(:user)
+                          .includes(user: { user_conquistas: :conquista })
                           .where(status: :accepted)
                           .select("liga_membros.*, #{pontos_subquery} AS total_pontos_ranking, #{palpites_subquery} AS total_palpites")
                           .order('total_pontos_ranking DESC NULLS LAST, total_palpites DESC, liga_membros.created_at ASC').to_a

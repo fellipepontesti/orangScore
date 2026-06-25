@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking, :update_conquistas]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -44,6 +44,7 @@ class UsersController < ApplicationController
                                    COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
                                    COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
                           .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                          .includes(user_conquistas: :conquista)
                           .to_a
       else
         @usuarios_ranking = []
@@ -68,6 +69,7 @@ class UsersController < ApplicationController
                                  COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
                                  COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
                         .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                        .includes(user_conquistas: :conquista)
                         .to_a
     end
 
@@ -78,6 +80,27 @@ class UsersController < ApplicationController
 
   def perfil
     @usuario = current_user
+    @conquistas_desbloqueadas = current_user.user_conquistas.includes(:conquista).index_by(&:conquista_id)
+    @todas_conquistas = Conquista.order(:id)
+    @dados_grafico = Users::RankingHistoryService.new(user: current_user).call
+  end
+
+  def update_conquistas
+    featured_ids = params[:featured_ids] || []
+    selected_conquistas = current_user.user_conquistas.where(id: featured_ids)
+    limite = current_user.premium? ? 3 : 1
+    
+    if selected_conquistas.count > limite
+      redirect_to perfil_path, alert: "Você só pode destacar até #{limite} conquistas no seu plano."
+      return
+    end
+    
+    ActiveRecord::Base.transaction do
+      current_user.user_conquistas.update_all(destacada: false)
+      selected_conquistas.update_all(destacada: true)
+    end
+    
+    redirect_to perfil_path, notice: "Conquistas em destaque atualizadas com sucesso!"
   end
 
   def edit_perfil
