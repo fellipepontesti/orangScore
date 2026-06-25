@@ -15,6 +15,8 @@ class Jogo < ApplicationRecord
     programado?
   end
 
+  before_validation :ajustar_definicao_e_status, if: :pode_ajustar_definicao_e_status?
+
   validates :data, presence: true
   validates :tipo, presence: true
   validates :mandante_id, presence: true, unless: :definir?
@@ -95,5 +97,14 @@ class Jogo < ApplicationRecord
     return unless finalizado?
 
     Jogos::BracketManager.atualizar
+  end
+
+  def pode_ajustar_definicao_e_status?
+    mandante_id.present? && visitante_id.present? && (definir? || times_a_definir?)
+  end
+
+  def ajustar_definicao_e_status
+    self.definir = false
+    self.status = :programado if times_a_definir?
   end
 end

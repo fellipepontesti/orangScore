@@ -122,231 +122,132 @@
   <div id="jogos-container" class="w-full">
     <% if @jogos.any? %>
       <% if @view_mode == 'lista' %>
-        <% jogos_ativos = @jogos.reject(&:finalizado?) %>
-        <% jogos_finalizados = @jogos.select(&:finalizado?) %>
-
-        <!-- Renderização no formato Lista Horizontal (Estilo Dashboard) -->
-        <div class="grid grid-cols-1 gap-4 w-full">
-          <% if jogos_ativos.any? %>
-            <% jogos_ativos.each do |jogo| %>
-              <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
-              <% pontos_do_usuario = jogo.user_points.find { |up| up.user_id == current_user.id } %>
-              
-              <div class="bg-base-100 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
-                   onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
-                
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
-                  <!-- Esquerda: Horário e Data -->
-                  <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
-                    <p class="opacity-50"><%= horario_jogo(jogo, "%d/%m") %></p>
-                    <p class="text-warning font-black text-sm">
-                      <%= horario_jogo(jogo, "%H:%M") %>
-                    </p>
-                  </div>
-
-                  <!-- Meio: Confronto com Placar/VS -->
-                  <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
-                    <!-- Mandante -->
-                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
-                      <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
-                        <% if jogo.mandante.present? %>
-                          <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                        <% else %>
-                          <%= jogo.nome_provisorio_mandante || 'Mandante' %>
-                        <% end %>
-                      </span>
-                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                        <% if jogo.mandante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
-                        <% end %>
-                      </div>
-                    </div>
-
-                    <!-- Placar ou VS -->
-                    <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
-                      <% if jogo.finalizado? || jogo.em_andamento? || jogo.suspenso? %>
-                        <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
-                          <%= jogo.gols_mandante.to_i %>
-                        </span>
-                        <span class="opacity-30 text-xs font-black">x</span>
-                        <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
-                          <%= jogo.gols_visitante.to_i %>
-                        </span>
-                      <% else %>
-                        <span class="opacity-30 text-xs font-black">x</span>
-                      <% end %>
-                    </div>
-
-                    <!-- Visitante -->
-                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
-                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                        <% if jogo.visitante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
-                        <% end %>
-                      </div>
-                      <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
-                        <% if jogo.visitante.present? %>
-                          <%= link_to"#{jogo.visitante.nome}", selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                        <% else %>
-                          <%= jogo.nome_provisorio_visitante || 'Visitante' %>
-                        <% end %>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Direita: Ações (Palpite e Botão) -->
-                <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
-                  <% if palpite.present? %>
-                    <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap shrink-0">
-                      Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %></strong>
-                      <% if jogo.finalizado? %>
-                        <% pontos = pontos_do_usuario ? pontos_do_usuario.pontos.to_i : 0 %>
-                        <% badge_class = case pontos
-                           when 10 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black animate-pulse hover:scale-105 transition-all duration-300 cursor-default"
-                           when 7, 5, 2 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black hover:scale-105 transition-all duration-300 cursor-default"
-                           else "bg-slate-800 text-slate-400 font-medium hover:scale-105 transition-all duration-300 cursor-default"
-                           end
-                        %>
-                        <span class="badge <%= badge_class %> badge-sm py-2 px-2 ml-1 border-none shadow-sm rounded-md font-mono whitespace-nowrap shrink-0" title="<%= pontos_do_usuario&.motivo || 'Nenhum ponto obtido' %>">
-                          <%= pontos > 0 ? "+#{pontos} pts" : "0 pts" %>
-                        </span>
-                      <% end %>
-                    </span>
-                  <% end %>
-
-                  <div class="flex gap-2 w-full sm:w-auto justify-end">
-                    <% if jogo.finalizado? %>
-                      <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200 font-bold px-4" %>
-                    <% elsif palpite.present? %>
-                      <%= link_to "Editar Palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
-                    <% elsif jogo.times_a_definir? || jogo.definir? %>
-                      <span class="badge badge-neutral p-3 font-bold w-full sm:w-auto text-center">Indisponível</span>
-                    <% else %>
-                      <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
-                    <% end %>
-                  </div>
-                </div>
-
+        <!-- Renderização no formato Lista Horizontal (Estilo Dashboard) agrupada por Data -->
+        <div class="space-y-8 w-full">
+          <% @jogos.group_by { |j| j.data.to_date }.each do |data, jogos_do_dia| %>
+            <div class="space-y-4">
+              <!-- Separador/Cabeçalho da Data -->
+              <div class="relative flex py-2 items-center w-full">
+                <div class="flex-grow border-t border-base-300"></div>
+                <span class="flex-shrink mx-4 text-xs font-black uppercase tracking-widest text-slate-400 bg-base-200 px-4 py-2 rounded-full border border-base-300/40 shadow-sm flex items-center gap-1.5">
+                  📅 <%= data == Time.zone.today ? "Hoje" : (data == Time.zone.tomorrow ? "Amanhã" : data.strftime("%d/%m/%Y")) %>
+                </span>
+                <div class="flex-grow border-t border-base-300"></div>
               </div>
-            <% end %>
-          <% end %>
 
-          <% if jogos_finalizados.any? %>
-            <!-- Separador elegante para Jogos Finalizados -->
-            <div class="relative flex py-5 items-center w-full">
-              <div class="flex-grow border-t border-base-300"></div>
-              <span class="flex-shrink mx-4 text-xs font-black uppercase tracking-widest text-slate-500 bg-base-200 px-3.5 py-2 rounded-full border border-base-300 shadow-sm flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-error">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                </svg>
-                Jogos Finalizados
-              </span>
-              <div class="flex-grow border-t border-base-300"></div>
+              <div class="grid grid-cols-1 gap-4 w-full">
+                <% jogos_do_dia.each do |jogo| %>
+                  <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
+                  <% pontos_do_usuario = jogo.user_points.find { |up| up.user_id == current_user.id } %>
+                  
+                  <div class="bg-base-100 <%= 'opacity-90 bg-base-100/70' if jogo.finalizado? %> rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full"
+                       onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
+                    
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                      <!-- Esquerda: Status/Horário -->
+                      <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                        <% if jogo.em_andamento? %>
+                          <p class="text-success font-black uppercase tracking-wider animate-pulse">AO VIVO</p>
+                        <% elsif jogo.suspenso? %>
+                          <p class="text-warning font-black uppercase tracking-wider">SUSPENSO</p>
+                        <% elsif jogo.finalizado? %>
+                          <p class="text-error font-black uppercase tracking-wider opacity-60">FIM</p>
+                        <% else %>
+                          <p class="opacity-50">Horário</p>
+                        <% end %>
+                        <p class="text-warning font-black text-sm">
+                          <%= horario_jogo(jogo, "%H:%M") %>
+                        </p>
+                      </div>
+
+                      <!-- Meio: Confronto com Placar/VS -->
+                      <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                        <!-- Mandante -->
+                        <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                          <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                            <% if jogo.mandante.present? %>
+                              <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                            <% else %>
+                              <%= jogo.nome_provisorio_mandante || 'Mandante' %>
+                            <% end %>
+                          </span>
+                          <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                            <% if jogo.mandante&.logo.present? %>
+                              <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                            <% end %>
+                          </div>
+                        </div>
+
+                        <!-- Placar ou VS -->
+                        <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
+                          <% if jogo.finalizado? || jogo.em_andamento? || jogo.suspenso? %>
+                            <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                              <%= jogo.gols_mandante.to_i %>
+                            </span>
+                            <span class="opacity-30 text-xs font-black">x</span>
+                            <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
+                              <%= jogo.gols_visitante.to_i %>
+                            </span>
+                          <% else %>
+                            <span class="opacity-30 text-xs font-black">x</span>
+                          <% end %>
+                        </div>
+
+                        <!-- Visitante -->
+                        <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                          <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                            <% if jogo.visitante&.logo.present? %>
+                              <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                            <% end %>
+                          </div>
+                          <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                            <% if jogo.visitante.present? %>
+                              <%= link_to "#{jogo.visitante.nome}", selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
+                            <% else %>
+                              <%= jogo.nome_provisorio_visitante || 'Visitante' %>
+                            <% end %>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Direita: Ações (Palpite e Botão) -->
+                    <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
+                      <% if palpite.present? %>
+                        <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap shrink-0">
+                          Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %></strong>
+                          <% if jogo.finalizado? %>
+                            <% pontos = pontos_do_usuario ? pontos_do_usuario.pontos.to_i : 0 %>
+                            <% badge_class = case pontos
+                               when 10 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black animate-pulse hover:scale-105 transition-all duration-300 cursor-default"
+                               when 7, 5, 2 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black hover:scale-105 transition-all duration-300 cursor-default"
+                               else "bg-slate-800 text-slate-400 font-medium hover:scale-105 transition-all duration-300 cursor-default"
+                               end
+                            %>
+                            <span class="badge <%= badge_class %> badge-sm py-2 px-2 ml-1 border-none shadow-sm rounded-md font-mono whitespace-nowrap shrink-0" title="<%= pontos_do_usuario&.motivo || 'Nenhum ponto obtido' %>">
+                              <%= pontos > 0 ? "+#{pontos} pts" : "0 pts" %>
+                            </span>
+                          <% end %>
+                        </span>
+                      <% end %>
+
+                      <div class="flex gap-2 w-full sm:w-auto justify-end">
+                        <% if jogo.finalizado? %>
+                          <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200 font-bold px-4" %>
+                        <% elsif palpite.present? %>
+                          <%= link_to "Editar Palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                        <% elsif jogo.times_a_definir? || jogo.definir? %>
+                          <span class="badge badge-neutral p-3 font-bold w-full sm:w-auto text-center">Indisponível</span>
+                        <% else %>
+                          <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                        <% end %>
+                      </div>
+                    </div>
+
+                  </div>
+                <% end %>
+              </div>
             </div>
-
-            <% jogos_finalizados.each do |jogo| %>
-              <% palpite = jogo.palpites.find { |p| p.user_id == current_user.id } %>
-              <% pontos_do_usuario = jogo.user_points.find { |up| up.user_id == current_user.id } %>
-              
-              <div class="bg-base-100/70 rounded-2xl border border-base-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-md transition duration-200 cursor-pointer w-full opacity-90"
-                   onclick="if(event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && !event.target.closest('a') && !event.target.closest('button')) window.location='<%= jogo_path(jogo) %>'">
-                
-                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
-                  <!-- Esquerda: Horário e Data -->
-                  <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-24 sm:min-w-[96px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
-                    <p class="opacity-50"><%= horario_jogo(jogo, "%d/%m") %></p>
-                    <p class="text-warning font-black text-sm">
-                      <%= horario_jogo(jogo, "%H:%M") %>
-                    </p>
-                  </div>
-
-                  <!-- Meio: Confronto com Placar/VS -->
-                  <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
-                    <!-- Mandante -->
-                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
-                      <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
-                        <% if jogo.mandante.present? %>
-                          <%= link_to jogo.mandante.nome, selecao_path(jogo.mandante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                        <% else %>
-                          <%= jogo.nome_provisorio_mandante || 'Mandante' %>
-                        <% end %>
-                      </span>
-                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                        <% if jogo.mandante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
-                        <% end %>
-                      </div>
-                    </div>
-
-                    <!-- Placar ou VS -->
-                    <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px]">
-                      <% if jogo.finalizado? || jogo.em_andamento? || jogo.suspenso? %>
-                        <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
-                          <%= jogo.gols_mandante.to_i %>
-                        </span>
-                        <span class="opacity-30 text-xs font-black">x</span>
-                        <span class="font-mono font-black text-base px-2 py-0.5 rounded-sm bg-base-200/60">
-                          <%= jogo.gols_visitante.to_i %>
-                        </span>
-                      <% else %>
-                        <span class="opacity-30 text-xs font-black">x</span>
-                      <% end %>
-                    </div>
-
-                    <!-- Visitante -->
-                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
-                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
-                        <% if jogo.visitante&.logo.present? %>
-                          <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
-                        <% end %>
-                      </div>
-                      <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
-                        <% if jogo.visitante.present? %>
-                          <%= link_to"#{jogo.visitante.nome}", selecao_path(jogo.visitante), onclick: "event.stopPropagation();", class: "hover:underline" %>
-                        <% else %>
-                          <%= jogo.nome_provisorio_visitante || 'Visitante' %>
-                        <% end %>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Direita: Ações (Palpite e Botão) -->
-                <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
-                  <% if palpite.present? %>
-                    <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap shrink-0">
-                      Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %></strong>
-                      <% if jogo.finalizado? %>
-                        <% pontos = pontos_do_usuario ? pontos_do_usuario.pontos.to_i : 0 %>
-                        <% badge_class = case pontos
-                           when 10 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black animate-pulse hover:scale-105 transition-all duration-300 cursor-default"
-                           when 7, 5, 2 then "bg-emerald-500 hover:bg-emerald-600 text-white font-black hover:scale-105 transition-all duration-300 cursor-default"
-                           else "bg-slate-800 text-slate-400 font-medium hover:scale-105 transition-all duration-300 cursor-default"
-                           end
-                        %>
-                        <span class="badge <%= badge_class %> badge-sm py-2 px-2 ml-1 border-none shadow-sm rounded-md font-mono whitespace-nowrap shrink-0" title="<%= pontos_do_usuario&.motivo || 'Nenhum ponto obtido' %>">
-                          <%= pontos > 0 ? "+#{pontos} pts" : "0 pts" %>
-                        </span>
-                      <% end %>
-                    </span>
-                  <% end %>
-
-                  <div class="flex gap-2 w-full sm:w-auto justify-end">
-                    <% if jogo.finalizado? %>
-                      <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200 font-bold px-4" %>
-                    <% elsif palpite.present? %>
-                      <%= link_to "Editar Palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
-                    <% elsif jogo.times_a_definir? || jogo.definir? %>
-                      <span class="badge badge-neutral p-3 font-bold w-full sm:w-auto text-center">Indisponível</span>
-                    <% else %>
-                      <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
-                    <% end %>
-                  </div>
-                </div>
-
-              </div>
-            <% end %>
           <% end %>
         </div>
       <% else %>

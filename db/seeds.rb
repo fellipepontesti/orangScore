@@ -148,7 +148,23 @@ Conquista.find_or_create_by!(slug: 'rei_do_mata_mata') do |c|
   c.cor = 'bg-fuchsia-600/20 text-fuchsia-400 border-fuchsia-500/30'
 end
 
-Conquista.find_or_create_by!(slug: 'azarado') do |c|
+# Redefinindo 'azarado' para 5 erros seguidos
+# Usando update se já existir para mudar os campos nome e descricao
+c_azarado = Conquista.find_or_initialize_by(slug: 'azarado')
+c_azarado.nome = 'Azarado'
+c_azarado.descricao = 'Errou o vencedor/resultado de 5 jogos seguidos em que palpitou.'
+c_azarado.icon = '🌧️'
+c_azarado.cor = 'bg-slate-600/20 text-slate-400 border-slate-500/30'
+c_azarado.save!
+
+Conquista.find_or_create_by!(slug: 'super_azarado') do |c|
+  c.nome = 'Super Azarado'
+  c.descricao = 'Errou o vencedor/resultado de 10 jogos seguidos em que palpitou.'
+  c.icon = '🌪️'
+  c.cor = 'bg-red-900/20 text-red-400 border-red-500/30'
+end
+
+Conquista.find_or_create_by!(slug: 'quase_la') do |c|
   c.nome = 'Quase Lá'
   c.descricao = 'Errou o placar exato por apenas 1 gol de diferença em um dos times (ganhou 7 pontos).'
   c.icon = '🩹'

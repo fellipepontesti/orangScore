@@ -147,8 +147,15 @@
       </p>
 
       <%= form_with url: update_perfil_conquistas_path, method: :patch, local: true do |f| %>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 mb-6">
-          <% @todas_conquistas.each do |c| %>
+        <%# Ordena as conquistas: desbloqueadas primeiro %>
+        <%
+          conquistas_ordenadas = @todas_conquistas.sort_by do |c|
+            @conquistas_desbloqueadas[c.id].present? ? 0 : 1
+          end
+        %>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 mb-2">
+          <% conquistas_ordenadas.each do |c| %>
             <% user_conquista = @conquistas_desbloqueadas[c.id] %>
             <% is_unlocked = user_conquista.present? %>
             
@@ -177,6 +184,14 @@
               <% end %>
             </div>
           <% end %>
+        </div>
+
+        <!-- Indicativo de rolagem para baixo -->
+        <div class="text-center text-xs text-base-content/40 mt-1 mb-4 flex items-center justify-center gap-1 select-none">
+          <span>Role para baixo para ver mais conquistas</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3 animate-bounce">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
         </div>
 
         <div class="modal-action flex justify-between gap-2 border-t border-base-200 pt-4">

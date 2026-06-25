@@ -26,6 +26,8 @@ module Users
       palpite_ultimo_segundo: 'palpite_ultimo_segundo',
       rei_do_mata_mata: 'rei_do_mata_mata',
       azarado: 'azarado',
+      super_azarado: 'super_azarado',
+      quase_la: 'quase_la',
       palpitador_preciso: 'palpitador_preciso'
     }.freeze
 
@@ -98,9 +100,9 @@ module Users
         award(user, SLUGS[:palpitador_preciso])
       end
 
-      # Azarado (errou placar exato por apenas 1 gol de diferença, ganhando 7 pontos)
+      # Quase Lá (errou placar exato por apenas 1 gol de diferença, ganhando 7 pontos)
       if point.pontos == 7
-        award(user, SLUGS[:azarado], jogo)
+        award(user, SLUGS[:quase_la], jogo)
       end
 
       # Zebra
@@ -130,6 +132,9 @@ module Users
       if last_5_points.size == 5 && last_5_points.all? { |pts| pts >= 5 }
         award(user, SLUGS[:pe_quente], jogo)
       end
+
+      # Azarado / Super Azarado (erros consecutivos)
+      check_azarado_achievements(user)
     end
 
     def self.check_referrals_achievements(user)
@@ -185,6 +190,33 @@ module Users
       end
     end
 
+    def self.check_azarado_achievements(user)
+      points = user.user_points.joins(:jogo)
+                               .where(jogos: { status: :finalizado })
+                               .order("jogos.data ASC")
+                               .pluck(:pontos)
+      
+      max_consecutive_errors = 0
+      current_consecutive_errors = 0
+
+      points.each do |pts|
+        if pts <= 2 # 2 pontos ou menos (participação) indica erro no palpite
+          current_consecutive_errors += 1
+          max_consecutive_errors = current_consecutive_errors if current_consecutive_errors > max_consecutive_errors
+        else
+          current_consecutive_errors = 0
+        end
+      end
+
+      if max_consecutive_errors >= 5
+        award(user, SLUGS[:azarado])
+      end
+
+      if max_consecutive_errors >= 10
+        award(user, SLUGS[:super_azarado])
+      end
+    end
+
     # Verifica e concede retroativamente todas as conquistas cabíveis para o histórico do usuário
     def self.check_retroactive_achievements(user)
       check_palpite_achievements(user) if user.palpites.any?
@@ -194,6 +226,7 @@ module Users
       check_socializacao(user)
       check_liga_cheia(user)
       check_rei_do_mata_mata(user)
+      check_azarado_achievements(user)
 
       user.palpites.includes(:jogo).each do |palpite|
         check_palpite_ultimo_segundo(user, palpite)
