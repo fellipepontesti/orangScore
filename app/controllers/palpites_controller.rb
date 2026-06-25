@@ -208,12 +208,17 @@ class PalpitesController < ApplicationController
                         .first
 
         if next_jogo
-          redirect_to new_palpite_path(jogo_id: next_jogo.uuid, quick_mode: true), notice: "#{success_message} Próximo jogo..."
+          redirect_to new_palpite_path(jogo_id: next_jogo.uuid, quick_mode: true, return_to: params[:return_to]), notice: "#{success_message} Próximo jogo..."
         else
-          redirect_to jogos_path, notice: "Parabéns! Você palpitou em todos os jogos disponíveis no momento."
+          redirect_path = params[:return_to] == 'dashboard' ? authenticated_root_path : jogos_path
+          redirect_to redirect_path, notice: "Parabéns! Você palpitou em todos os jogos disponíveis no momento."
         end
       else
-        redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: success_message
+        if params[:return_to] == 'dashboard'
+          redirect_to authenticated_root_path, notice: success_message
+        else
+          redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: success_message
+        end
       end
     end
 end

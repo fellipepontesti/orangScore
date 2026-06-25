@@ -16,6 +16,7 @@
         <% end %>
 
         <%= hidden_field_tag :quick_mode, params[:quick_mode] %>
+        <%= hidden_field_tag :return_to, params[:return_to] %>
 
         <% if @jogo.present? %>
           <div class="text-center mb-8">
@@ -78,9 +79,15 @@
         <div class="divider my-4"></div>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-          <%= link_to "Voltar aos Jogos",
-            jogos_path(tipo: @jogo&.tipo || params[:tipo]),
-            class: "btn btn-ghost" %>
+          <% if params[:return_to] == 'dashboard' %>
+            <%= link_to "Voltar ao Início",
+              authenticated_root_path,
+              class: "btn btn-ghost" %>
+          <% else %>
+            <%= link_to "Voltar aos Jogos",
+              jogos_path(tipo: @jogo&.tipo || params[:tipo]),
+              class: "btn btn-ghost" %>
+          <% end %>
 
           <% se_quick_mode = params[:quick_mode].present? || params[:quick_mode] == 'true' %>
           <%= form.submit se_quick_mode ? "Salvar e Próximo Jogo ➔" : "Confirmar Palpite",

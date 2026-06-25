@@ -323,9 +323,9 @@
                   <% if jogo.finalizado? %>
                     <%= link_to "Detalhes", jogo_path(jogo), class: "btn btn-sm btn-ghost bg-base-200 font-bold px-4" %>
                   <% elsif palpite.present? %>
-                    <%= link_to "Editar Palpite", edit_palpite_path(palpite), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                    <%= link_to "Editar Palpite", edit_palpite_path(palpite, return_to: 'dashboard'), class: "btn btn-sm btn-warning text-white font-bold px-4 py-2 hover:scale-105 transition" %>
                   <% else %>
-                    <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
+                    <%= link_to "Palpitar", new_palpite_path(jogo_id: jogo.uuid, return_to: 'dashboard'), class: "btn btn-sm btn-primary text-white font-bold px-4 py-2 hover:scale-105 transition" %>
                   <% end %>
                 </div>
               </div>
