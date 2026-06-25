@@ -2,7 +2,7 @@ class DashboardController < ApplicationController
   include JogosHelper
 
   before_action :authenticate_user!
-  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user, :editar_numeracao_selecoes, :editar_numeracao_jogadores, :salvar_numeracao_jogadores, :detalhamento_jogos]
+  before_action :authorize_root!, only: [:convites_pendentes, :aceitar_convite, :negar_convite, :new_user, :create_user, :editar_numeracao_selecoes, :editar_numeracao_jogadores, :salvar_numeracao_jogadores, :detalhamento_jogos, :preencher_mata_mata, :resetar_mata_mata]
   before_action :authorize_premium_or_admin!, only: [:artilharia]
 
   def index 
@@ -422,6 +422,16 @@ class DashboardController < ApplicationController
     else
       redirect_to dashboard_editar_numeracao_selecoes_path, alert: "Nenhum jogador informado para atualização."
     end
+  end
+
+  def preencher_mata_mata
+    Jogos::BracketManager.atualizar
+    redirect_to authenticated_root_path, notice: "Chaveamento de mata-mata preenchido e atualizado com sucesso!"
+  end
+
+  def resetar_mata_mata
+    Jogos::BracketManager.resetar
+    redirect_to authenticated_root_path, notice: "Chaveamento de mata-mata limpo e resetado com sucesso!"
   end
 
   private

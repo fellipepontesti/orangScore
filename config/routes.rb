@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   delete "/dashboard/convites/:liga_membro_id/negar", to: "dashboard#negar_convite", as: :dashboard_negar_convite
   get "/dashboard/usuarios/novo", to: "dashboard#new_user", as: :dashboard_new_user
   post "/dashboard/usuarios", to: "dashboard#create_user", as: :dashboard_create_user
+  post "/dashboard/preencher_mata_mata", to: "dashboard#preencher_mata_mata", as: :dashboard_preencher_mata_mata
+  post "/dashboard/resetar_mata_mata", to: "dashboard#resetar_mata_mata", as: :dashboard_resetar_mata_mata
 
   # Numeração de Jogadores para Root
   get "/dashboard/jogadores/numeracao", to: "dashboard#editar_numeracao_selecoes", as: :dashboard_editar_numeracao_selecoes

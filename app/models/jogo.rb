@@ -43,6 +43,7 @@ class Jogo < ApplicationRecord
   ]
 
   after_save :recalcular_estatisticas_selecoes, if: :saved_changes_para_grupo?
+  after_save :atualizar_chaves_torneio, if: :saved_change_to_status?
   after_destroy :recalcular_estatisticas_selecoes_apos_destruicao, if: :grupo?
 
   private
@@ -82,5 +83,11 @@ class Jogo < ApplicationRecord
     return unless grupo?
 
     errors.add(:definir, 'só pode ser marcado em jogos do mata-mata')
+  end
+
+  def atualizar_chaves_torneio
+    return unless finalizado?
+
+    Jogos::BracketManager.atualizar
   end
 end
