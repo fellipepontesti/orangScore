@@ -370,17 +370,49 @@
   </div>
 
   <!-- Gráfico de Evolução no Ranking -->
-  <% if @dados_grafico.present? && @dados_grafico.any? %>
-    <div class="bg-base-100 shadow-xl border border-base-200 rounded-3xl p-6 sm:p-8">
-      <h3 class="text-xl font-bold mb-1 flex items-center gap-2 text-white">
-        📈 Sua Evolução no Ranking
-      </h3>
-      <p class="text-xs opacity-60 mb-6">Acompanhe a sua posição no ranking geral após cada um dos seus palpites finalizados.</p>
+  <% if current_user.premium? || current_user.root? %>
+    <% if @dados_grafico.present? && @dados_grafico.any? %>
+      <div onclick="window.location='<%= ranking_path(periodo: 'global') %>'" 
+           class="bg-base-100 shadow-xl border border-base-200 hover:border-primary/40 rounded-3xl p-6 sm:p-8 cursor-pointer group transition-all duration-300 hover:shadow-2xl relative overflow-hidden">
+        
+        <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-bold mb-1 flex items-center gap-2 text-white group-hover:text-primary transition-colors">
+          <span>📈 Sua Evolução no Ranking</span>
+        </h3>
+        <p class="text-xs opacity-60 mb-6">Acompanhe a sua posição no ranking geral após cada um dos seus palpites finalizados. Clique para ver o ranking completo!</p>
+        
+        <div class="w-full h-[300px] relative">
+          <canvas id="rankingHistoryChart"></canvas>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div onclick="window.location='<%= planos_path %>'" 
+         class="bg-base-100/50 shadow-xl border border-base-200/50 hover:border-amber-400/40 rounded-3xl p-6 sm:p-8 cursor-pointer group transition-all duration-300 hover:shadow-2xl relative overflow-hidden">
       
-      <div class="w-full h-[300px] relative">
-        <canvas id="rankingHistoryChart"></canvas>
+      <div class="filter blur-md select-none pointer-events-none opacity-20">
+        <h3 class="text-xl font-bold mb-1 text-white">📈 Sua Evolução no Ranking</h3>
+        <p class="text-xs mb-6">Acompanhe a sua posição no ranking geral após cada um dos seus palpites finalizados.</p>
+        <div class="w-full h-[300px] bg-base-300 rounded-xl"></div>
+      </div>
+
+      <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-base-100/40 backdrop-blur-[2px]">
+        <div class="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-400 text-2xl flex items-center justify-center mb-3 animate-bounce shadow-md">
+          👑
+        </div>
+        <h4 class="font-extrabold text-white text-lg mb-1">Evolução do Ranking Geral</h4>
+        <p class="text-xs text-base-content/75 max-w-sm mb-4">Veja seu histórico de posições no ranking e compare seu desempenho ao vivo. Exclusivo para assinantes Premium!</p>
+        <span class="btn btn-amber btn-sm rounded-xl font-bold text-black group-hover:scale-105 transition-transform px-6 shadow-md">
+          Assinar Premium
+        </span>
       </div>
     </div>
+  <% end %>
 
     <script>
       (function() {

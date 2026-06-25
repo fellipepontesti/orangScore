@@ -23,13 +23,13 @@ module Users
       # Limitar a busca de pontos e palpites até a data do último jogo analisado
       max_data = jogos.last.data
       all_user_points = UserPoint.joins(:jogo)
+                                 .includes(:jogo)
                                  .where("jogos.data <= ?", max_data)
-                                 .select("user_points.*, jogos.data as jogo_data")
                                  .to_a
 
       all_palpites = Palpite.joins(:jogo)
+                            .includes(:jogo)
                             .where("jogos.data <= ?", max_data)
-                            .select("palpites.*, jogos.data as jogo_data")
                             .to_a
 
       history = []
@@ -38,7 +38,7 @@ module Users
         # Calcular os pontos acumulados de cada usuário até o momento do jogo atual
         points_up_to_game = Hash.new(0)
         all_user_points.each do |up|
-          if up.jogo_data <= jogo.data
+          if up.jogo.data <= jogo.data
             points_up_to_game[up.user_id] += up.pontos
           end
         end
@@ -46,7 +46,7 @@ module Users
         # Calcular o total de palpites de cada usuário até o momento do jogo atual
         palpites_up_to_game = Hash.new(0)
         all_palpites.each do |p|
-          if p.jogo_data <= jogo.data
+          if p.jogo.data <= jogo.data
             palpites_up_to_game[p.user_id] += 1
           end
         end
