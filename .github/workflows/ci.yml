@@ -64,3 +64,21 @@ jobs:
       - name: Run tests
         run: |
           bin/rails test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test # Só executa o deploy se os testes passarem com sucesso
+    if: github.ref == 'refs/heads/master' # Só faz deploy ao commitar ou aceitar PR na master
+
+    steps:
+      - name: Executar deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ~/orangScore
+            git pull origin master
+            ./script.sh
