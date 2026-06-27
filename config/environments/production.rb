@@ -51,8 +51,10 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = false
 
-  # Configuração de Log Simples e Segura: Grava em arquivo com rotação
-  config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "production.log"), 10, 50.megabytes)
+  # Configuração de Log: Grava em pasta dedicada com rotação diária
+  log_dir = Rails.root.join("log", "production")
+  FileUtils.mkdir_p(log_dir) unless File.directory?(log_dir)
+  config.logger = ActiveSupport::Logger.new(log_dir.join("production.log"), "daily")
   config.logger.formatter = config.log_formatter
   config.logger = ActiveSupport::TaggedLogging.new(config.logger)
 

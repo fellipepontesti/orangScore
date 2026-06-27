@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  before_action :log_request_details
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :check_terms_acceptance, if: -> { user_signed_in? && !devise_controller? }
@@ -108,5 +109,22 @@ class ApplicationController < ActionController::Base
       Users::AwardAchievements.check_retroactive_achievements(current_user)
       session[:retroactive_checked] = true
     end
+  end
+
+  def log_request_details
+    return if request.path.start_with?("/assets", "/rails")
+
+    user_info = if user_signed_in?
+                  "User: ID #{current_user.id} (#{current_user.email})"
+                else
+                  "User: Guest"
+                end
+
+    parameter_filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
+    filtered_params = parameter_filter.filter(params.to_unsafe_h).except(:controller, :action)
+
+    params_str = filtered_params.any? ? " | Params: #{filtered_params.to_json}" : ""
+
+    Rails.logger.info "[Audit] #{request.method} #{request.fullpath} | #{user_info} | IP: #{request.remote_ip}#{params_str}"
   end
 end
