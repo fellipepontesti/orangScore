@@ -130,7 +130,7 @@ class PalpitesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def palpite_params
-      params.require(:palpite).permit(:jogo_id, :gols_casa, :gols_fora)
+      params.require(:palpite).permit(:jogo_id, :gols_casa, :gols_fora, :vencedor_penaltis_id)
     end
 
     def filtered_palpites

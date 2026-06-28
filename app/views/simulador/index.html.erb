@@ -20,6 +20,14 @@
 
     <!-- Controles Superiores -->
     <div class="flex flex-wrap items-center gap-3">
+      <!-- Botão de Resetar Simulação (inicialmente oculto via hidden) -->
+      <button id="btn-resetar-simulacao" class="btn btn-outline btn-error btn-sm rounded-2xl flex items-center gap-1.5 hidden shadow-lg" onclick="resetarSimulacao()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Resetar Simulação
+      </button>
+
       <!-- Seletor de Modo de Visualização -->
       <div class="tabs tabs-boxed bg-base-200/80 p-1 rounded-2xl border border-base-300/40 shadow-inner flex gap-1">
         <button id="btn-modo-fases" class="tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 text-base-content/60 hover:text-base-content hover:bg-base-300/40" onclick="alterarModoVisualizacao('fases')">
@@ -30,6 +38,29 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- Indicativo de Simulação Interativa -->
+  <div id="banner-dica-simulacao" class="bg-primary/10 border border-primary/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden">
+    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
+    <div class="flex items-start gap-3.5">
+      <div class="p-2 bg-primary/20 rounded-xl text-primary shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
+        </svg>
+      </div>
+      <div class="text-xs sm:text-sm">
+        <p class="font-black text-white mb-0.5 tracking-wide">
+          🏆 Chaveamento Oficial do Mata-Mata
+        </p>
+        <p class="opacity-75 leading-relaxed">
+          Esta é a árvore oficial de confrontos do campeonato. Clique no botão ao lado para fazer sua própria simulação!
+        </p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="entrarModoSimulacao()">
+      Fazer Simulação
+    </button>
   </div>
 
   <!-- Banner Festivo do Campeão (Oculto Inicialmente) -->
@@ -257,6 +288,7 @@
 
   let modoVisualizacao = 'arvore'; // 'fases' | 'arvore'
   let abaAtivaFase = 'segunda_fase'; // 'segunda_fase' | 'oitavas' | 'quartas' | 'semi' | 'finais'
+  let simulatingMode = false; // Modo simulação inicia desativado (apenas visualização intacta)
 
   document.addEventListener("turbo:load", function() {
     inicializarSimulador();
@@ -268,7 +300,20 @@
   }
 
   function inicializarSimulador() {
-    // 1. Tentar recuperar simulação do LocalStorage
+    // Ao inicializar, sempre começamos no modo visualização oficial
+    simulatingMode = false;
+    resetarParaBancoReal();
+
+    // Renderizar visualização atual
+    renderizarTudo();
+    verificarEcelebrarCampeao(false); // checa se já tem campeão definido
+    atualizarInterfaceModo();
+  }
+
+  function entrarModoSimulacao() {
+    simulatingMode = true;
+    
+    // Tenta carregar dados salvos do localStorage
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -305,9 +350,21 @@
       resetarParaBancoReal();
     }
 
-    // 2. Renderizar visualização atual
     renderizarTudo();
-    verificarEcelebrarCampeao(false); // checa se já tem campeão definido
+    verificarEcelebrarCampeao(false);
+    atualizarInterfaceModo();
+  }
+
+  function sairModoSimulacao() {
+    simulatingMode = false;
+    resetarParaBancoReal();
+    
+    // Ocultar banner do campeão e parar confetes
+    document.getElementById('banner-campeao').classList.add('hidden');
+    pararConfetes();
+    
+    renderizarTudo();
+    atualizarInterfaceModo();
   }
 
   function resetarParaBancoReal() {
@@ -315,7 +372,7 @@
   }
 
   function resetarSimulacao() {
-    if(confirm("Tem certeza que deseja limpar toda a simulação e voltar ao estado real das chaves do campeonato?")) {
+    if(confirm("Tem certeza que deseja limpar toda a sua simulação e voltar ao estado real do campeonato?")) {
       resetarParaBancoReal();
       localStorage.removeItem(STORAGE_KEY);
       
@@ -324,14 +381,86 @@
       pararConfetes();
       
       renderizarTudo();
+      atualizarInterfaceModo();
     }
   }
 
   function salvarNoStorage() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(simState));
+      atualizarInterfaceModo();
     } catch(e) {
       console.error("Não foi possível salvar a simulação no localStorage:", e);
+    }
+  }
+
+  function atualizarInterfaceModo() {
+    const bannerDica = document.getElementById('banner-dica-simulacao');
+    const btnResetar = document.getElementById('btn-resetar-simulacao');
+    
+    if (simulatingMode) {
+      if (bannerDica) {
+        bannerDica.className = "bg-warning/10 border border-warning/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden";
+        bannerDica.innerHTML = `
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-warning/5 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-start gap-3.5">
+            <div class="p-2 bg-warning/20 rounded-xl text-warning shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
+              </svg>
+            </div>
+            <div class="text-xs sm:text-sm">
+              <p class="font-black text-white mb-0.5 tracking-wide">
+                🎮 Modo Simulação Ativo
+              </p>
+              <p class="opacity-75 leading-relaxed">
+                Você está simulando os placares do mata-mata! Clique nos campos de gols para alterar ou nos times para avançá-los.
+              </p>
+            </div>
+          </div>
+          <button class="btn btn-error btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="sairModoSimulacao()">
+            Visualizar Real
+          </button>
+        `;
+      }
+      
+      if (btnResetar) {
+        if (localStorage.getItem(STORAGE_KEY)) {
+          btnResetar.classList.remove('hidden');
+        } else {
+          btnResetar.classList.add('hidden');
+        }
+      }
+    } else {
+      if (bannerDica) {
+        bannerDica.className = "bg-primary/10 border border-primary/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden";
+        bannerDica.innerHTML = `
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-start gap-3.5">
+            <div class="p-2 bg-primary/20 rounded-xl text-primary shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
+              </svg>
+            </div>
+            <div class="text-xs sm:text-sm">
+              <p class="font-black text-white mb-0.5 tracking-wide">
+                🏆 Chaveamento Oficial do Mata-Mata
+              </p>
+              <p class="opacity-75 leading-relaxed">
+                Esta é a árvore oficial de confrontos do campeonato. Clique no botão ao lado para fazer sua própria simulação!
+              </p>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="entrarModoSimulacao()">
+            Fazer Simulação
+          </button>
+        `;
+      }
+      
+      if (btnResetar) {
+        btnResetar.classList.add('hidden');
+      }
     }
   }
 

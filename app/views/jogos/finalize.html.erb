@@ -62,7 +62,88 @@
 
         </div>
 
+          <% unless @jogo.grupo? %>
+          <!-- Container de Vencedor nos Pênaltis para o Admin -->
+          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless @jogo.gols_mandante.present? && @jogo.gols_visitante.present? && @jogo.gols_mandante.to_i == @jogo.gols_visitante.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-3.5 shadow-inner">
+            <div class="flex items-center justify-center gap-2 text-warning font-black text-xs uppercase tracking-wider">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
+              </svg>
+              Decisão nos Pênaltis (Mata-Mata)
+            </div>
+            <p class="text-xs opacity-75">O placar informado é de empate! Escolha quem avançou de fase nos pênaltis:</p>
+            
+            <div class="flex items-center justify-center gap-3">
+              <!-- Mandante -->
+              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
+                <%= form.radio_button :vencedor_penaltis_id, @jogo.mandante_id, class: "hidden" %>
+                <span><%= @jogo.mandante&.nome || 'Mandante' %></span>
+              </label>
+
+              <!-- Visitante -->
+              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
+                <%= form.radio_button :vencedor_penaltis_id, @jogo.visitante_id, class: "hidden" %>
+                <span><%= @jogo.visitante&.nome || 'Visitante' %></span>
+              </label>
+            </div>
+          </div>
+        <% end %>
+
         <div class="divider my-4"></div>
+
+        <script>
+          (function() {
+            function setupPenaltis() {
+              const inputCasa = document.getElementById('gols_mandante');
+              const inputFora = document.getElementById('gols_visitante');
+              const container = document.getElementById('vencedor-penaltis-container');
+              if (!inputCasa || !inputFora || !container) return;
+
+              function checkValues() {
+                const valCasa = inputCasa.value;
+                const valFora = inputFora.value;
+
+                if (valCasa !== '' && valFora !== '' && parseInt(valCasa) === parseInt(valFora)) {
+                  container.classList.remove('hidden');
+                } else {
+                  container.classList.add('hidden');
+                  // Limpa seleções de pênaltis se não for empate
+                  const radios = container.querySelectorAll('input[type="radio"]');
+                  radios.forEach(r => r.checked = false);
+                  atualizarBotoesEstilo();
+                }
+              }
+
+              function atualizarBotoesEstilo() {
+                const labels = container.querySelectorAll('label');
+                labels.forEach(label => {
+                  const radio = label.querySelector('input[type="radio"]');
+                  if (radio && radio.checked) {
+                    label.classList.add('bg-warning', 'text-warning-content');
+                    label.classList.remove('btn-outline');
+                  } else {
+                    label.classList.remove('bg-warning', 'text-warning-content');
+                    label.classList.add('btn-outline');
+                  }
+                });
+              }
+
+              inputCasa.addEventListener('input', checkValues);
+              inputFora.addEventListener('input', checkValues);
+
+              container.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', atualizarBotoesEstilo);
+              });
+
+              // Executa inicialmente
+              checkValues();
+              atualizarBotoesEstilo();
+            }
+
+            document.addEventListener("turbo:load", setupPenaltis);
+            setupPenaltis();
+          })();
+        </script>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
           <%= link_to "Cancelar",

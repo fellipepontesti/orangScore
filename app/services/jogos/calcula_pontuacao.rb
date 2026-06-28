@@ -12,7 +12,7 @@ module Jogos
       gols_m = gols_mandante.to_i
       gols_v = gols_visitante.to_i
 
-      if palpite_m == gols_m && palpite_v == gols_v
+      pontos = if palpite_m == gols_m && palpite_v == gols_v
         10
       elsif (gols_m <=> gols_v) == (palpite_m <=> palpite_v) && (palpite_m == gols_m || palpite_v == gols_v)
         7
@@ -21,6 +21,16 @@ module Jogos
       else
         2
       end
+
+      # Bônus de pênaltis no cálculo em memória
+      jogo = palpite.jogo
+      if jogo && jogo.tipo != 'grupo' && gols_m == gols_v && palpite_m == palpite_v
+        if palpite.vencedor_penaltis_id.present? && palpite.vencedor_penaltis_id == jogo.vencedor_penaltis_id
+          pontos += 1
+        end
+      end
+
+      pontos
     end
 
     def call
@@ -45,7 +55,7 @@ module Jogos
     private
 
     def calcular_pontos_palpite(palpite)
-      if acertou_placar_exato?(palpite)
+      pontos, motivo = if acertou_placar_exato?(palpite)
         [10, "Placar Exato"]
       elsif acertou_vencedor_ou_empate?(palpite) && acertou_gols_de_um_time?(palpite)
         [7, "Vencedor/Empate + Gols de um time"]
@@ -54,6 +64,16 @@ module Jogos
       else
         [2, "Participação"]
       end
+
+      # Regra especial de mata-mata para decisões por pênaltis
+      if @jogo.tipo != 'grupo' && @jogo.gols_mandante == @jogo.gols_visitante && palpite.gols_casa == palpite.gols_fora
+        if palpite.vencedor_penaltis_id.present? && palpite.vencedor_penaltis_id == @jogo.vencedor_penaltis_id
+          pontos += 1
+          motivo += " + Bônus de Pênaltis"
+        end
+      end
+
+      [pontos, motivo]
     end
 
     def acertou_placar_exato?(palpite)

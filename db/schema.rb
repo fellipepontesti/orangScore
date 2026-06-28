@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_28_035410) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_28_045133) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -110,6 +110,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_28_035410) do
     t.integer "prob_mandante"
     t.integer "prob_empate"
     t.integer "prob_visitante"
+    t.bigint "vencedor_penaltis_id"
+    t.index ["vencedor_penaltis_id"], name: "index_jogos_on_vencedor_penaltis_id"
   end
 
   create_table "liga_membros", force: :cascade do |t|
@@ -175,6 +177,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_28_035410) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.uuid "uuid", null: false
+    t.bigint "vencedor_penaltis_id"
+    t.index ["vencedor_penaltis_id"], name: "index_palpites_on_vencedor_penaltis_id"
   end
 
   create_table "selecoes", force: :cascade do |t|
@@ -258,6 +262,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_28_035410) do
 
   add_foreign_key "informacao_jogos", "jogos"
   add_foreign_key "jogadores", "selecoes"
+  add_foreign_key "jogos", "selecoes", column: "vencedor_penaltis_id"
+  add_foreign_key "palpites", "selecoes", column: "vencedor_penaltis_id"
   add_foreign_key "user_conquistas", "conquistas"
   add_foreign_key "user_conquistas", "jogos"
   add_foreign_key "user_conquistas", "users"

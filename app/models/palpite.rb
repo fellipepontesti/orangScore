@@ -2,6 +2,7 @@ class Palpite < ApplicationRecord
   include HasPublicUuid
   belongs_to :user
   belongs_to :jogo
+  belongs_to :vencedor_penaltis, class_name: 'Selecao', optional: true
 
   validates :gols_casa, presence: true
   validates :gols_fora, presence: true

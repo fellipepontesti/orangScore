@@ -310,7 +310,7 @@ module Jogos
       elsif jogo.gols_visitante.to_i > jogo.gols_mandante.to_i
         jogo.visitante
       else
-        nil
+        jogo.vencedor_penaltis
       end
     end
 
@@ -321,7 +321,7 @@ module Jogos
       elsif jogo.gols_visitante.to_i < jogo.gols_mandante.to_i
         jogo.visitante
       else
-        nil
+        jogo.vencedor_penaltis_id == jogo.mandante_id ? jogo.visitante : jogo.mandante
       end
     end
 

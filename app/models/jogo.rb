@@ -4,6 +4,7 @@ class Jogo < ApplicationRecord
   belongs_to :mandante, class_name: 'Selecao', optional: true
   belongs_to :visitante, class_name: 'Selecao', optional: true
   belongs_to :grupo, optional: true
+  belongs_to :vencedor_penaltis, class_name: 'Selecao', optional: true
   has_many :palpites, dependent: :destroy
   has_many :user_points, dependent: :destroy
   has_one :informacao_jogo, class_name: 'InformacaoJogo', dependent: :destroy
