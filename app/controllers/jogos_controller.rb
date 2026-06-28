@@ -38,6 +38,12 @@ class JogosController < ApplicationController
   def show
     @palpite = current_user.palpites.find_by(jogo_id: @jogo.id)
     @user_point = current_user.user_points.find_by(jogo_id: @jogo.id)
+
+    if current_user.root?
+      ja_palpitaram_ids = @jogo.palpites.pluck(:user_id)
+      @usuarios_sem_palpite = User.where.not(id: ja_palpitaram_ids).order(:name)
+      @usuarios_com_palpite = User.where(id: ja_palpitaram_ids).order(:name)
+    end
   end
 
   def palpites

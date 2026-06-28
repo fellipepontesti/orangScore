@@ -58,7 +58,15 @@ class PalpitesController < ApplicationController
   # GET /palpites/new
   def new
     @jogo = Jogo.find_by_uuid_param!(params[:jogo_id])
-    @palpite = current_user.palpites.build
+    
+    if params[:target_user_id].present? && current_user.root?
+      @target_user = User.find(params[:target_user_id])
+      @palpite = @target_user.palpites.build
+    else
+      @target_user = nil
+      @palpite = current_user.palpites.build
+    end
+    
     @palpite.jogo = @jogo
   end
 
@@ -69,7 +77,15 @@ class PalpitesController < ApplicationController
 
   def create
     @jogo = Jogo.find_by(uuid: palpite_params[:jogo_id])
-    @palpite = current_user.palpites.build(palpite_params.except(:jogo_id))
+
+    # Suporte para root criar palpite em nome de outro usuário
+    target_user = if current_user.root? && params[:target_user_id].present?
+      User.find_by(id: params[:target_user_id]) || current_user
+    else
+      current_user
+    end
+
+    @palpite = target_user.palpites.build(palpite_params.except(:jogo_id))
 
     unless @jogo
       redirect_to jogos_path, alert: "Jogo não informado."
@@ -85,10 +101,15 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.save
-        Users::AwardAchievements.check_palpite_achievements(current_user)
-        format.html { handle_quick_mode_redirect("Palpite criado com sucesso!") }
+        Users::AwardAchievements.check_palpite_achievements(target_user)
+        if current_user.root? && target_user != current_user
+          format.html { redirect_to jogo_path(@jogo), notice: "Palpite de #{target_user.name} cadastrado com sucesso!" }
+        else
+          format.html { handle_quick_mode_redirect("Palpite criado com sucesso!") }
+        end
         format.json { render :show, status: :created, location: @palpite }
       else
+        @target_user = target_user != current_user ? target_user : nil
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @palpite.errors, status: :unprocessable_entity }
       end

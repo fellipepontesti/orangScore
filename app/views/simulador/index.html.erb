@@ -18,15 +18,6 @@
       </p>
     </div>
 
-    <!-- Controles Superiores -->
-    <div class="flex flex-wrap items-center gap-3">
-      <!-- Botão de Resetar Simulação (inicialmente oculto via hidden) -->
-      <button id="btn-resetar-simulacao" class="btn btn-outline btn-error btn-sm rounded-2xl flex items-center gap-1.5 hidden shadow-lg" onclick="resetarSimulacao()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-        </svg>
-        Resetar Simulação
-      </button>
 
       <!-- Seletor de Modo de Visualização -->
       <div class="tabs tabs-boxed bg-base-200/80 p-1 rounded-2xl border border-base-300/40 shadow-inner flex gap-1">
@@ -40,27 +31,22 @@
     </div>
   </div>
 
-  <!-- Indicativo de Simulação Interativa -->
-  <div id="banner-dica-simulacao" class="bg-primary/10 border border-primary/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden">
+  <!-- Banner Chaveamento Oficial -->
+  <div class="bg-primary/10 border border-primary/20 rounded-3xl p-4 mb-6 flex items-start gap-3.5 shadow-md max-w-4xl relative overflow-hidden">
     <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
-    <div class="flex items-start gap-3.5">
-      <div class="p-2 bg-primary/20 rounded-xl text-primary shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
-        </svg>
-      </div>
-      <div class="text-xs sm:text-sm">
-        <p class="font-black text-white mb-0.5 tracking-wide">
-          🏆 Chaveamento Oficial do Mata-Mata
-        </p>
-        <p class="opacity-75 leading-relaxed">
-          Esta é a árvore oficial de confrontos do campeonato. Clique no botão ao lado para fazer sua própria simulação!
-        </p>
-      </div>
+    <div class="p-2 bg-primary/20 rounded-xl text-primary shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
+      </svg>
     </div>
-    <button class="btn btn-primary btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="entrarModoSimulacao()">
-      Fazer Simulação
-    </button>
+    <div class="text-xs sm:text-sm">
+      <p class="font-black text-white mb-0.5 tracking-wide">
+        🏆 Chaveamento Oficial do Mata-Mata
+      </p>
+      <p class="opacity-75 leading-relaxed">
+        Acompanhe todos os confrontos e resultados do mata-mata ao vivo!
+      </p>
+    </div>
   </div>
 
   <!-- Banner Festivo do Campeão (Oculto Inicialmente) -->
@@ -288,7 +274,6 @@
 
   let modoVisualizacao = 'arvore'; // 'fases' | 'arvore'
   let abaAtivaFase = 'segunda_fase'; // 'segunda_fase' | 'oitavas' | 'quartas' | 'semi' | 'finais'
-  let simulatingMode = false; // Modo simulação inicia desativado (apenas visualização intacta)
 
   document.addEventListener("turbo:load", function() {
     inicializarSimulador();
@@ -300,168 +285,10 @@
   }
 
   function inicializarSimulador() {
-    // Ao inicializar, sempre começamos no modo visualização oficial
-    simulatingMode = false;
-    resetarParaBancoReal();
-
-    // Renderizar visualização atual
-    renderizarTudo();
-    verificarEcelebrarCampeao(false); // checa se já tem campeão definido
-    atualizarInterfaceModo();
-  }
-
-  function entrarModoSimulacao() {
-    simulatingMode = true;
-    
-    // Tenta carregar dados salvos do localStorage
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        simState = JSON.parse(stored);
-        
-        // Sincronizar qualquer novo time ou alteração do banco real que não estava no cache
-        Object.keys(DADOS_JOGOS_REAIS).forEach(id => {
-          if (!simState[id]) {
-            simState[id] = JSON.parse(JSON.stringify(DADOS_JOGOS_REAIS[id]));
-          } else {
-            // Sincroniza campos estáticos novos/atualizados como data e estádio
-            simState[id].data_formatada = DADOS_JOGOS_REAIS[id].data_formatada;
-            simState[id].estadio = DADOS_JOGOS_REAIS[id].estadio;
-
-            // Se no banco real o jogo foi finalizado de fato, atualiza
-            if (DADOS_JOGOS_REAIS[id].status === 'finalizado') {
-              simState[id].gols_mandante = DADOS_JOGOS_REAIS[id].gols_mandante;
-              simState[id].gols_visitante = DADOS_JOGOS_REAIS[id].gols_visitante;
-              simState[id].mandante_id = DADOS_JOGOS_REAIS[id].mandante_id;
-              simState[id].mandante_nome = DADOS_JOGOS_REAIS[id].mandante_nome;
-              simState[id].mandante_logo = DADOS_JOGOS_REAIS[id].mandante_logo;
-              simState[id].visitante_id = DADOS_JOGOS_REAIS[id].visitante_id;
-              simState[id].visitante_nome = DADOS_JOGOS_REAIS[id].visitante_nome;
-              simState[id].visitante_logo = DADOS_JOGOS_REAIS[id].visitante_logo;
-              simState[id].status = 'finalizado';
-            }
-          }
-        });
-      } else {
-        resetarParaBancoReal();
-      }
-    } catch(e) {
-      console.error("Erro ao carregar dados do localStorage, usando dados reais do banco:", e);
-      resetarParaBancoReal();
-    }
-
+    // Sempre carrega os dados reais do banco
+    simState = JSON.parse(JSON.stringify(DADOS_JOGOS_REAIS));
     renderizarTudo();
     verificarEcelebrarCampeao(false);
-    atualizarInterfaceModo();
-  }
-
-  function sairModoSimulacao() {
-    simulatingMode = false;
-    resetarParaBancoReal();
-    
-    // Ocultar banner do campeão e parar confetes
-    document.getElementById('banner-campeao').classList.add('hidden');
-    pararConfetes();
-    
-    renderizarTudo();
-    atualizarInterfaceModo();
-  }
-
-  function resetarParaBancoReal() {
-    simState = JSON.parse(JSON.stringify(DADOS_JOGOS_REAIS));
-  }
-
-  function resetarSimulacao() {
-    if(confirm("Tem certeza que deseja limpar toda a sua simulação e voltar ao estado real do campeonato?")) {
-      resetarParaBancoReal();
-      localStorage.removeItem(STORAGE_KEY);
-      
-      // Ocultar banner do campeão e parar confetes
-      document.getElementById('banner-campeao').classList.add('hidden');
-      pararConfetes();
-      
-      renderizarTudo();
-      atualizarInterfaceModo();
-    }
-  }
-
-  function salvarNoStorage() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(simState));
-      atualizarInterfaceModo();
-    } catch(e) {
-      console.error("Não foi possível salvar a simulação no localStorage:", e);
-    }
-  }
-
-  function atualizarInterfaceModo() {
-    const bannerDica = document.getElementById('banner-dica-simulacao');
-    const btnResetar = document.getElementById('btn-resetar-simulacao');
-    
-    if (simulatingMode) {
-      if (bannerDica) {
-        bannerDica.className = "bg-warning/10 border border-warning/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden";
-        bannerDica.innerHTML = `
-          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-warning/5 rounded-full blur-xl pointer-events-none"></div>
-          <div class="flex items-start gap-3.5">
-            <div class="p-2 bg-warning/20 rounded-xl text-warning shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
-              </svg>
-            </div>
-            <div class="text-xs sm:text-sm">
-              <p class="font-black text-white mb-0.5 tracking-wide">
-                🎮 Modo Simulação Ativo
-              </p>
-              <p class="opacity-75 leading-relaxed">
-                Você está simulando os placares do mata-mata! Clique nos campos de gols para alterar ou nos times para avançá-los.
-              </p>
-            </div>
-          </div>
-          <button class="btn btn-error btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="sairModoSimulacao()">
-            Visualizar Real
-          </button>
-        `;
-      }
-      
-      if (btnResetar) {
-        if (localStorage.getItem(STORAGE_KEY)) {
-          btnResetar.classList.remove('hidden');
-        } else {
-          btnResetar.classList.add('hidden');
-        }
-      }
-    } else {
-      if (bannerDica) {
-        bannerDica.className = "bg-primary/10 border border-primary/20 rounded-3xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-md max-w-4xl relative overflow-hidden";
-        bannerDica.innerHTML = `
-          <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
-          <div class="flex items-start gap-3.5">
-            <div class="p-2 bg-primary/20 rounded-xl text-primary shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z" />
-              </svg>
-            </div>
-            <div class="text-xs sm:text-sm">
-              <p class="font-black text-white mb-0.5 tracking-wide">
-                🏆 Chaveamento Oficial do Mata-Mata
-              </p>
-              <p class="opacity-75 leading-relaxed">
-                Esta é a árvore oficial de confrontos do campeonato. Clique no botão ao lado para fazer sua própria simulação!
-              </p>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-xs sm:btn-sm rounded-xl font-bold shrink-0 self-center shadow-lg" onclick="entrarModoSimulacao()">
-            Fazer Simulação
-          </button>
-        `;
-      }
-      
-      if (btnResetar) {
-        btnResetar.classList.add('hidden');
-      }
-    }
   }
 
   function renderizarTudo() {
@@ -644,8 +471,8 @@
         
         <div class="space-y-1.5">
           <!-- Mandante -->
-          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${m_venceu ? 'bg-success/10 font-bold border border-success/20' : 'hover:bg-base-200/50'}" 
-               ${jogo.mandante_id ? `onclick="event.stopPropagation(); vitoriaRapida(${jogo.id}, ${jogo.mandante_id})"` : ''} style="${jogo.mandante_id ? 'cursor: pointer;' : ''}">
+          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${m_venceu ? 'bg-success/10 font-bold border border-success/20' : ''}" 
+               ${jogo.mandante_id ? `onclick="event.stopPropagation(); window.location='/selecoes/${jogo.mandante_uuid || jogo.mandante_id}'"` : ''} style="${jogo.mandante_id ? 'cursor: pointer;' : ''}">
             <div class="flex items-center gap-1.5 min-w-0 flex-1">
               <div class="mask mask-squircle h-6 w-6 bg-base-300 flex items-center justify-center shrink-0">
                 ${logoMandanteHTML}
@@ -654,17 +481,12 @@
                 ${jogo.mandante_nome}
               </span>
             </div>
-            <input type="text" pattern="[0-9]*" inputmode="numeric" 
-                   class="input input-xs font-mono font-black text-center w-8 bg-base-200 border-none rounded-lg p-0" 
-                   value="${golsMandanteVal}" 
-                   placeholder="0"
-                   onclick="event.stopPropagation()"
-                   oninput="atualizarPlacarSimulado(${jogo.id}, 'mandante', this.value)">
+            <span class="font-mono font-black text-[11px] min-w-[18px] text-center opacity-70">${golsMandanteVal !== '' ? golsMandanteVal : '-'}</span>
           </div>
 
           <!-- Visitante -->
-          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${v_venceu ? 'bg-success/10 font-bold border border-success/20' : 'hover:bg-base-200/50'}" 
-               ${jogo.visitante_id ? `onclick="event.stopPropagation(); vitoriaRapida(${jogo.id}, ${jogo.visitante_id})"` : ''} style="${jogo.visitante_id ? 'cursor: pointer;' : ''}">
+          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${v_venceu ? 'bg-success/10 font-bold border border-success/20' : ''}" 
+               ${jogo.visitante_id ? `onclick="event.stopPropagation(); window.location='/selecoes/${jogo.visitante_uuid || jogo.visitante_id}'"` : ''} style="${jogo.visitante_id ? 'cursor: pointer;' : ''}">
             <div class="flex items-center gap-1.5 min-w-0 flex-1">
               <div class="mask mask-squircle h-6 w-6 bg-base-300 flex items-center justify-center shrink-0">
                 ${logoVisitanteHTML}
@@ -673,31 +495,9 @@
                 ${jogo.visitante_nome}
               </span>
             </div>
-            <input type="text" pattern="[0-9]*" inputmode="numeric" 
-                   class="input input-xs font-mono font-black text-center w-8 bg-base-200 border-none rounded-lg p-0" 
-                   value="${golsVisitanteVal}" 
-                   placeholder="0"
-                   onclick="event.stopPropagation()"
-                   oninput="atualizarPlacarSimulado(${jogo.id}, 'visitante', this.value)">
+            <span class="font-mono font-black text-[11px] min-w-[18px] text-center opacity-70">${golsVisitanteVal !== '' ? golsVisitanteVal : '-'}</span>
           </div>
         </div>
-
-        <!-- Seção de Pênaltis em caso de Empate -->
-        ${showPenalties ? `
-          <div class="mt-2 pt-1.5 border-t border-base-300/40 text-center">
-            <span class="text-[9px] font-black uppercase tracking-wider text-slate-400">Decidir Pênaltis:</span>
-            <div class="flex justify-center gap-4 mt-1">
-              <button class="btn btn-xs rounded-lg px-2 text-[9px] font-black ${jogo.vencedor_id === jogo.mandante_id ? 'btn-success text-white' : 'btn-ghost opacity-60'}" 
-                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.mandante_id})">
-                ${jogo.mandante_nome.substring(0,3).toUpperCase()}
-              </button>
-              <button class="btn btn-xs rounded-lg px-2 text-[9px] font-black ${jogo.vencedor_id === jogo.visitante_id ? 'btn-success text-white' : 'btn-ghost opacity-60'}" 
-                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.visitante_id})">
-                ${jogo.visitante_nome.substring(0,3).toUpperCase()}
-              </button>
-            </div>
-          </div>
-        ` : ''}
       `;
     } else {
       // Layout Normal / Confortável para a Lista de Abas
@@ -714,7 +514,7 @@
           
           <!-- Mandante -->
           <div class="flex flex-col items-center flex-1 w-1/3 p-2 rounded-xl transition cursor-pointer select-none hover:bg-base-100/50 ${m_venceu ? 'border border-success/30 bg-success/5' : ''}"
-               ${jogo.mandante_id ? `onclick="event.stopPropagation(); vitoriaRapida(${jogo.id}, ${jogo.mandante_id})"` : ''}>
+               ${jogo.mandante_id ? `onclick="event.stopPropagation(); window.location='/selecoes/${jogo.mandante_uuid || jogo.mandante_id}'"` : ''}>
             <div class="avatar mb-2">
               <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center overflow-hidden">
                 ${logoMandanteHTML}
@@ -725,29 +525,19 @@
             </div>
           </div>
 
-          <!-- inputs centrais -->
+          <!-- Placar central -->
           <div class="flex flex-col items-center justify-center px-2 shrink-0">
             <div class="flex items-center gap-1 sm:gap-2">
-              <input type="text" pattern="[0-9]*" inputmode="numeric" 
-                     class="input input-bordered font-mono font-black text-center text-lg w-12 h-10 sm:w-14 sm:h-12 bg-base-100 rounded-xl"
-                     value="${golsMandanteVal}" 
-                     placeholder="0"
-                     onclick="event.stopPropagation()"
-                     oninput="atualizarPlacarSimulado(${jogo.id}, 'mandante', this.value)">
+              <span class="font-mono font-black text-2xl min-w-[32px] text-center">${golsMandanteVal !== '' && golsMandanteVal !== null ? golsMandanteVal : '-'}</span>
               <span class="opacity-30 text-xs font-black">x</span>
-              <input type="text" pattern="[0-9]*" inputmode="numeric" 
-                     class="input input-bordered font-mono font-black text-center text-lg w-12 h-10 sm:w-14 sm:h-12 bg-base-100 rounded-xl"
-                     value="${golsVisitanteVal}" 
-                     placeholder="0"
-                     onclick="event.stopPropagation()"
-                     oninput="atualizarPlacarSimulado(${jogo.id}, 'visitante', this.value)">
+              <span class="font-mono font-black text-2xl min-w-[32px] text-center">${golsVisitanteVal !== '' && golsVisitanteVal !== null ? golsVisitanteVal : '-'}</span>
             </div>
-            <span class="text-[9px] opacity-40 uppercase tracking-widest mt-1.5 font-bold">Placar</span>
+            <span class="text-[9px] opacity-40 uppercase tracking-widest mt-1.5 font-bold">Placar Oficial</span>
           </div>
 
           <!-- Visitante -->
           <div class="flex flex-col items-center flex-1 w-1/3 p-2 rounded-xl transition cursor-pointer select-none hover:bg-base-100/50 ${v_venceu ? 'border border-success/30 bg-success/5' : ''}"
-               ${jogo.visitante_id ? `onclick="event.stopPropagation(); vitoriaRapida(${jogo.id}, ${jogo.visitante_id})"` : ''}>
+               ${jogo.visitante_id ? `onclick="event.stopPropagation(); window.location='/selecoes/${jogo.visitante_uuid || jogo.visitante_id}'"` : ''}>
             <div class="avatar mb-2">
               <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center overflow-hidden">
                 ${logoVisitanteHTML}
@@ -759,23 +549,6 @@
           </div>
 
         </div>
-
-        <!-- Seção de Pênaltis em caso de Empate -->
-        ${showPenalties ? `
-          <div class="pt-3 border-t border-base-200/50 text-center animate-fade-in">
-            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Desempate por Pênaltis:</span>
-            <div class="flex justify-center gap-4 mt-2">
-              <button class="btn btn-sm rounded-xl px-4 text-xs font-black ${jogo.vencedor_id === jogo.mandante_id ? 'btn-success text-white' : 'btn-outline border-base-300'}" 
-                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.mandante_id})">
-                ⚽ ${jogo.mandante_nome}
-              </button>
-              <button class="btn btn-sm rounded-xl px-4 text-xs font-black ${jogo.vencedor_id === jogo.visitante_id ? 'btn-success text-white' : 'btn-outline border-base-300'}" 
-                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.visitante_id})">
-                ⚽ ${jogo.visitante_nome}
-              </button>
-            </div>
-          </div>
-        ` : ''}
       `;
     }
 

@@ -17,6 +17,21 @@
 
         <%= hidden_field_tag :quick_mode, params[:quick_mode] %>
         <%= hidden_field_tag :return_to, params[:return_to] %>
+        <%= hidden_field_tag :target_user_id, params[:target_user_id] if params[:target_user_id].present? %>
+
+        <% if @target_user.present? && current_user.root? %>
+          <div class="bg-warning/10 border border-warning/30 rounded-2xl p-4 flex items-center gap-3">
+            <div class="p-2 bg-warning/20 rounded-xl text-warning shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            </div>
+            <div class="text-xs">
+              <p class="font-black text-warning uppercase tracking-wider text-[10px] mb-0.5">Modo Admin</p>
+              <p class="opacity-80">Você está cadastrando um palpite em nome de <strong><%= @target_user.name %></strong>.</p>
+            </div>
+          </div>
+        <% end %>
 
         <% if @jogo.present? %>
           <div class="text-center mb-8">
