@@ -42,44 +42,105 @@
 </div>
 
 <dialog id="modal-palpite-mata-mata" class="modal">
-  <div class="modal-box max-w-lg rounded-3xl border border-base-200 bg-base-100 shadow-2xl">
-    <div class="flex items-start justify-between gap-4 mb-5">
+  <div class="modal-box max-w-xl rounded-3xl border border-base-200 bg-base-100 shadow-2xl p-6">
+    <div class="flex items-start justify-between gap-4 mb-4">
       <div>
-        <p id="modal-jogo-fase" class="text-xs font-black uppercase tracking-widest text-primary"></p>
-        <h3 id="modal-jogo-titulo" class="text-2xl font-black">Palpite do jogo</h3>
+        <p id="modal-jogo-fase" class="text-xs font-black uppercase tracking-widest text-primary mb-0.5"></p>
+        <h3 id="modal-jogo-titulo" class="text-xl font-black">Palpite do jogo</h3>
       </div>
       <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost">x</button>
+        <button class="btn btn-sm btn-circle btn-ghost">✕</button>
       </form>
     </div>
 
     <input type="hidden" id="modal-jogo-id" />
 
-    <div class="space-y-4">
-      <div class="grid grid-cols-[minmax(0,1fr)_5rem] gap-3 items-center rounded-2xl border border-base-300 bg-base-200/50 p-3">
-        <div id="modal-time-mandante" class="min-w-0"></div>
-        <input id="modal-gols-mandante" type="number" min="0" max="99" class="input input-bordered text-center font-black" oninput="atualizarPenaltisModal()" />
+    <div class="space-y-5">
+      <!-- Confronto: Mandante x Visitante com score inputs -->
+      <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        
+        <!-- Mandante -->
+        <div class="flex flex-col items-center gap-2">
+          <div id="modal-logo-mandante" class="mask mask-squircle w-14 h-14 bg-base-200 overflow-hidden flex items-center justify-center shrink-0"></div>
+          <p id="modal-nome-mandante" class="text-xs font-bold text-center truncate w-full max-w-[100px]"></p>
+          <!-- Display do gol -->
+          <div class="text-5xl font-black tabular-nums text-center cursor-pointer hover:scale-105 active:scale-95 transition select-none"
+               onclick="document.getElementById('modal-gols-mandante').focus()">
+            <span id="modal-display-mandante">0</span>
+          </div>
+          <!-- Botões −/+ -->
+          <div class="flex items-center gap-1 p-1 bg-base-200 rounded-xl">
+            <button type="button" onclick="simAjustarGol('mandante', -1)"
+                    class="btn btn-ghost btn-xs btn-circle text-xl font-black hover:bg-error/20 hover:text-error">−</button>
+            <input type="number" id="modal-gols-mandante" min="0" max="99" value="0"
+                   class="input input-bordered input-xs w-12 text-center font-black"
+                   oninput="simSyncDisplay('mandante')" onchange="simSyncDisplay('mandante')">
+            <button type="button" onclick="simAjustarGol('mandante', 1)"
+                    class="btn btn-ghost btn-xs btn-circle text-xl font-black hover:bg-success/20 hover:text-success">+</button>
+          </div>
+          <!-- Atalhos 0-5 -->
+          <div class="grid grid-cols-3 gap-1 w-full">
+            <% [0,1,2,3,4,5].each do |n| %>
+              <button type="button" onclick="simDefinirGol('mandante', <%= n %>)"
+                      class="btn btn-xs btn-ghost border border-base-300 hover:border-primary hover:text-primary"><%= n %></button>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- X central -->
+        <div class="flex items-center justify-center">
+          <div class="w-9 h-9 rounded-full bg-base-300 flex items-center justify-center font-black text-lg opacity-60 shadow-inner">×</div>
+        </div>
+
+        <!-- Visitante -->
+        <div class="flex flex-col items-center gap-2">
+          <div id="modal-logo-visitante" class="mask mask-squircle w-14 h-14 bg-base-200 overflow-hidden flex items-center justify-center shrink-0"></div>
+          <p id="modal-nome-visitante" class="text-xs font-bold text-center truncate w-full max-w-[100px]"></p>
+          <!-- Display do gol -->
+          <div class="text-5xl font-black tabular-nums text-center cursor-pointer hover:scale-105 active:scale-95 transition select-none"
+               onclick="document.getElementById('modal-gols-visitante').focus()">
+            <span id="modal-display-visitante">0</span>
+          </div>
+          <!-- Botões −/+ -->
+          <div class="flex items-center gap-1 p-1 bg-base-200 rounded-xl">
+            <button type="button" onclick="simAjustarGol('visitante', -1)"
+                    class="btn btn-ghost btn-xs btn-circle text-xl font-black hover:bg-error/20 hover:text-error">−</button>
+            <input type="number" id="modal-gols-visitante" min="0" max="99" value="0"
+                   class="input input-bordered input-xs w-12 text-center font-black"
+                   oninput="simSyncDisplay('visitante')" onchange="simSyncDisplay('visitante')">
+            <button type="button" onclick="simAjustarGol('visitante', 1)"
+                    class="btn btn-ghost btn-xs btn-circle text-xl font-black hover:bg-success/20 hover:text-success">+</button>
+          </div>
+          <!-- Atalhos 0-5 -->
+          <div class="grid grid-cols-3 gap-1 w-full">
+            <% [0,1,2,3,4,5].each do |n| %>
+              <button type="button" onclick="simDefinirGol('visitante', <%= n %>)"
+                      class="btn btn-xs btn-ghost border border-base-300 hover:border-primary hover:text-primary"><%= n %></button>
+            <% end %>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-[minmax(0,1fr)_5rem] gap-3 items-center rounded-2xl border border-base-300 bg-base-200/50 p-3">
-        <div id="modal-time-visitante" class="min-w-0"></div>
-        <input id="modal-gols-visitante" type="number" min="0" max="99" class="input input-bordered text-center font-black" oninput="atualizarPenaltisModal()" />
-      </div>
-
+      <!-- Pênaltis (aparece quando empate) -->
       <div id="modal-penaltis" class="hidden rounded-2xl border border-warning/30 bg-warning/10 p-4 space-y-3">
-        <p class="text-xs font-black uppercase tracking-widest text-warning">Empate no tempo normal: quem vence nos pênaltis?</p>
-        <div id="modal-penaltis-opcoes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        <div class="flex items-center gap-2 text-warning font-black text-xs uppercase tracking-wider">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z"/>
+          </svg>
+          Empate — quem vence nos pênaltis?
+        </div>
+        <div id="modal-penaltis-opcoes" class="grid grid-cols-2 gap-2"></div>
       </div>
 
-      <p id="modal-palpite-erro" class="hidden text-xs font-bold text-error"></p>
+      <p id="modal-palpite-erro" class="hidden text-xs font-bold text-error text-center"></p>
     </div>
 
-    <div class="modal-action">
+    <div class="modal-action mt-5">
       <form method="dialog">
         <button class="btn btn-ghost rounded-xl">Cancelar</button>
       </form>
       <button type="button" class="btn btn-primary rounded-xl font-black" onclick="salvarPalpiteMataMata()">
-        Salvar palpite
+        Confirmar Palpite
       </button>
     </div>
   </div>
@@ -337,27 +398,86 @@
       const jogo = estado[jogoId];
       if (!jogo || !jogo.mandante_id || !jogo.visitante_id) return;
 
-      document.getElementById("modal-jogo-id").value = jogo.id;
-      document.getElementById("modal-jogo-fase").textContent = fases.find((fase) => fase.key === jogo.tipo)?.label || "Mata-Mata";
-      document.getElementById("modal-jogo-titulo").textContent = `Jogo ${jogo.id}`;
-      document.getElementById("modal-time-mandante").innerHTML = timeModalHtml(timeDoJogo(jogo, "mandante"));
-      document.getElementById("modal-time-visitante").innerHTML = timeModalHtml(timeDoJogo(jogo, "visitante"));
-      document.getElementById("modal-gols-mandante").value = jogo.gols_mandante === null ? "" : jogo.gols_mandante;
-      document.getElementById("modal-gols-visitante").value = jogo.gols_visitante === null ? "" : jogo.gols_visitante;
-      document.getElementById("modal-palpite-erro").classList.add("hidden");
-
-      const opcoes = document.getElementById("modal-penaltis-opcoes");
       const mandante = timeDoJogo(jogo, "mandante");
       const visitante = timeDoJogo(jogo, "visitante");
+
+      document.getElementById("modal-jogo-id").value = jogo.id;
+      document.getElementById("modal-jogo-fase").textContent = fases.find((f) => f.key === jogo.tipo)?.label || "Mata-Mata";
+      document.getElementById("modal-jogo-titulo").textContent = `${mandante.nome} x ${visitante.nome}`;
+
+      // Logos
+      document.getElementById("modal-logo-mandante").innerHTML = mandante.logo
+        ? `<img src="${mandante.logo}" class="object-cover w-full h-full" alt="">`
+        : `<span class="text-lg font-black opacity-30">?</span>`;
+      document.getElementById("modal-logo-visitante").innerHTML = visitante.logo
+        ? `<img src="${visitante.logo}" class="object-cover w-full h-full" alt="">`
+        : `<span class="text-lg font-black opacity-30">?</span>`;
+
+      // Nomes
+      document.getElementById("modal-nome-mandante").textContent = mandante.nome;
+      document.getElementById("modal-nome-visitante").textContent = visitante.nome;
+
+      // Gols
+      const golsM = jogo.gols_mandante !== null ? jogo.gols_mandante : 0;
+      const golsV = jogo.gols_visitante !== null ? jogo.gols_visitante : 0;
+      document.getElementById("modal-gols-mandante").value = golsM;
+      document.getElementById("modal-gols-visitante").value = golsV;
+      document.getElementById("modal-display-mandante").textContent = golsM;
+      document.getElementById("modal-display-visitante").textContent = golsV;
+
+      // Pênaltis
+      const opcoes = document.getElementById("modal-penaltis-opcoes");
       opcoes.innerHTML = [mandante, visitante].map((time) => `
-        <label class="btn btn-outline btn-warning rounded-xl justify-start">
+        <label class="btn btn-outline btn-warning rounded-xl justify-start ${jogo.vencedor_id === time.id ? 'bg-warning text-warning-content' : ''}">
           <input type="radio" name="vencedor_penaltis_simulado" value="${time.id}" class="radio radio-warning radio-sm" ${jogo.vencedor_id === time.id ? "checked" : ""}>
           <span class="truncate">${time.nome}</span>
         </label>
       `).join("");
 
+      // Listener para estilo dos botões de pênaltis
+      opcoes.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+          opcoes.querySelectorAll("label").forEach((label) => {
+            const r = label.querySelector("input[type='radio']");
+            if (r && r.checked) {
+              label.classList.add("bg-warning", "text-warning-content");
+              label.classList.remove("btn-outline");
+            } else {
+              label.classList.remove("bg-warning", "text-warning-content");
+              label.classList.add("btn-outline");
+            }
+          });
+        });
+      });
+
+      document.getElementById("modal-palpite-erro").classList.add("hidden");
       atualizarPenaltisModal();
       document.getElementById("modal-palpite-mata-mata").showModal();
+    };
+
+    window.simSyncDisplay = function(lado) {
+      const input = document.getElementById(`modal-gols-${lado}`);
+      const display = document.getElementById(`modal-display-${lado}`);
+      let val = parseInt(input.value, 10);
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > 99) val = 99;
+      input.value = val;
+      display.textContent = val;
+      atualizarPenaltisModal();
+    };
+
+    window.simAjustarGol = function(lado, delta) {
+      const input = document.getElementById(`modal-gols-${lado}`);
+      let val = parseInt(input.value, 10) || 0;
+      val = Math.max(0, Math.min(99, val + delta));
+      input.value = val;
+      simSyncDisplay(lado);
+    };
+
+    window.simDefinirGol = function(lado, valor) {
+      const input = document.getElementById(`modal-gols-${lado}`);
+      input.value = valor;
+      simSyncDisplay(lado);
     };
 
     window.atualizarPenaltisModal = function() {
