@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   patch "/perfil", to: "users#update_perfil"
   patch "/perfil/conquistas", to: "users#update_conquistas", as: :update_perfil_conquistas
   patch "/perfil/alterar_senha", to: "users#update_password", as: :update_password
+  patch "/perfil/aviso-pontuacao-penaltis", to: "users#dismiss_penaltis_scoring_notice", as: :dismiss_penaltis_scoring_notice
   patch "/toggle_odds", to: "users#toggle_odds", as: :toggle_odds
 
   post "/checkout/mercado_pago/pix", to: "checkout#mercado_pago_pix"

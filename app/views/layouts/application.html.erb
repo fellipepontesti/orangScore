@@ -397,9 +397,9 @@
         </div>
       </dialog>
     <% end %>
-    <% if current_user.present? %>
+    <% if current_user.present? && current_user.penaltis_scoring_notice_seen_at.blank? %>
       <!-- Modal Anúncio Bônus Pênaltis -->
-      <dialog id="penaltis_announcement_modal" class="modal">
+      <dialog id="penaltis_announcement_modal" class="modal modal-open">
         <div class="modal-box max-w-md border border-primary/20 shadow-2xl p-6 rounded-3xl text-center relative overflow-hidden bg-base-100">
           <div class="absolute -top-12 -left-12 w-32 h-32 bg-primary/20 rounded-full blur-2xl"></div>
           <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl"></div>
@@ -419,44 +419,24 @@
               ✨ +1 Ponto Extra
             </p>
             <p class="text-xs leading-relaxed">
-              Agora, ao palpitar um **empate no tempo normal** para partidas do Mata-Mata, você poderá escolher quem avançará de fase nos pênaltis.
+              Agora, ao palpitar um <strong>empate no tempo normal</strong> para partidas do Mata-Mata, você poderá escolher quem avançará de fase nos pênaltis.
             </p>
             <p class="text-xs leading-relaxed">
-              Se o jogo real terminar empatado no tempo normal e você **acertar o time classificado na disputa de pênaltis**, você ganha **1 ponto extra** na sua pontuação daquele jogo!
+              Se o jogo real terminar empatado no tempo normal e você <strong>acertar o time classificado na disputa de pênaltis</strong>, você ganha <strong>1 ponto extra</strong> na sua pontuação daquele jogo.
+            </p>
+            <p class="text-xs leading-relaxed font-bold text-warning">
+              Reavalie seus palpites do mata-mata para aproveitar a nova pontuação.
             </p>
           </div>
 
           <div class="modal-action justify-center mt-4">
-            <button class="btn btn-primary rounded-xl px-12 font-bold w-full" onclick="dismissPenaltisAnnouncement()">
-              Entendido!
-            </button>
+            <%= button_to "Entendido!",
+              dismiss_penaltis_scoring_notice_path,
+              method: :patch,
+              class: "btn btn-primary rounded-xl px-12 font-bold w-full" %>
           </div>
         </div>
       </dialog>
-
-      <script>
-        (function() {
-          function checkPenaltisAnnouncement() {
-            const key = 'orangscore_penaltis_modal_seen_v1';
-            const modal = document.getElementById('penaltis_announcement_modal');
-            if (!modal) return;
-            
-            if (!localStorage.getItem(key)) {
-              modal.showModal();
-            }
-          }
-          
-          window.dismissPenaltisAnnouncement = function() {
-            const key = 'orangscore_penaltis_modal_seen_v1';
-            localStorage.setItem(key, 'true');
-            const modal = document.getElementById('penaltis_announcement_modal');
-            if (modal) modal.close();
-          };
-
-          document.addEventListener("turbo:load", checkPenaltisAnnouncement);
-          checkPenaltisAnnouncement();
-        })();
-      </script>
     <% end %>
   </body>
 </html>

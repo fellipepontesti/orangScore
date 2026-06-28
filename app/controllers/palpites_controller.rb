@@ -103,7 +103,7 @@ class PalpitesController < ApplicationController
       if @palpite.save
         Users::AwardAchievements.check_palpite_achievements(target_user)
         if current_user.root? && target_user != current_user
-          format.html { redirect_to jogo_path(@jogo), notice: "Palpite de #{target_user.name} cadastrado com sucesso!" }
+          format.html { handle_quick_mode_redirect("Palpite de #{target_user.name} cadastrado com sucesso!") }
         else
           format.html { handle_quick_mode_redirect("Palpite criado com sucesso!") }
         end
@@ -127,7 +127,7 @@ class PalpitesController < ApplicationController
 
     respond_to do |format|
       if @palpite.update(palpite_params.except(:jogo_id))
-        Users::AwardAchievements.check_palpite_achievements(current_user)
+        Users::AwardAchievements.check_palpite_achievements(@palpite.user)
         format.html { handle_quick_mode_redirect("Palpite atualizado com sucesso!") }
         format.json { render :show, status: :ok, location: @palpite }
       else
@@ -237,6 +237,8 @@ class PalpitesController < ApplicationController
       else
         if params[:return_to] == 'dashboard'
           redirect_to authenticated_root_path, notice: success_message
+        elsif params[:return_to] == 'jogo_palpites'
+          redirect_to palpites_jogo_path(@jogo, user_id: params[:target_user_id].presence || @palpite&.user_id), notice: success_message
         else
           redirect_to jogos_path(tipo: @jogo.tipo, grupo: @jogo.grupo&.uuid), notice: success_message
         end

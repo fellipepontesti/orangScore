@@ -168,6 +168,47 @@
     </div>
   <% end %>
 
+  <% if current_user.root? %>
+    <div class="bg-base-100 rounded-2xl border border-base-200 p-4 sm:p-5 shadow-xl space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-sm font-black uppercase tracking-widest text-primary mb-1">Filtro de Usuário</h2>
+          <p class="text-xs opacity-60">Selecione um participante para ver o palpite dele ou cadastrar um novo palpite neste jogo.</p>
+        </div>
+
+        <%= form_with url: palpites_jogo_path(@jogo), method: :get, local: true, class: "flex flex-col sm:flex-row gap-2 lg:min-w-[28rem]" do |f| %>
+          <%= f.select :user_id,
+            options_from_collection_for_select(@usuarios_para_filtro, :id, :name, @usuario_filtrado&.id),
+            { include_blank: "Todos os usuários" },
+            class: "select select-bordered w-full" %>
+          <%= f.submit "Filtrar", class: "btn btn-primary font-bold" %>
+          <%= link_to "Limpar", palpites_jogo_path(@jogo), class: "btn btn-ghost" if @usuario_filtrado.present? %>
+        <% end %>
+      </div>
+
+      <% if @usuario_filtrado.present? %>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-base-200/60 rounded-xl p-4 border border-base-300">
+          <div class="min-w-0">
+            <p class="text-xs opacity-60">Usuário selecionado</p>
+            <p class="font-black truncate"><%= @usuario_filtrado.name %></p>
+          </div>
+
+          <% if @palpite_usuario_filtrado.present? %>
+            <%= link_to "Editar palpite",
+              edit_palpite_path(@palpite_usuario_filtrado, return_to: "jogo_palpites", target_user_id: @usuario_filtrado.id),
+              class: "btn btn-outline btn-warning font-bold" %>
+          <% elsif @jogo.palpitavel? %>
+            <%= link_to "Criar palpite",
+              new_palpite_path(jogo_id: @jogo.uuid, target_user_id: @usuario_filtrado.id, return_to: "jogo_palpites"),
+              class: "btn btn-primary font-bold" %>
+          <% else %>
+            <span class="badge badge-warning font-bold py-3 px-4">Jogo não está aberto para palpites</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <!-- Tabela de Palpites -->
   <div class="bg-base-100 shadow-2xl rounded-2xl border border-base-200 overflow-hidden">
     <div class="px-2 sm:px-6 py-4 bg-base-200/50 border-b border-base-200 flex items-center justify-between gap-2 sm:gap-4 text-xs font-black uppercase tracking-wider opacity-60">

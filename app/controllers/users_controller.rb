@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking, :update_conquistas]
+  before_action :authorize_root!, except: [:pontuacao, :perfil, :edit_perfil, :update_perfil, :toggle_odds, :update_password, :ranking, :update_conquistas, :dismiss_penaltis_scoring_notice]
   before_action :set_user, only: [:show, :edit, :update, :destroy, :change_plan]
 
   def index
@@ -136,6 +136,11 @@ class UsersController < ApplicationController
     status = novo_estado ? "escondidas" : "visíveis"
     flash[:notice] = "As odds foram #{status} para todos os usuários do sistema."
 
+    redirect_back fallback_location: authenticated_root_path
+  end
+
+  def dismiss_penaltis_scoring_notice
+    current_user.update_column(:penaltis_scoring_notice_seen_at, Time.current)
     redirect_back fallback_location: authenticated_root_path
   end
 

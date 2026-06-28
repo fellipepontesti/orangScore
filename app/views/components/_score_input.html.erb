@@ -108,12 +108,20 @@
     display.textContent = value;
   }
 
+  function notifyScoreChanged(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
   function incrementScore(inputId) {
     const input = document.getElementById(inputId);
     let value = parseInt(input.value) || 0;
     if (value < 99) {
       input.value = value + 1;
       updateScoreDisplay(inputId);
+      notifyScoreChanged(inputId);
     }
   }
 
@@ -123,6 +131,7 @@
     if (value > 0) {
       input.value = value - 1;
       updateScoreDisplay(inputId);
+      notifyScoreChanged(inputId);
     }
   }
 
@@ -130,6 +139,7 @@
     const input = document.getElementById(inputId);
     input.value = score;
     updateScoreDisplay(inputId);
+    notifyScoreChanged(inputId);
   }
 
   // Inicializa o display na primeira carga

@@ -7,7 +7,7 @@ class JogosController < ApplicationController
 
   def index
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
-    @view_mode = params[:view_mode].presence || 'grupo'
+    @view_mode = params[:view_mode].presence || 'lista'
     
     @tipo_ativo = params[:tipo].presence
     if @view_mode == 'grupo'
@@ -52,7 +52,13 @@ class JogosController < ApplicationController
       return
     end
 
-    @palpites = @jogo.palpites.includes(:user).to_a
+    @usuarios_para_filtro = User.order(:name) if current_user.root?
+    @usuario_filtrado = @usuarios_para_filtro&.find { |usuario| usuario.id.to_s == params[:user_id].to_s } if params[:user_id].present?
+    @palpite_usuario_filtrado = @jogo.palpites.find_by(user_id: @usuario_filtrado.id) if @usuario_filtrado
+
+    @palpites = @jogo.palpites.includes(:user)
+    @palpites = @palpites.where(user_id: @usuario_filtrado.id) if @usuario_filtrado
+    @palpites = @palpites.to_a
     @user_points_by_user = @jogo.user_points.index_by(&:user_id)
 
     @pontos_por_palpite = {}

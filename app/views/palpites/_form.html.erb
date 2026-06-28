@@ -179,6 +179,10 @@
             <%= link_to "Voltar ao Início",
               authenticated_root_path,
               class: "btn btn-ghost" %>
+          <% elsif params[:return_to] == 'jogo_palpites' %>
+            <%= link_to "Voltar aos Palpites",
+              palpites_jogo_path(@jogo, user_id: params[:target_user_id]),
+              class: "btn btn-ghost" %>
           <% else %>
             <%= link_to "Voltar aos Jogos",
               jogos_path(tipo: @jogo&.tipo || params[:tipo]),
