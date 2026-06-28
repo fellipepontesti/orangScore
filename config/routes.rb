@@ -55,6 +55,7 @@ Rails.application.routes.draw do
 
   get "/perfil", to: "users#perfil", as: :perfil
   get "/simulador", to: "simulador#index", as: :simulador
+  get "/simulador/mata-mata", to: "simulador#mata_mata", as: :simulador_mata_mata
   get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
   patch "/perfil", to: "users#update_perfil"
   patch "/perfil/conquistas", to: "users#update_conquistas", as: :update_perfil_conquistas

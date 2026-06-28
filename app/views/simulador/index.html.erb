@@ -18,7 +18,8 @@
       </p>
     </div>
 
-
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <%= link_to "Simular Mata-Mata", simulador_mata_mata_path, class: "btn btn-primary rounded-2xl font-black shadow-lg shadow-primary/20" %>
       <!-- Seletor de Modo de Visualização -->
       <div class="tabs tabs-boxed bg-base-200/80 p-1 rounded-2xl border border-base-300/40 shadow-inner flex gap-1">
         <button id="btn-modo-fases" class="tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 text-base-content/60 hover:text-base-content hover:bg-base-300/40" onclick="alterarModoVisualizacao('fases')">

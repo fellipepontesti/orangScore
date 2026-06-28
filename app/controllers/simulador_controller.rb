@@ -7,7 +7,18 @@ class SimuladorController < ApplicationController
     @jogos = Jogo.where.not(tipo: :grupo).includes(:mandante, :visitante).order(:data, :id)
 
     # Serializa os confrontos mantendo a ordenação cronológica
-    @jogos_json = @jogos.map do |j|
+    @jogos_json = jogos_mata_mata_json(@jogos)
+  end
+
+  def mata_mata
+    @jogos = Jogo.where.not(tipo: :grupo).includes(:mandante, :visitante).order(:data, :id)
+    @jogos_json = jogos_mata_mata_json(@jogos)
+  end
+
+  private
+
+  def jogos_mata_mata_json(jogos)
+    jogos.map do |j|
       {
         id: j.id,
         uuid: j.uuid,

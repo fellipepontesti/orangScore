@@ -28,7 +28,8 @@ module Users
       azarado: 'azarado',
       super_azarado: 'super_azarado',
       quase_la: 'quase_la',
-      palpitador_preciso: 'palpitador_preciso'
+      palpitador_preciso: 'palpitador_preciso',
+      deu_ruim: 'deu_ruim'
     }.freeze
 
     def self.award(user, slug, jogo = nil)
@@ -217,6 +218,28 @@ module Users
       end
     end
 
+    def self.check_deu_ruim(jogo)
+      return unless jogo.finalizado?
+      return if jogo.tipo == 'grupo' # Só vale para mata-mata
+
+      # Identifica o perdedor (seleção eliminada)
+      perdedor = if jogo.gols_mandante.to_i < jogo.gols_visitante.to_i
+        jogo.mandante
+      elsif jogo.gols_visitante.to_i < jogo.gols_mandante.to_i
+        jogo.visitante
+      else
+        # Empate — desempate por pênaltis
+        jogo.vencedor_penaltis_id == jogo.mandante_id ? jogo.visitante : jogo.mandante
+      end
+
+      return unless perdedor
+
+      # Premia todos os usuários cuja seleção foi eliminada
+      User.where(selecao_id: perdedor.id).find_each do |user|
+        award(user, SLUGS[:deu_ruim], jogo)
+      end
+    end
+
     # Verifica e concede retroativamente todas as conquistas cabíveis para o histórico do usuário
     def self.check_retroactive_achievements(user)
       check_palpite_achievements(user) if user.palpites.any?
@@ -234,6 +257,13 @@ module Users
 
       user.user_points.includes(:jogo).find_each do |up|
         check_match_finished_achievements(user, up.jogo)
+      end
+
+      # Verifica conquista 'Deu Ruim' retroativamente
+      if user.selecao.present?
+        Jogo.where.not(tipo: :grupo).finalizado.each do |jogo|
+          check_deu_ruim(jogo)
+        end
       end
     end
   end

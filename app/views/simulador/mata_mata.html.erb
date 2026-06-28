@@ -1,0 +1,429 @@
+<% content_for :title, "Simular Mata-Mata" %>
+
+<div class="w-full max-w-7xl mx-auto px-4 py-8 space-y-8">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-base-200 pb-6">
+    <div class="min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <%= link_to "Jogos", jogos_path, class: "hover:underline" %>
+        <span>/</span>
+        <%= link_to "Mata-Mata", simulador_path, class: "hover:underline" %>
+        <span>/</span>
+        <span>Simulação</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Simular Mata-Mata
+      </h1>
+      <p class="text-sm opacity-70 max-w-2xl">
+        Clique em cada confronto da chave, preencha o placar e escolha o vencedor nos pênaltis quando houver empate.
+      </p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-2">
+      <%= link_to "Ver chave oficial", simulador_path, class: "btn btn-outline rounded-2xl font-bold" %>
+      <button type="button" class="btn btn-ghost rounded-2xl font-bold" onclick="resetarSimulacaoMataMata()">
+        Limpar simulação
+      </button>
+    </div>
+  </div>
+
+  <div id="simulador-campeao" class="hidden rounded-2xl border border-warning/30 bg-warning/10 p-5 sm:p-6 shadow-xl">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-black uppercase tracking-widest text-warning mb-1">Campeão Simulado</p>
+        <h2 id="simulador-campeao-nome" class="text-2xl sm:text-3xl font-black text-white"></h2>
+      </div>
+      <div id="simulador-campeao-logo" class="mask mask-squircle w-16 h-16 bg-base-200 flex items-center justify-center overflow-hidden shrink-0"></div>
+    </div>
+  </div>
+
+  <div class="rounded-3xl border border-base-200 bg-base-100/60 shadow-xl overflow-x-auto">
+    <div id="simulador-chave" class="min-w-[1180px] grid grid-cols-5 gap-5 p-5 items-stretch"></div>
+  </div>
+</div>
+
+<dialog id="modal-palpite-mata-mata" class="modal">
+  <div class="modal-box max-w-lg rounded-3xl border border-base-200 bg-base-100 shadow-2xl">
+    <div class="flex items-start justify-between gap-4 mb-5">
+      <div>
+        <p id="modal-jogo-fase" class="text-xs font-black uppercase tracking-widest text-primary"></p>
+        <h3 id="modal-jogo-titulo" class="text-2xl font-black">Palpite do jogo</h3>
+      </div>
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost">x</button>
+      </form>
+    </div>
+
+    <input type="hidden" id="modal-jogo-id" />
+
+    <div class="space-y-4">
+      <div class="grid grid-cols-[minmax(0,1fr)_5rem] gap-3 items-center rounded-2xl border border-base-300 bg-base-200/50 p-3">
+        <div id="modal-time-mandante" class="min-w-0"></div>
+        <input id="modal-gols-mandante" type="number" min="0" max="99" class="input input-bordered text-center font-black" oninput="atualizarPenaltisModal()" />
+      </div>
+
+      <div class="grid grid-cols-[minmax(0,1fr)_5rem] gap-3 items-center rounded-2xl border border-base-300 bg-base-200/50 p-3">
+        <div id="modal-time-visitante" class="min-w-0"></div>
+        <input id="modal-gols-visitante" type="number" min="0" max="99" class="input input-bordered text-center font-black" oninput="atualizarPenaltisModal()" />
+      </div>
+
+      <div id="modal-penaltis" class="hidden rounded-2xl border border-warning/30 bg-warning/10 p-4 space-y-3">
+        <p class="text-xs font-black uppercase tracking-widest text-warning">Empate no tempo normal: quem vence nos pênaltis?</p>
+        <div id="modal-penaltis-opcoes" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+      </div>
+
+      <p id="modal-palpite-erro" class="hidden text-xs font-bold text-error"></p>
+    </div>
+
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn btn-ghost rounded-xl">Cancelar</button>
+      </form>
+      <button type="button" class="btn btn-primary rounded-xl font-black" onclick="salvarPalpiteMataMata()">
+        Salvar palpite
+      </button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<script>
+  (function() {
+    const jogosOriginais = <%= raw @jogos_json.to_json %>;
+    const storageKey = "orangscore_mata_mata_palpite_<%= current_user.id %>_v2";
+    const fases = [
+      { key: "segunda_fase", label: "Segunda Fase" },
+      { key: "oitavas", label: "Oitavas" },
+      { key: "quartas", label: "Quartas" },
+      { key: "semi", label: "Semifinais" },
+      { key: "final", label: "Final" }
+    ];
+
+    let estado = {};
+
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function prepararEstadoBase() {
+      const base = {};
+      jogosOriginais.forEach((jogo) => {
+        base[jogo.id] = {
+          ...clone(jogo),
+          gols_mandante: null,
+          gols_visitante: null,
+          vencedor_id: null
+        };
+      });
+      return base;
+    }
+
+    function carregarEstado() {
+      estado = prepararEstadoBase();
+
+      try {
+        const salvo = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        Object.keys(salvo).forEach((id) => {
+          if (!estado[id]) return;
+          estado[id].gols_mandante = salvo[id].gols_mandante;
+          estado[id].gols_visitante = salvo[id].gols_visitante;
+          estado[id].vencedor_id = salvo[id].vencedor_id;
+        });
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+      }
+
+      recalcularChaveamento();
+    }
+
+    function salvarEstado() {
+      const payload = {};
+      Object.keys(estado).forEach((id) => {
+        payload[id] = {
+          gols_mandante: estado[id].gols_mandante,
+          gols_visitante: estado[id].gols_visitante,
+          vencedor_id: estado[id].vencedor_id
+        };
+      });
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    }
+
+    function jogosDaFase(faseKey) {
+      return Object.values(estado)
+        .filter((jogo) => jogo.tipo === faseKey)
+        .sort((a, b) => {
+          const dataA = a.data_iso || "";
+          const dataB = b.data_iso || "";
+          if (dataA === dataB) return a.id - b.id;
+          return dataA.localeCompare(dataB);
+        });
+    }
+
+    function timeDoJogo(jogo, lado) {
+      return {
+        id: jogo[`${lado}_id`],
+        uuid: jogo[`${lado}_uuid`],
+        nome: jogo[`${lado}_nome`] || "A definir",
+        logo: jogo[`${lado}_logo`]
+      };
+    }
+
+    function aplicarTime(jogo, lado, time) {
+      jogo[`${lado}_id`] = time.id;
+      jogo[`${lado}_uuid`] = time.uuid;
+      jogo[`${lado}_nome`] = time.nome || "A definir";
+      jogo[`${lado}_logo`] = time.logo || null;
+    }
+
+    function limparTimesSimuladosDasFasesFuturas() {
+      fases.slice(1).forEach((fase) => {
+        jogosDaFase(fase.key).forEach((jogo) => {
+          const original = jogosOriginais.find((item) => item.id === jogo.id);
+          ["mandante", "visitante"].forEach((lado) => {
+            if (original && original[`${lado}_id`]) {
+              aplicarTime(jogo, lado, timeDoJogo(original, lado));
+            } else {
+              aplicarTime(jogo, lado, { id: null, uuid: null, nome: original?.[`nome_provisorio_${lado}`] || "A definir", logo: null });
+            }
+          });
+        });
+      });
+    }
+
+    function vencedorDoJogo(jogo) {
+      const golsMandante = jogo.gols_mandante;
+      const golsVisitante = jogo.gols_visitante;
+      if (golsMandante === null || golsVisitante === null) return null;
+      if (!jogo.mandante_id || !jogo.visitante_id) return null;
+      if (golsMandante > golsVisitante) return timeDoJogo(jogo, "mandante");
+      if (golsVisitante > golsMandante) return timeDoJogo(jogo, "visitante");
+      if (jogo.vencedor_id === jogo.mandante_id) return timeDoJogo(jogo, "mandante");
+      if (jogo.vencedor_id === jogo.visitante_id) return timeDoJogo(jogo, "visitante");
+      return null;
+    }
+
+    function recalcularChaveamento() {
+      limparTimesSimuladosDasFasesFuturas();
+
+      for (let i = 0; i < fases.length - 1; i += 1) {
+        const jogosOrigem = jogosDaFase(fases[i].key);
+        const jogosDestino = jogosDaFase(fases[i + 1].key);
+
+        jogosOrigem.forEach((jogo, index) => {
+          const vencedor = vencedorDoJogo(jogo);
+          if (!vencedor) return;
+
+          const destino = jogosDestino[Math.floor(index / 2)];
+          if (!destino) return;
+
+          aplicarTime(destino, index % 2 === 0 ? "mandante" : "visitante", vencedor);
+        });
+      }
+    }
+
+    function logoHtml(time, classes = "w-7 h-7") {
+      if (time.logo) {
+        return `<div class="mask mask-squircle ${classes} bg-base-200 overflow-hidden flex items-center justify-center shrink-0"><img src="${time.logo}" class="object-cover w-full h-full" alt=""></div>`;
+      }
+
+      return `<div class="mask mask-squircle ${classes} bg-base-200 flex items-center justify-center shrink-0"><span class="text-xs font-black opacity-40">?</span></div>`;
+    }
+
+    function placarHtml(jogo) {
+      if (jogo.gols_mandante === null || jogo.gols_visitante === null) return "x";
+      return `${jogo.gols_mandante} x ${jogo.gols_visitante}`;
+    }
+
+    function renderizarTimeCard(jogo, lado) {
+      const time = timeDoJogo(jogo, lado);
+      const vencedor = vencedorDoJogo(jogo);
+      const venceu = vencedor && vencedor.id === time.id;
+
+      return `
+        <div class="flex items-center gap-2 rounded-xl p-2 ${venceu ? "bg-success/10 border border-success/30" : "bg-base-200/50 border border-base-300/40"}">
+          ${logoHtml(time)}
+          <span class="truncate text-xs font-bold min-w-0" title="${time.nome}">${time.nome}</span>
+        </div>
+      `;
+    }
+
+    function renderizarCardJogo(jogo) {
+      const vencedor = vencedorDoJogo(jogo);
+      const bloqueado = !jogo.mandante_id || !jogo.visitante_id;
+      const empatadoSemPenalti = jogo.gols_mandante !== null && jogo.gols_visitante !== null && jogo.gols_mandante === jogo.gols_visitante && !vencedor;
+      let status = "Clique para palpitar";
+      let statusClass = "text-base-content/50";
+
+      if (bloqueado) {
+        status = "Aguardando classificados";
+      } else if (empatadoSemPenalti) {
+        status = "Escolha os pênaltis";
+        statusClass = "text-warning";
+      } else if (vencedor) {
+        status = `${vencedor.nome} avança`;
+        statusClass = "text-success";
+      }
+
+      return `
+        <button
+          type="button"
+          class="w-full rounded-2xl border border-base-200 bg-base-100 p-3 shadow-lg text-left hover:border-primary/50 hover:-translate-y-0.5 transition disabled:opacity-50 disabled:hover:translate-y-0"
+          onclick="abrirModalPalpiteMataMata(${jogo.id})"
+          ${bloqueado ? "disabled" : ""}
+        >
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="text-[10px] uppercase tracking-widest font-black text-primary">Jogo ${jogo.id}</span>
+            <span class="font-mono text-xs font-black bg-base-200 rounded-lg px-2 py-1">${placarHtml(jogo)}</span>
+          </div>
+          <div class="space-y-1.5">
+            ${renderizarTimeCard(jogo, "mandante")}
+            ${renderizarTimeCard(jogo, "visitante")}
+          </div>
+          <p class="text-[11px] font-bold mt-2 ${statusClass}">${status}</p>
+        </button>
+      `;
+    }
+
+    function renderizarChave() {
+      const container = document.getElementById("simulador-chave");
+      container.innerHTML = fases.map((fase, index) => {
+        const jogos = jogosDaFase(fase.key);
+        const spacingClass = index === 0 ? "gap-3" : index === 1 ? "gap-8" : index === 2 ? "gap-16" : index === 3 ? "gap-28" : "gap-0 justify-center";
+
+        return `
+          <section class="min-h-[760px] flex flex-col">
+            <div class="sticky top-0 z-10 bg-base-100/95 rounded-xl border border-base-200 p-3 mb-4 shadow-sm">
+              <p class="text-xs font-black uppercase tracking-widest text-primary text-center">${fase.label}</p>
+            </div>
+            <div class="flex-1 flex flex-col ${spacingClass}">
+              ${jogos.length ? jogos.map(renderizarCardJogo).join("") : '<div class="text-center text-xs opacity-50 py-8">Sem jogos</div>'}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderizarCampeao() {
+      const final = jogosDaFase("final")[0];
+      const vencedor = final ? vencedorDoJogo(final) : null;
+      const banner = document.getElementById("simulador-campeao");
+      const nome = document.getElementById("simulador-campeao-nome");
+      const logo = document.getElementById("simulador-campeao-logo");
+
+      if (!vencedor) {
+        banner.classList.add("hidden");
+        return;
+      }
+
+      nome.textContent = vencedor.nome;
+      logo.innerHTML = vencedor.logo ? `<img src="${vencedor.logo}" class="object-cover w-full h-full" alt="">` : '<span class="font-black opacity-50">?</span>';
+      banner.classList.remove("hidden");
+    }
+
+    function renderizarTudo() {
+      renderizarChave();
+      renderizarCampeao();
+    }
+
+    function timeModalHtml(time) {
+      return `
+        <div class="flex items-center gap-3 min-w-0">
+          ${logoHtml(time, "w-10 h-10")}
+          <p class="font-black truncate" title="${time.nome}">${time.nome}</p>
+        </div>
+      `;
+    }
+
+    window.abrirModalPalpiteMataMata = function(jogoId) {
+      const jogo = estado[jogoId];
+      if (!jogo || !jogo.mandante_id || !jogo.visitante_id) return;
+
+      document.getElementById("modal-jogo-id").value = jogo.id;
+      document.getElementById("modal-jogo-fase").textContent = fases.find((fase) => fase.key === jogo.tipo)?.label || "Mata-Mata";
+      document.getElementById("modal-jogo-titulo").textContent = `Jogo ${jogo.id}`;
+      document.getElementById("modal-time-mandante").innerHTML = timeModalHtml(timeDoJogo(jogo, "mandante"));
+      document.getElementById("modal-time-visitante").innerHTML = timeModalHtml(timeDoJogo(jogo, "visitante"));
+      document.getElementById("modal-gols-mandante").value = jogo.gols_mandante === null ? "" : jogo.gols_mandante;
+      document.getElementById("modal-gols-visitante").value = jogo.gols_visitante === null ? "" : jogo.gols_visitante;
+      document.getElementById("modal-palpite-erro").classList.add("hidden");
+
+      const opcoes = document.getElementById("modal-penaltis-opcoes");
+      const mandante = timeDoJogo(jogo, "mandante");
+      const visitante = timeDoJogo(jogo, "visitante");
+      opcoes.innerHTML = [mandante, visitante].map((time) => `
+        <label class="btn btn-outline btn-warning rounded-xl justify-start">
+          <input type="radio" name="vencedor_penaltis_simulado" value="${time.id}" class="radio radio-warning radio-sm" ${jogo.vencedor_id === time.id ? "checked" : ""}>
+          <span class="truncate">${time.nome}</span>
+        </label>
+      `).join("");
+
+      atualizarPenaltisModal();
+      document.getElementById("modal-palpite-mata-mata").showModal();
+    };
+
+    window.atualizarPenaltisModal = function() {
+      const golsMandante = document.getElementById("modal-gols-mandante").value;
+      const golsVisitante = document.getElementById("modal-gols-visitante").value;
+      const penaltis = document.getElementById("modal-penaltis");
+      const show = golsMandante !== "" && golsVisitante !== "" && parseInt(golsMandante, 10) === parseInt(golsVisitante, 10);
+      penaltis.classList.toggle("hidden", !show);
+    };
+
+    window.salvarPalpiteMataMata = function() {
+      const jogo = estado[document.getElementById("modal-jogo-id").value];
+      const erro = document.getElementById("modal-palpite-erro");
+      const golsMandanteValue = document.getElementById("modal-gols-mandante").value;
+      const golsVisitanteValue = document.getElementById("modal-gols-visitante").value;
+
+      erro.classList.add("hidden");
+
+      if (golsMandanteValue === "" || golsVisitanteValue === "") {
+        erro.textContent = "Preencha os dois placares.";
+        erro.classList.remove("hidden");
+        return;
+      }
+
+      const golsMandante = Math.max(0, Math.min(99, parseInt(golsMandanteValue, 10)));
+      const golsVisitante = Math.max(0, Math.min(99, parseInt(golsVisitanteValue, 10)));
+      let vencedorId = null;
+
+      if (golsMandante > golsVisitante) {
+        vencedorId = jogo.mandante_id;
+      } else if (golsVisitante > golsMandante) {
+        vencedorId = jogo.visitante_id;
+      } else {
+        const selecionado = document.querySelector('input[name="vencedor_penaltis_simulado"]:checked');
+        if (!selecionado) {
+          erro.textContent = "Escolha quem vence nos pênaltis.";
+          erro.classList.remove("hidden");
+          return;
+        }
+        vencedorId = parseInt(selecionado.value, 10);
+      }
+
+      jogo.gols_mandante = golsMandante;
+      jogo.gols_visitante = golsVisitante;
+      jogo.vencedor_id = vencedorId;
+
+      recalcularChaveamento();
+      salvarEstado();
+      renderizarTudo();
+      document.getElementById("modal-palpite-mata-mata").close();
+    };
+
+    window.resetarSimulacaoMataMata = function() {
+      localStorage.removeItem(storageKey);
+      carregarEstado();
+      renderizarTudo();
+    };
+
+    function iniciar() {
+      carregarEstado();
+      renderizarTudo();
+    }
+
+    document.addEventListener("turbo:load", iniciar);
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      iniciar();
+    }
+  })();
+</script>

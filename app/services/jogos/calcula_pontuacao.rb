@@ -49,6 +49,9 @@ module Jogos
         Users::AwardAchievements.check_match_finished_achievements(palpite.user, @jogo)
       end
 
+      # Conquista "Deu Ruim": verifica usuários com a seleção eliminada
+      Users::AwardAchievements.check_deu_ruim(@jogo) unless @jogo.tipo == 'grupo'
+
       atribuir_bonus_campeao if @jogo.tipo == 'final'
     end
 

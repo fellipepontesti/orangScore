@@ -177,3 +177,10 @@ Conquista.find_or_create_by!(slug: 'palpitador_preciso') do |c|
   c.icon = '🎯'
   c.cor = 'bg-amber-600/20 text-amber-400 border-amber-500/30'
 end
+
+Conquista.find_or_create_by!(slug: 'deu_ruim') do |c|
+  c.nome = 'Deu Ruim'
+  c.descricao = 'Sua seleção foi eliminada do campeonato. 💔 Melhor sorte na próxima!'
+  c.icon = '😭'
+  c.cor = 'bg-red-900/20 text-red-400 border-red-700/30'
+end
