@@ -27,6 +27,29 @@ class DashboardController < ApplicationController
       @jogos_programados = Jogo.where(status: :programado, definir: false, data: Time.zone.today.beginning_of_day..Time.zone.today.end_of_day).order(data: :asc)
       @next_jogo_rapido = next_jogo_rapido(current_user)
       @jogos_pendentes = jogos_pendentes_count(current_user)
+
+      caminho_placares = Rails.root.join("tmp/placares_salvos_28_junho.json")
+      if File.exist?(caminho_placares)
+        begin
+          dados_congelados = JSON.parse(File.read(caminho_placares))
+          @jogos_salvos = dados_congelados["jogos"] || []
+          
+          ids_times = @jogos_salvos.map { |r| [r["mandante_id"], r["visitante_id"]] }.flatten.compact.uniq
+          @selecoes_map = Selecao.where(id: ids_times).index_by(&:id)
+
+          ids_usuarios = @jogos_salvos.map { |r| (r["palpites"] || []).map { |p| p["user_id"] } }.flatten.uniq
+          @users_map = User.where(id: ids_usuarios).index_by(&:id)
+        rescue => e
+          @jogos_salvos = []
+          @selecoes_map = {}
+          @users_map = {}
+        end
+      else
+        @jogos_salvos = []
+        @selecoes_map = {}
+        @users_map = {}
+      end
+
       return render :root_index
     end
     @next_jogo_rapido = next_jogo_rapido(current_user)

@@ -89,9 +89,121 @@
 
     <div class="w-full px-4 sm:px-8 pb-8">
       <% if @palpites.any? %>
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <% @palpites.each do |palpite| %>
-            <%= render "palpite_card", palpite: palpite, pontos: @points_by_palpite_id[palpite.id] %>
+        <div class="space-y-6 w-full">
+          <% @palpites.group_by(&:jogo).each do |jogo, palpites_do_jogo| %>
+            <div class="bg-base-100 rounded-2xl border border-base-200 p-4 sm:p-6 shadow-md">
+              
+              <!-- Cabeçalho do Jogo (Estilo Listagem de Jogos) -->
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-base-200 pb-4 mb-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1 w-full min-w-0">
+                  
+                  <!-- Esquerda: Status/Data -->
+                  <div class="text-xs font-semibold shrink-0 text-center border-b sm:border-b-0 sm:border-r border-base-200 pb-2 sm:pb-0 sm:pr-4 sm:w-28 sm:min-w-[112px] w-full flex sm:flex-col justify-between sm:justify-center items-center gap-1">
+                    <% if jogo.em_andamento? %>
+                      <p class="text-success font-black uppercase tracking-wider animate-pulse">AO VIVO</p>
+                    <% elsif jogo.suspenso? %>
+                      <p class="text-warning font-black uppercase tracking-wider">SUSPENSO</p>
+                    <% elsif jogo.finalizado? %>
+                      <p class="text-error font-black uppercase tracking-wider opacity-60">FIM</p>
+                    <% else %>
+                      <p class="opacity-50">Horário</p>
+                    <% end %>
+                    <p class="text-warning font-black text-sm">
+                      <%= jogo.data.strftime("%d/%m %H:%M") %>
+                    </p>
+                  </div>
+
+                  <!-- Meio: Confronto com Placar Oficial -->
+                  <div class="flex items-center gap-3 sm:gap-6 flex-1 min-w-0 w-full justify-between sm:justify-start">
+                    <!-- Mandante -->
+                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-end text-right">
+                      <span class="truncate" title="<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>">
+                        <%= jogo.mandante&.nome || jogo.nome_provisorio_mandante || 'Mandante' %>
+                      </span>
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                        <% if jogo.mandante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.mandante.logo}", class: "object-cover w-full h-full" %>
+                        <% end %>
+                      </div>
+                    </div>
+
+                    <!-- Placar oficial -->
+                    <div class="flex items-center gap-2 shrink-0 justify-center min-w-[70px] bg-base-200 px-3 py-1 rounded-xl border border-base-300/40">
+                      <% if jogo.finalizado? || jogo.em_andamento? || jogo.suspenso? %>
+                        <span class="font-mono font-black text-sm text-white">
+                          <%= jogo.gols_mandante.to_i %>
+                        </span>
+                        <span class="opacity-30 text-xs font-black">x</span>
+                        <span class="font-mono font-black text-sm text-white">
+                          <%= jogo.gols_visitante.to_i %>
+                        </span>
+                      <% else %>
+                        <span class="opacity-40 text-xs font-bold uppercase tracking-wider">VS</span>
+                      <% end %>
+                    </div>
+
+                    <!-- Visitante -->
+                    <div class="flex items-center gap-2 font-bold text-sm min-w-0 flex-1 justify-start">
+                      <div class="mask mask-squircle h-6 w-6 bg-base-200 overflow-hidden flex items-center justify-center shrink-0">
+                        <% if jogo.visitante&.logo.present? %>
+                          <%= image_tag "selecoes/#{jogo.visitante.logo}", class: "object-cover w-full h-full" %>
+                        <% end %>
+                      </div>
+                      <span class="truncate" title="<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>">
+                        <%= jogo.visitante&.nome || jogo.nome_provisorio_visitante || 'Visitante' %>
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Palpites dos Usuários -->
+              <div>
+                <h3 class="text-xs font-black uppercase text-warning mb-3 tracking-wider">Palpites dos Usuários (<%= palpites_do_jogo.size %>)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <% palpites_do_jogo.each do |palpite| %>
+                    <% pontos = @points_by_palpite_id[palpite.id] %>
+                    <div class="bg-base-200/50 rounded-xl p-3 border border-base-300/50 flex items-center justify-between gap-4">
+                      
+                      <!-- Usuário -->
+                      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div class="bg-base-300 text-neutral-content w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold">
+                          <%= palpite.user.name.first.upcase %>
+                        </div>
+                        <div class="min-w-0">
+                          <p class="font-bold text-white text-xs truncate" title="<%= palpite.user.name %>"><%= palpite.user.name %></p>
+                          <p class="text-[10px] opacity-40 font-semibold">Palpite #<%= palpite.id %></p>
+                        </div>
+                      </div>
+
+                      <!-- Placar Palpitado e Pontos -->
+                      <div class="flex items-center gap-3 shrink-0">
+                        <div class="bg-base-100 border border-base-300/60 px-3 py-1 rounded-lg text-sm font-black font-mono tracking-tight text-white whitespace-nowrap">
+                          <%= palpite.gols_casa %>
+                          <span class="mx-0.5 opacity-30 text-xs font-medium">x</span>
+                          <%= palpite.gols_fora %>
+                        </div>
+
+                        <div class="text-right min-w-[70px]">
+                          <% if jogo.finalizado? %>
+                            <span class="badge badge-warning text-[10px] font-black uppercase py-2 text-white">
+                              +<%= pontos.to_i %> pts
+                            </span>
+                          <% else %>
+                            <span class="badge badge-neutral text-[10px] font-black uppercase py-2 opacity-50">
+                              -- pts
+                            </span>
+                          <% end %>
+                        </div>
+                      </div>
+
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+
+            </div>
           <% end %>
         </div>
       <% else %>

@@ -79,12 +79,10 @@ class JogosController < ApplicationController
 
   def new
     @jogo = Jogo.new
-    @selecoes = Selecao.order(:nome)
     @grupos = Grupo.order(:nome)
   end
 
   def edit
-    @selecoes = Selecao.order(:nome)
     @grupos = Grupo.order(:nome)
   end
 
@@ -96,7 +94,6 @@ class JogosController < ApplicationController
         format.html { redirect_to @jogo, notice: "Jogo criado com sucesso!." }
         format.json { render :show, status: :created, location: @jogo }
       else
-        @selecoes = Selecao.order(:nome)
         @grupos = Grupo.order(:nome)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @jogo.errors, status: :unprocessable_entity }
@@ -118,7 +115,6 @@ class JogosController < ApplicationController
         end
         format.json { render :show, status: :ok, location: @jogo }
       else
-        @selecoes = Selecao.order(:nome)
         @grupos = Grupo.order(:nome)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @jogo.errors, status: :unprocessable_entity }
@@ -258,13 +254,102 @@ class JogosController < ApplicationController
     end
   end
 
+  def salvar_placares
+    inicio_dia = Time.use_zone("America/Sao_Paulo") { Time.zone.parse("2026-06-28 00:00:00") }
+    # Filtra jogos a partir do dia 28 de junho que estão programados e têm palpites
+    jogos = Jogo.where("data >= ?", inicio_dia)
+                .where(status: :programado)
+                .joins(:palpites)
+                .distinct
+
+    dados_jogos = jogos.map do |j|
+      {
+        mandante_id: j.mandante_id,
+        visitante_id: j.visitante_id,
+        nome_provisorio_mandante: j.nome_provisorio_mandante,
+        nome_provisorio_visitante: j.nome_provisorio_visitante,
+        gols_mandante: j.gols_mandante,
+        gols_visitante: j.gols_visitante,
+        status: j.status,
+        definir: j.definir,
+        palpites: j.palpites.map do |p|
+          {
+            user_id: p.user_id,
+            gols_casa: p.gols_casa,
+            gols_fora: p.gols_fora
+          }
+        end
+      }
+    end
+
+    dados_salvos = { "jogos" => dados_jogos }
+
+    FileUtils.mkdir_p(Rails.root.join("tmp"))
+    File.write(Rails.root.join("tmp/placares_salvos_28_junho.json"), JSON.pretty_generate(dados_salvos))
+
+    total_palpites = dados_jogos.sum { |j| j[:palpites].size }
+    redirect_back fallback_location: authenticated_root_path, notice: "#{dados_jogos.size} jogos programados e #{total_palpites} palpites de usuários do dia 28 de Junho em diante foram salvos com sucesso!"
+  end
+
+  def realocar_placares
+    caminho = Rails.root.join("tmp/placares_salvos_28_junho.json")
+    unless File.exist?(caminho)
+      redirect_back fallback_location: authenticated_root_path, alert: "Nenhum palpite ou placar do dia 28 de Junho em diante foi salvo anteriormente!"
+      return
+    end
+
+    conteudo = JSON.parse(File.read(caminho))
+    dados_jogos = conteudo["jogos"] || []
+
+    inicio_dia = Time.use_zone("America/Sao_Paulo") { Time.zone.parse("2026-06-28 00:00:00") }
+    jogos_futuros = Jogo.where("data >= ?", inicio_dia).to_a
+
+    jogos_atualizados = 0
+    palpites_realocados = 0
+
+    dados_jogos.each do |registro|
+      jogo = if registro["definir"] == false && registro["mandante_id"].present? && registro["visitante_id"].present?
+        jogos_futuros.find { |j| j.mandante_id == registro["mandante_id"] && j.visitante_id == registro["visitante_id"] }
+      elsif registro["nome_provisorio_mandante"].present? && registro["nome_provisorio_visitante"].present?
+        jogos_futuros.find { |j| j.nome_provisorio_mandante == registro["nome_provisorio_mandante"] && j.nome_provisorio_visitante == registro["nome_provisorio_visitante"] }
+      end
+
+      if jogo
+        jogo.update(
+          gols_mandante: registro["gols_mandante"],
+          gols_visitante: registro["gols_visitante"],
+          status: registro["status"]
+        )
+        jogos_atualizados += 1
+
+        (registro["palpites"] || []).each do |p_salvo|
+          palpite = Palpite.find_or_initialize_by(user_id: p_salvo["user_id"], jogo_id: jogo.id)
+          palpite.gols_casa = p_salvo["gols_casa"]
+          palpite.gols_fora = p_salvo["gols_fora"]
+          if palpite.save
+            palpites_realocados += 1
+          end
+        end
+      end
+    end
+
+    redirect_back fallback_location: authenticated_root_path, notice: "Placares restaurados em #{jogos_atualizados} jogos e #{palpites_realocados} palpites de usuários realocados!"
+  end
+
   private
     def set_jogo
       @jogo = Jogo.find_by_uuid_param!(params[:id])
     end
 
     def load_selecoes
-      @selecoes = Selecao.order(:nome)
+      if @jogo.present?
+        classificadas_ids = Selecao.classificadas.pluck(:id)
+        classificadas_ids << @jogo.mandante_id if @jogo.mandante_id.present?
+        classificadas_ids << @jogo.visitante_id if @jogo.visitante_id.present?
+        @selecoes = Selecao.where(id: classificadas_ids.uniq).order(:nome)
+      else
+        @selecoes = Selecao.classificadas.order(:nome)
+      end
     end
 
     def jogo_params

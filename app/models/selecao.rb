@@ -34,6 +34,8 @@ class Selecao < ApplicationRecord
     order(Arel.sql('pontos DESC, (gols - gols_sofridos) DESC, gols DESC, nome ASC')) 
   }
 
+  scope :classificadas, -> { where(desclassificada: false) }
+
   def estilo_card
     nome_limpo = nome.to_s.strip.downcase.gsub('í', 'i').gsub('é', 'e').gsub('ó', 'o').gsub('á', 'a').gsub('ã', 'a').gsub('ç', 'c')
     

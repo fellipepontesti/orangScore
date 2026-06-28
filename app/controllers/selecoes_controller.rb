@@ -125,7 +125,7 @@ class SelecoesController < ApplicationController
     end
 
     def selecao_params
-      params.require(:selecao).permit(:nome, :pontos, :qtd_jogos, :vitorias, :derrotas, :empates, :logo, :grupo_id)
+      params.require(:selecao).permit(:nome, :pontos, :qtd_jogos, :vitorias, :derrotas, :empates, :logo, :grupo_id, :desclassificada)
     end
 
     def logos_disponiveis

@@ -1,0 +1,958 @@
+<% content_for :title, "Simulador do Mata-Mata" %>
+
+<div class="w-full max-w-7xl mx-auto px-4 py-8 relative">
+
+  <!-- Cabeçalho -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-base-200 pb-6 mb-8 relative z-10">
+    <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex items-center gap-2 text-sm text-orange-500 font-mono font-bold uppercase tracking-wider">
+        <span>Mata-Mata</span>
+        <span>/</span>
+        <span>Simulador Interativo</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent pb-1">
+        Chaveamento do Mata-Mata
+      </h1>
+      <p class="text-sm opacity-70">
+        Acompanhe os confrontos oficiais e simule as projeções da fase final até coroar o grande campeão.
+      </p>
+    </div>
+
+    <!-- Controles Superiores -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Seletor de Modo de Visualização -->
+      <div class="tabs tabs-boxed bg-base-200/80 p-1 rounded-2xl border border-base-300/40 shadow-inner flex gap-1">
+        <button id="btn-modo-fases" class="tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 text-base-content/60 hover:text-base-content hover:bg-base-300/40" onclick="alterarModoVisualizacao('fases')">
+          Por Fases
+        </button>
+        <button id="btn-modo-arvore" class="tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 tab-active bg-primary text-primary-content shadow-lg shadow-primary/25 scale-105" onclick="alterarModoVisualizacao('arvore')">
+          Árvore Completa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner Festivo do Campeão (Oculto Inicialmente) -->
+  <div id="banner-campeao" class="hidden card bg-gradient-to-r from-amber-500/20 via-yellow-500/25 to-orange-600/20 border-2 border-yellow-500/30 rounded-3xl p-6 sm:p-8 mb-8 text-center shadow-xl animate-fade-in relative overflow-hidden z-20">
+    <!-- Efeito de Brilho de Fundo -->
+    <div class="absolute -inset-10 bg-radial-gradient from-yellow-500/20 to-transparent blur-2xl opacity-60"></div>
+    <div class="relative z-10 flex flex-col items-center justify-center gap-3">
+      <span class="text-4xl sm:text-5xl animate-bounce">🏆</span>
+      <h2 class="text-2xl sm:text-3xl font-black uppercase tracking-widest text-yellow-400">
+        Seu Campeão Simulado!
+      </h2>
+      <div class="flex items-center gap-4 mt-2 mb-2 p-4 px-6 rounded-2xl bg-base-100/90 border border-yellow-500/30 shadow-2xl scale-110">
+        <div id="campeao-logo" class="mask mask-squircle w-12 h-12 bg-base-200 overflow-hidden flex items-center justify-center shadow">
+          <!-- Logo do Campeão via JS -->
+        </div>
+        <span id="campeao-nome" class="font-black text-xl sm:text-2xl bg-gradient-to-r from-yellow-400 to-amber-200 bg-clip-text text-transparent">
+          --
+        </span>
+      </div>
+      <p class="text-xs opacity-75 max-w-md">
+        Parabéns! Sua simulação do mata-mata está completa. Você pode compartilhar seu palpite com seus amigos ou reiniciar a simulação a qualquer momento.
+      </p>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal - Visualização 1: Por Fases (Abas) -->
+  <div id="container-fases" class="space-y-6 relative z-10 hidden">
+    <!-- Navegação de Abas das Fases -->
+    <div class="flex justify-start sm:justify-center items-center gap-2 overflow-x-auto pb-2 scrollbar-hide bg-base-200/50 p-2 rounded-2xl border border-base-300/40">
+      <button class="tab-fase btn btn-sm rounded-xl font-bold bg-primary text-primary-content shadow-md" data-fase="segunda_fase" onclick="selecionarAbaFase('segunda_fase')">
+        Segunda Fase
+      </button>
+      <button class="tab-fase btn btn-sm btn-ghost rounded-xl font-bold opacity-60" data-fase="oitavas" onclick="selecionarAbaFase('oitavas')">
+        Oitavas
+      </button>
+      <button class="tab-fase btn btn-sm btn-ghost rounded-xl font-bold opacity-60" data-fase="quartas" onclick="selecionarAbaFase('quartas')">
+        Quartas
+      </button>
+      <button class="tab-fase btn btn-sm btn-ghost rounded-xl font-bold opacity-60" data-fase="semi" onclick="selecionarAbaFase('semi')">
+        Semifinais
+      </button>
+      <button class="tab-fase btn btn-sm btn-ghost rounded-xl font-bold opacity-60" data-fase="finais" onclick="selecionarAbaFase('finais')">
+        Finais
+      </button>
+    </div>
+
+    <!-- Lista de Confrontos da Fase -->
+    <div id="lista-confrontos-fase" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+      <!-- Injetado Dinamicamente via JS -->
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal - Visualização 2: Árvore Completa -->
+  <div id="container-arvore" class="w-full overflow-x-auto rounded-3xl border border-base-200 bg-base-200/10 p-6 md:p-8 scrollbar-thin relative z-10">
+    <div class="min-w-[1250px] flex justify-between items-center gap-4 py-8 relative">
+      
+      <!-- Coluna 1: Segunda Fase (Esquerda) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-segunda-esq">
+        <!-- Jogos 74, 75, 78, 79, 86, 87, 88, 89 -->
+      </div>
+
+      <!-- Coluna 2: Oitavas (Esquerda) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-oitavas-esq">
+        <!-- Jogos 90, 91, 94, 95 -->
+      </div>
+
+      <!-- Coluna 3: Quartas (Esquerda) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-quartas-esq">
+        <!-- Jogos 98, 99 -->
+      </div>
+
+      <!-- Coluna 4: Semifinal (Esquerda) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-semi-esq">
+        <!-- Jogo 102 -->
+      </div>
+
+      <!-- Coluna 5: Central (Final / 3º Lugar / Campeão) -->
+      <div class="flex flex-col justify-center gap-16 h-[880px] w-64 shrink-0 text-center relative" id="col-arvore-central">
+        <!-- Detalhe decorativo do troféu no centro -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+          <span class="text-[180px]">🏆</span>
+        </div>
+        
+        <!-- Bloco Final -->
+        <div class="flex flex-col gap-3 relative z-10" id="bloco-arvore-final">
+          <p class="text-xs font-black uppercase tracking-widest text-warning">Grande Final</p>
+          <div id="card-jogo-104"></div>
+        </div>
+
+        <!-- Bloco Terceiro Lugar -->
+        <div class="flex flex-col gap-3 relative z-10" id="bloco-arvore-terceiro">
+          <p class="text-xs font-black uppercase tracking-widest opacity-60">Decisão 3º Lugar</p>
+          <div id="card-jogo-105"></div>
+        </div>
+      </div>
+
+      <!-- Coluna 6: Semifinal (Direita) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-semi-dir">
+        <!-- Jogo 103 -->
+      </div>
+
+      <!-- Coluna 7: Quartas (Direita) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-quartas-dir">
+        <!-- Jogos 100, 101 -->
+      </div>
+
+      <!-- Coluna 8: Oitavas (Direita) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-oitavas-dir">
+        <!-- Jogos 92, 93, 96, 97 -->
+      </div>
+
+      <!-- Coluna 9: Segunda Fase (Direita) -->
+      <div class="flex flex-col justify-around h-[880px] w-56 shrink-0" id="col-arvore-segunda-dir">
+        <!-- Jogos 82, 83, 76, 77, 80, 81, 84, 85 -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Canvas de Confetes da Vitória -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+</div>
+
+<script>
+  // Permissões
+  const USER_IS_ROOT = <%= current_user.root? ? 'true' : 'false' %>;
+
+  // Injeção de Dados do Backend (Array Ordenado Cronologicamente por Data)
+  const JOGOS_ORDENADOS = <%= raw @jogos_json.to_json %>;
+  const DADOS_JOGOS_REAIS = JOGOS_ORDENADOS.reduce((acc, j) => {
+    acc[j.id] = j;
+    return acc;
+  }, {});
+  
+  // Chave do LocalStorage
+  const STORAGE_KEY = "orangscore_simulador_bracket_v2";
+
+  // Estado Local da Simulação
+  let simState = {};
+
+  // Mapeamento da Árvore de Confrontos (De onde para onde vai)
+  const MAPA_AVANCO = {
+    // Segunda Fase -> Oitavas
+    74: { destino: 90, pos: 'mandante' },
+    75: { destino: 90, pos: 'visitante' },
+    78: { destino: 91, pos: 'mandante' },
+    79: { destino: 91, pos: 'visitante' },
+    82: { destino: 92, pos: 'mandante' },
+    83: { destino: 92, pos: 'visitante' },
+    76: { destino: 93, pos: 'mandante' },
+    77: { destino: 93, pos: 'visitante' },
+    86: { destino: 94, pos: 'mandante' },
+    87: { destino: 94, pos: 'visitante' },
+    88: { destino: 95, pos: 'mandante' },
+    89: { destino: 95, pos: 'visitante' },
+    80: { destino: 96, pos: 'mandante' },
+    81: { destino: 96, pos: 'visitante' },
+    84: { destino: 97, pos: 'mandante' },
+    85: { destino: 97, pos: 'visitante' },
+
+    // Oitavas -> Quartas
+    90: { destino: 98, pos: 'mandante' },
+    91: { destino: 98, pos: 'visitante' },
+    94: { destino: 99, pos: 'mandante' },
+    95: { destino: 99, pos: 'visitante' },
+    92: { destino: 100, pos: 'mandante' },
+    93: { destino: 100, pos: 'visitante' },
+    96: { destino: 101, pos: 'mandante' },
+    97: { destino: 101, pos: 'visitante' },
+
+    // Quartas -> Semis
+    98: { destino: 102, pos: 'mandante' },
+    99: { destino: 102, pos: 'visitante' },
+    100: { destino: 103, pos: 'mandante' },
+    101: { destino: 103, pos: 'visitante' },
+
+    // Semis -> Final e 3º Lugar
+    102: { vencedor: { destino: 104, pos: 'mandante' }, perdedor: { destino: 105, pos: 'mandante' } },
+    103: { vencedor: { destino: 104, pos: 'visitante' }, perdedor: { destino: 105, pos: 'visitante' } }
+  };
+
+  // Mapeamento Inverso para Limpeza em Cascata (Se alterar a origem, limpa os filhos)
+  const MAPA_DEPENDENCIAS = {
+    74: [90, 98, 102, 104, 105],
+    75: [90, 98, 102, 104, 105],
+    78: [91, 98, 102, 104, 105],
+    79: [91, 98, 102, 104, 105],
+    86: [94, 99, 102, 104, 105],
+    87: [94, 99, 102, 104, 105],
+    88: [95, 99, 102, 104, 105],
+    89: [95, 99, 102, 104, 105],
+    82: [92, 100, 103, 104, 105],
+    83: [92, 100, 103, 104, 105],
+    76: [93, 100, 103, 104, 105],
+    77: [93, 100, 103, 104, 105],
+    80: [96, 101, 103, 104, 105],
+    81: [96, 101, 103, 104, 105],
+    84: [97, 101, 103, 104, 105],
+    85: [97, 101, 103, 104, 105],
+    90: [98, 102, 104, 105],
+    91: [98, 102, 104, 105],
+    94: [99, 102, 104, 105],
+    95: [99, 102, 104, 105],
+    92: [100, 103, 104, 105],
+    93: [100, 103, 104, 105],
+    96: [101, 103, 104, 105],
+    97: [101, 103, 104, 105],
+    98: [102, 104, 105],
+    99: [102, 104, 105],
+    100: [103, 104, 105],
+    101: [103, 104, 105],
+    102: [104, 105],
+    103: [104, 105]
+  };
+
+  // Nomes Amigáveis das Fases
+  const LABELS_FASES = {
+    'segunda_fase': 'Segunda Fase',
+    'oitavas': 'Oitavas de Final',
+    'quartas': 'Quartas de Final',
+    'semi': 'Semifinal',
+    'final': 'Final',
+    'terceiro_lugar': '3º Lugar'
+  };
+
+  let modoVisualizacao = 'arvore'; // 'fases' | 'arvore'
+  let abaAtivaFase = 'segunda_fase'; // 'segunda_fase' | 'oitavas' | 'quartas' | 'semi' | 'finais'
+
+  document.addEventListener("turbo:load", function() {
+    inicializarSimulador();
+  });
+
+  // Fallback caso o turbo:load não rode por algum motivo
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    inicializarSimulador();
+  }
+
+  function inicializarSimulador() {
+    // 1. Tentar recuperar simulação do LocalStorage
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        simState = JSON.parse(stored);
+        
+        // Sincronizar qualquer novo time ou alteração do banco real que não estava no cache
+        Object.keys(DADOS_JOGOS_REAIS).forEach(id => {
+          if (!simState[id]) {
+            simState[id] = JSON.parse(JSON.stringify(DADOS_JOGOS_REAIS[id]));
+          } else {
+            // Sincroniza campos estáticos novos/atualizados como data e estádio
+            simState[id].data_formatada = DADOS_JOGOS_REAIS[id].data_formatada;
+            simState[id].estadio = DADOS_JOGOS_REAIS[id].estadio;
+
+            // Se no banco real o jogo foi finalizado de fato, atualiza
+            if (DADOS_JOGOS_REAIS[id].status === 'finalizado') {
+              simState[id].gols_mandante = DADOS_JOGOS_REAIS[id].gols_mandante;
+              simState[id].gols_visitante = DADOS_JOGOS_REAIS[id].gols_visitante;
+              simState[id].mandante_id = DADOS_JOGOS_REAIS[id].mandante_id;
+              simState[id].mandante_nome = DADOS_JOGOS_REAIS[id].mandante_nome;
+              simState[id].mandante_logo = DADOS_JOGOS_REAIS[id].mandante_logo;
+              simState[id].visitante_id = DADOS_JOGOS_REAIS[id].visitante_id;
+              simState[id].visitante_nome = DADOS_JOGOS_REAIS[id].visitante_nome;
+              simState[id].visitante_logo = DADOS_JOGOS_REAIS[id].visitante_logo;
+              simState[id].status = 'finalizado';
+            }
+          }
+        });
+      } else {
+        resetarParaBancoReal();
+      }
+    } catch(e) {
+      console.error("Erro ao carregar dados do localStorage, usando dados reais do banco:", e);
+      resetarParaBancoReal();
+    }
+
+    // 2. Renderizar visualização atual
+    renderizarTudo();
+    verificarEcelebrarCampeao(false); // checa se já tem campeão definido
+  }
+
+  function resetarParaBancoReal() {
+    simState = JSON.parse(JSON.stringify(DADOS_JOGOS_REAIS));
+  }
+
+  function resetarSimulacao() {
+    if(confirm("Tem certeza que deseja limpar toda a simulação e voltar ao estado real das chaves do campeonato?")) {
+      resetarParaBancoReal();
+      localStorage.removeItem(STORAGE_KEY);
+      
+      // Ocultar banner do campeão e parar confetes
+      document.getElementById('banner-campeao').classList.add('hidden');
+      pararConfetes();
+      
+      renderizarTudo();
+    }
+  }
+
+  function salvarNoStorage() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(simState));
+    } catch(e) {
+      console.error("Não foi possível salvar a simulação no localStorage:", e);
+    }
+  }
+
+  function renderizarTudo() {
+    if (modoVisualizacao === 'fases') {
+      renderizarAbaFases();
+    } else {
+      renderizarArvoreCompleta();
+    }
+  }
+
+  function alterarModoVisualizacao(modo) {
+    modoVisualizacao = modo;
+
+    const btnFases = document.getElementById('btn-modo-fases');
+    const btnArvore = document.getElementById('btn-modo-arvore');
+    const containerFases = document.getElementById('container-fases');
+    const containerArvore = document.getElementById('container-arvore');
+
+    if (modo === 'fases') {
+      btnFases.className = "tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 tab-active bg-primary text-primary-content shadow-lg shadow-primary/25 scale-105";
+      btnArvore.className = "tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 text-base-content/60 hover:text-base-content hover:bg-base-300/40";
+      containerFases.classList.remove('hidden');
+      containerArvore.classList.add('hidden');
+      renderizarAbaFases();
+    } else {
+      btnArvore.className = "tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 tab-active bg-primary text-primary-content shadow-lg shadow-primary/25 scale-105";
+      btnFases.className = "tab tab-sm sm:tab-md font-bold rounded-xl transition-all duration-200 text-base-content/60 hover:text-base-content hover:bg-base-300/40";
+      containerArvore.classList.remove('hidden');
+      containerFases.classList.add('hidden');
+      renderizarArvoreCompleta();
+    }
+  }
+
+  function selecionarAbaFase(fase) {
+    abaAtivaFase = fase;
+    
+    // Atualizar classes dos botões das abas
+    document.querySelectorAll('.tab-fase').forEach(btn => {
+      const btnFase = btn.getAttribute('data-fase');
+      if (btnFase === fase) {
+        btn.className = "tab-fase btn btn-sm rounded-xl font-bold bg-primary text-primary-content shadow-md";
+      } else {
+        btn.className = "tab-fase btn btn-sm btn-ghost rounded-xl font-bold opacity-60";
+      }
+    });
+
+    renderizarAbaFases();
+  }
+
+  // Pega os jogos de mata-mata que pertencem à aba de fase ativa mantendo a ordem cronológica
+  function obterJogosFaseAtiva() {
+    let tiposFase = [];
+    switch(abaAtivaFase) {
+      case 'segunda_fase':
+        tiposFase = ['segunda_fase', 1];
+        break;
+      case 'oitavas':
+        tiposFase = ['oitavas', 2];
+        break;
+      case 'quartas':
+        tiposFase = ['quartas', 3];
+        break;
+      case 'semi':
+        tiposFase = ['semi', 4];
+        break;
+      case 'finais':
+        tiposFase = ['final', 'terceiro_lugar', 5, 6];
+        break;
+      default:
+        return [];
+    }
+    
+    // Filtra o array original mantendo a ordenação cronológica e retorna o estado atualizado da simulação
+    return JOGOS_ORDENADOS
+      .filter(j => tiposFase.includes(j.tipo))
+      .map(j => simState[j.id]);
+  }
+
+  // Renderiza a lista de jogos do modo Por Fases
+  function renderizarAbaFases() {
+    const container = document.getElementById('lista-confrontos-fase');
+    container.innerHTML = '';
+    
+    const jogos = obterJogosFaseAtiva(); // Mantém a ordenação de data perfeita vinda do Ruby
+    
+    if (jogos.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center py-10 opacity-50">Nenhum jogo nesta fase.</div>';
+      return;
+    }
+
+    jogos.forEach(jogo => {
+      const card = criarCardHTML(jogo, false);
+      container.appendChild(card);
+    });
+  }
+
+  // Renderiza a árvore de brackets
+  function renderizarArvoreCompleta() {
+    // Lista de ids por coluna
+    const cols = {
+      'col-arvore-segunda-esq': [74, 75, 78, 79, 86, 87, 88, 89],
+      'col-arvore-oitavas-esq': [90, 91, 94, 95],
+      'col-arvore-quartas-esq': [98, 99],
+      'col-arvore-semi-esq': [102],
+      
+      'col-arvore-semi-dir': [103],
+      'col-arvore-quartas-dir': [100, 101],
+      'col-arvore-oitavas-dir': [92, 93, 96, 97],
+      'col-arvore-segunda-dir': [82, 83, 76, 77, 80, 81, 84, 85]
+    };
+
+    // Renderizar colunas laterais
+    Object.keys(cols).forEach(colId => {
+      const el = document.getElementById(colId);
+      el.innerHTML = '';
+      cols[colId].forEach(jogoId => {
+        const jogo = simState[jogoId];
+        if (jogo) {
+          const card = criarCardHTML(jogo, true);
+          el.appendChild(card);
+        }
+      });
+    });
+
+    // Renderizar Final e Terceiro Lugar no centro
+    const finalContainer = document.getElementById('card-jogo-104');
+    finalContainer.innerHTML = '';
+    if (simState[104]) {
+      finalContainer.appendChild(criarCardHTML(simState[104], true));
+    }
+
+    const terceiroContainer = document.getElementById('card-jogo-105');
+    terceiroContainer.innerHTML = '';
+    if (simState[105]) {
+      terceiroContainer.appendChild(criarCardHTML(simState[105], true));
+    }
+  }
+
+  // Gera o nó HTML do card do jogo
+  function criarCardHTML(jogo, compact = false) {
+    const div = document.createElement('div');
+    // Diferenciar a estilização compacta (para a árvore) e normal (para a lista de abas)
+    div.className = `card bg-base-100 border border-base-200/80 hover:border-primary/40 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 relative group overflow-hidden cursor-pointer ${compact ? 'w-full py-2.5 px-3 rounded-2xl' : 'w-full p-4 sm:p-5'}`;
+    div.id = `card-sim-jogo-${jogo.id}`;
+    
+    // Tornar o card clicável para abrir os detalhes do jogo, ignorando cliques em inputs e botões de simulação
+    div.setAttribute('onclick', `if(event.target.tagName !== 'INPUT' && event.target.tagName !== 'BUTTON' && !event.target.closest('button')) window.location='/jogos/${jogo.uuid}';`);
+
+    const labelFase = LABELS_FASES[jogo.tipo] || 'Mata-mata';
+    
+    // Se o time estiver definido, verifica se foi vencedor
+    const m_venceu = jogo.gols_mandante !== null && jogo.gols_visitante !== null && (parseInt(jogo.gols_mandante) > parseInt(jogo.gols_visitante) || (parseInt(jogo.gols_mandante) === parseInt(jogo.gols_visitante) && jogo.vencedor_id === jogo.mandante_id));
+    const v_venceu = jogo.gols_mandante !== null && jogo.gols_visitante !== null && (parseInt(jogo.gols_visitante) > parseInt(jogo.gols_mandante) || (parseInt(jogo.gols_mandante) === parseInt(jogo.gols_visitante) && jogo.vencedor_id === jogo.visitante_id));
+
+    // Logo Mandante
+    const logoMandanteHTML = jogo.mandante_logo 
+      ? `<img src="${jogo.mandante_logo}" class="object-cover w-full h-full" alt="Bandeira">` 
+      : `<span class="text-xs font-bold font-mono opacity-40">?</span>`;
+      
+    // Logo Visitante
+    const logoVisitanteHTML = jogo.visitante_logo 
+      ? `<img src="${jogo.visitante_logo}" class="object-cover w-full h-full" alt="Bandeira">` 
+      : `<span class="text-xs font-bold font-mono opacity-40">?</span>`;
+
+    // Inputs de Gols
+    const golsMandanteVal = jogo.gols_mandante !== null ? jogo.gols_mandante : '';
+    const golsVisitanteVal = jogo.gols_visitante !== null ? jogo.gols_visitante : '';
+
+    const showPenalties = jogo.gols_mandante !== null && jogo.gols_visitante !== null && parseInt(jogo.gols_mandante) === parseInt(jogo.gols_visitante) && jogo.mandante_id && jogo.visitante_id;
+
+    if (compact) {
+      // Layout Compacto para a Árvore
+      const dataLabel = jogo.data_formatada ? jogo.data_formatada.split(' ')[0] : '';
+      const horaLabel = jogo.data_formatada ? jogo.data_formatada.split(' ')[1] : '';
+      div.innerHTML = `
+        <div class="flex justify-between items-center text-[9px] font-black uppercase opacity-40 mb-1.5 tracking-wider">
+          <span>J${jogo.id} - ${dataLabel}</span>
+          <span class="text-orange-500 font-mono">${horaLabel}</span>
+        </div>
+        
+        <div class="space-y-1.5">
+          <!-- Mandante -->
+          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${m_venceu ? 'bg-success/10 font-bold border border-success/20' : 'hover:bg-base-200/50'}" 
+               ${jogo.mandante_id ? `onclick="vitoriaRapida(${jogo.id}, ${jogo.mandante_id})"` : ''} style="${jogo.mandante_id ? 'cursor: pointer;' : ''}">
+            <div class="flex items-center gap-1.5 min-w-0 flex-1">
+              <div class="mask mask-squircle h-6 w-6 bg-base-300 flex items-center justify-center shrink-0">
+                ${logoMandanteHTML}
+              </div>
+              <span class="truncate text-[11px] select-none" title="${jogo.mandante_nome}">
+                ${jogo.mandante_nome}
+              </span>
+            </div>
+            <input type="text" pattern="[0-9]*" inputmode="numeric" 
+                   class="input input-xs font-mono font-black text-center w-8 bg-base-200 border-none rounded-lg p-0" 
+                   value="${golsMandanteVal}" 
+                   placeholder="0"
+                   onclick="event.stopPropagation()"
+                   oninput="atualizarPlacarSimulado(${jogo.id}, 'mandante', this.value)">
+          </div>
+
+          <!-- Visitante -->
+          <div class="flex items-center justify-between gap-1.5 p-1 rounded-xl transition duration-150 ${v_venceu ? 'bg-success/10 font-bold border border-success/20' : 'hover:bg-base-200/50'}" 
+               ${jogo.visitante_id ? `onclick="vitoriaRapida(${jogo.id}, ${jogo.visitante_id})"` : ''} style="${jogo.visitante_id ? 'cursor: pointer;' : ''}">
+            <div class="flex items-center gap-1.5 min-w-0 flex-1">
+              <div class="mask mask-squircle h-6 w-6 bg-base-300 flex items-center justify-center shrink-0">
+                ${logoVisitanteHTML}
+              </div>
+              <span class="truncate text-[11px] select-none" title="${jogo.visitante_nome}">
+                ${jogo.visitante_nome}
+              </span>
+            </div>
+            <input type="text" pattern="[0-9]*" inputmode="numeric" 
+                   class="input input-xs font-mono font-black text-center w-8 bg-base-200 border-none rounded-lg p-0" 
+                   value="${golsVisitanteVal}" 
+                   placeholder="0"
+                   onclick="event.stopPropagation()"
+                   oninput="atualizarPlacarSimulado(${jogo.id}, 'visitante', this.value)">
+          </div>
+        </div>
+
+        <!-- Seção de Pênaltis em caso de Empate -->
+        ${showPenalties ? `
+          <div class="mt-2 pt-1.5 border-t border-base-300/40 text-center">
+            <span class="text-[9px] font-black uppercase tracking-wider text-slate-400">Decidir Pênaltis:</span>
+            <div class="flex justify-center gap-4 mt-1">
+              <button class="btn btn-xs rounded-lg px-2 text-[9px] font-black ${jogo.vencedor_id === jogo.mandante_id ? 'btn-success text-white' : 'btn-ghost opacity-60'}" 
+                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.mandante_id})">
+                ${jogo.mandante_nome.substring(0,3).toUpperCase()}
+              </button>
+              <button class="btn btn-xs rounded-lg px-2 text-[9px] font-black ${jogo.vencedor_id === jogo.visitante_id ? 'btn-success text-white' : 'btn-ghost opacity-60'}" 
+                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.visitante_id})">
+                ${jogo.visitante_nome.substring(0,3).toUpperCase()}
+              </button>
+            </div>
+          </div>
+        ` : ''}
+      `;
+    } else {
+      // Layout Normal / Confortável para a Lista de Abas
+      div.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+          <span class="badge badge-neutral text-xs font-black p-2 border-none">Jogo ${jogo.id}</span>
+          <div class="text-right">
+            <div class="text-[11px] font-black text-primary uppercase tracking-wider">${jogo.data_formatada || ''}</div>
+            <div class="text-[9px] opacity-50 uppercase font-bold truncate max-w-[150px]" title="${jogo.estadio || ''}">${jogo.estadio || ''}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 bg-base-200/50 rounded-2xl p-4 mb-3 border border-base-300/30">
+          
+          <!-- Mandante -->
+          <div class="flex flex-col items-center flex-1 w-1/3 p-2 rounded-xl transition cursor-pointer select-none hover:bg-base-100/50 ${m_venceu ? 'border border-success/30 bg-success/5' : ''}"
+               ${jogo.mandante_id ? `onclick="vitoriaRapida(${jogo.id}, ${jogo.mandante_id})"` : ''}>
+            <div class="avatar mb-2">
+              <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center overflow-hidden">
+                ${logoMandanteHTML}
+              </div>
+            </div>
+            <div class="font-bold text-center text-xs sm:text-sm leading-tight truncate w-full" title="${jogo.mandante_nome}">
+              ${jogo.mandante_nome}
+            </div>
+          </div>
+
+          <!-- inputs centrais -->
+          <div class="flex flex-col items-center justify-center px-2 shrink-0">
+            <div class="flex items-center gap-1 sm:gap-2">
+              <input type="text" pattern="[0-9]*" inputmode="numeric" 
+                     class="input input-bordered font-mono font-black text-center text-lg w-12 h-10 sm:w-14 sm:h-12 bg-base-100 rounded-xl"
+                     value="${golsMandanteVal}" 
+                     placeholder="0"
+                     onclick="event.stopPropagation()"
+                     oninput="atualizarPlacarSimulado(${jogo.id}, 'mandante', this.value)">
+              <span class="opacity-30 text-xs font-black">x</span>
+              <input type="text" pattern="[0-9]*" inputmode="numeric" 
+                     class="input input-bordered font-mono font-black text-center text-lg w-12 h-10 sm:w-14 sm:h-12 bg-base-100 rounded-xl"
+                     value="${golsVisitanteVal}" 
+                     placeholder="0"
+                     onclick="event.stopPropagation()"
+                     oninput="atualizarPlacarSimulado(${jogo.id}, 'visitante', this.value)">
+            </div>
+            <span class="text-[9px] opacity-40 uppercase tracking-widest mt-1.5 font-bold">Placar</span>
+          </div>
+
+          <!-- Visitante -->
+          <div class="flex flex-col items-center flex-1 w-1/3 p-2 rounded-xl transition cursor-pointer select-none hover:bg-base-100/50 ${v_venceu ? 'border border-success/30 bg-success/5' : ''}"
+               ${jogo.visitante_id ? `onclick="vitoriaRapida(${jogo.id}, ${jogo.visitante_id})"` : ''}>
+            <div class="avatar mb-2">
+              <div class="mask mask-squircle h-10 w-10 sm:h-12 sm:w-12 bg-base-300 flex items-center justify-center overflow-hidden">
+                ${logoVisitanteHTML}
+              </div>
+            </div>
+            <div class="font-bold text-center text-xs sm:text-sm leading-tight truncate w-full" title="${jogo.visitante_nome}">
+              ${jogo.visitante_nome}
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Seção de Pênaltis em caso de Empate -->
+        ${showPenalties ? `
+          <div class="pt-3 border-t border-base-200/50 text-center animate-fade-in">
+            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Desempate por Pênaltis:</span>
+            <div class="flex justify-center gap-4 mt-2">
+              <button class="btn btn-sm rounded-xl px-4 text-xs font-black ${jogo.vencedor_id === jogo.mandante_id ? 'btn-success text-white' : 'btn-outline border-base-300'}" 
+                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.mandante_id})">
+                ⚽ ${jogo.mandante_nome}
+              </button>
+              <button class="btn btn-sm rounded-xl px-4 text-xs font-black ${jogo.vencedor_id === jogo.visitante_id ? 'btn-success text-white' : 'btn-outline border-base-300'}" 
+                      onclick="event.stopPropagation(); desempatePenaltis(${jogo.id}, ${jogo.visitante_id})">
+                ⚽ ${jogo.visitante_nome}
+              </button>
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    return div;
+  }
+
+  // Vitórias rápidas ao clicar no escudo/nome do time (avanço rápido)
+  function vitoriaRapida(jogoId, timeId) {
+    const jogo = simState[jogoId];
+    if (!jogo || !jogo.mandante_id || !jogo.visitante_id) return;
+
+    if (timeId === jogo.mandante_id) {
+      jogo.gols_mandante = 1;
+      jogo.gols_visitante = 0;
+      jogo.vencedor_id = jogo.mandante_id;
+      jogo.perdedor_id = jogo.visitante_id;
+    } else {
+      jogo.gols_mandante = 0;
+      jogo.gols_visitante = 1;
+      jogo.vencedor_id = jogo.visitante_id;
+      jogo.perdedor_id = jogo.mandante_id;
+    }
+
+    processarAvancoConfronto(jogoId);
+    salvarNoStorage();
+    renderizarTudo();
+    verificarEcelebrarCampeao(true);
+  }
+
+  // Atualização dos inputs de placares
+  function atualizarPlacarSimulado(jogoId, posicao, valor) {
+    const jogo = simState[jogoId];
+    if (!jogo) return;
+
+    // Limpar caracteres não numéricos
+    const limpo = valor.replace(/\D/g, '');
+    const gols = limpo === '' ? null : parseInt(limpo);
+
+    if (posicao === 'mandante') {
+      jogo.gols_mandante = gols;
+    } else {
+      jogo.gols_visitante = gols;
+    }
+
+    // Calcular vencedor e perdedor caso ambos os gols estejam definidos
+    if (jogo.gols_mandante !== null && jogo.gols_visitante !== null) {
+      if (jogo.gols_mandante > jogo.gols_visitante) {
+        jogo.vencedor_id = jogo.mandante_id;
+        jogo.perdedor_id = jogo.visitante_id;
+      } else if (jogo.gols_visitante > jogo.gols_mandante) {
+        jogo.vencedor_id = jogo.visitante_id;
+        jogo.perdedor_id = jogo.mandante_id;
+      } else {
+        // Empate, remove vencedor e perdedor automáticos e obriga o desempate
+        // Se já existia um desempate pré-marcado e mantiveram o empate, mantém se o time ainda for um dos envolvidos
+        if (jogo.vencedor_id !== jogo.mandante_id && jogo.vencedor_id !== jogo.visitante_id) {
+          jogo.vencedor_id = null;
+          jogo.perdedor_id = null;
+        }
+      }
+    } else {
+      // Se limpou algum input, remove o vencedor/perdedor
+      jogo.vencedor_id = null;
+      jogo.perdedor_id = null;
+    }
+
+    processarAvancoConfronto(jogoId);
+    salvarNoStorage();
+    renderizarTudo();
+    verificarEcelebrarCampeao(true);
+  }
+
+  // Escolha do vencedor nos pênaltis
+  function desempatePenaltis(jogoId, timeId) {
+    const jogo = simState[jogoId];
+    if (!jogo) return;
+
+    jogo.vencedor_id = timeId;
+    jogo.perdedor_id = timeId === jogo.mandante_id ? jogo.visitante_id : jogo.mandante_id;
+
+    processarAvancoConfronto(jogoId);
+    salvarNoStorage();
+    renderizarTudo();
+    verificarEcelebrarCampeao(true);
+  }
+
+  // Executa o avanço e limpa as ramificações antigas para manter consistência
+  function processarAvancoConfronto(jogoId) {
+    const jogo = simState[jogoId];
+    if (!jogo) return;
+
+    const avancoInfo = MAPA_AVANCO[jogoId];
+    if (!avancoInfo) return;
+
+    // Se houve mudança, precisamos limpar todas as dependências futuras
+    // Isso evita que se o usuário mudar as oitavas, as quartas e semis antigas permaneçam
+    const dependentes = MAPA_DEPENDENCIAS[jogoId] || [];
+    dependentes.forEach(depId => {
+      const depJogo = simState[depId];
+      if (depJogo) {
+        // Se limpou o time que já estava avançado nas chaves seguintes
+        depJogo.gols_mandante = null;
+        depJogo.gols_visitante = null;
+        depJogo.vencedor_id = null;
+        depJogo.perdedor_id = null;
+
+        // Se o jogo de destino do jogo ID original for esse, limpamos também o nome/logo
+        const infoDepAvanco = MAPA_AVANCO[depId];
+        // Mas a limpeza geral limpa os times definidos das dependências
+        // Se o depId pertencer à lista de dependências futuras, as seleções nele precisam voltar para a definir
+        // A menos que o banco real tenha esses times definidos de fato
+        if (DADOS_JOGOS_REAIS[depId].mandante_id === null) {
+          depJogo.mandante_id = null;
+          depJogo.mandante_nome = DADOS_JOGOS_REAIS[depId].nome_provisorio_mandante || "A definir";
+          depJogo.mandante_logo = null;
+        }
+        if (DADOS_JOGOS_REAIS[depId].visitante_id === null) {
+          depJogo.visitante_id = null;
+          depJogo.visitante_nome = DADOS_JOGOS_REAIS[depId].nome_provisorio_visitante || "A definir";
+          depJogo.visitante_logo = null;
+        }
+      }
+    });
+
+    // Avança o vencedor (e perdedor se aplicável para Semis -> 3º Lugar)
+    if (jogo.vencedor_id) {
+      const vencedorNome = jogo.vencedor_id === jogo.mandante_id ? jogo.mandante_nome : jogo.visitante_nome;
+      const vencedorLogo = jogo.vencedor_id === jogo.mandante_id ? jogo.mandante_logo : jogo.visitante_logo;
+
+      // Se o jogo for semifinal (102 ou 103), avança para a final (104) E para o terceiro lugar (105)
+      if (jogoId === 102 || jogoId === 103) {
+        const destVenc = avancoInfo.vencedor;
+        const destPerd = avancoInfo.perdedor;
+
+        // Mandante ou visitante da final
+        const finalJogo = simState[destVenc.destino];
+        if (finalJogo) {
+          finalJogo[`${destVenc.pos}_id`] = jogo.vencedor_id;
+          finalJogo[`${destVenc.pos}_nome`] = vencedorNome;
+          finalJogo[`${destVenc.pos}_logo`] = vencedorLogo;
+        }
+
+        // Mandante ou visitante do terceiro lugar
+        const terceiroJogo = simState[destPerd.destino];
+        if (terceiroJogo && jogo.perdedor_id) {
+          const perdedorNome = jogo.perdedor_id === jogo.mandante_id ? jogo.mandante_nome : jogo.visitante_nome;
+          const perdedorLogo = jogo.perdedor_id === jogo.mandante_id ? jogo.mandante_logo : jogo.visitante_logo;
+          
+          terceiroJogo[`${destPerd.pos}_id`] = jogo.perdedor_id;
+          terceiroJogo[`${destPerd.pos}_nome`] = perdedorNome;
+          terceiroJogo[`${destPerd.pos}_logo`] = perdedorLogo;
+        }
+      } else {
+        // Avanço padrão (Segunda Fase -> Oitavas -> Quartas -> Semis)
+        const destJogo = simState[avancoInfo.destino];
+        if (destJogo) {
+          destJogo[`${avancoInfo.pos}_id`] = jogo.vencedor_id;
+          destJogo[`${avancoInfo.pos}_nome`] = vencedorNome;
+          destJogo[`${avancoInfo.pos}_logo`] = vencedorLogo;
+        }
+      }
+    }
+  }
+
+  // Verifica se a final (jogo 104) acabou e celebra o campeão!
+  function verificarEcelebrarCampeao(dispararEfeito = true) {
+    const finalJogo = simState[104];
+    const banner = document.getElementById('banner-campeao');
+    
+    if (finalJogo && finalJogo.vencedor_id) {
+      const campNome = finalJogo.vencedor_id === finalJogo.mandante_id ? finalJogo.mandante_nome : finalJogo.visitante_nome;
+      const campLogo = finalJogo.vencedor_id === finalJogo.mandante_id ? finalJogo.mandante_logo : finalJogo.visitante_logo;
+      
+      document.getElementById('campeao-nome').innerText = campNome;
+      
+      const logoDiv = document.getElementById('campeao-logo');
+      if (campLogo) {
+        logoDiv.innerHTML = `<img src="${campLogo}" class="object-cover w-full h-full" alt="Campeão">`;
+      } else {
+        logoDiv.innerHTML = `<span class="text-sm font-black opacity-50">🏆</span>`;
+      }
+      
+      banner.classList.remove('hidden');
+      if (dispararEfeito) {
+        iniciarConfetes();
+      }
+    } else {
+      banner.classList.add('hidden');
+      pararConfetes();
+    }
+  }
+
+  // Animação de Confetes em Canvas Nativo e Otimizado
+  let confettiInterval = null;
+  let confettiActive = false;
+  
+  function iniciarConfetes() {
+    if (confettiActive) return;
+    confettiActive = true;
+
+    const canvas = document.getElementById('confetti-canvas');
+    canvas.classList.remove('hidden');
+    const ctx = canvas.getContext('2d');
+    
+    // Ajustar tamanho
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const colors = ['#f59e0b', '#fb923c', '#ea580c', '#facc15', '#fef08a', '#ffffff'];
+    const confetis = [];
+
+    for (let i = 0; i < 150; i++) {
+      confetis.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * canvas.height,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 5,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+        tiltAngle: 0
+      });
+    }
+
+    function draw() {
+      if (!confettiActive) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      confetis.forEach((c, index) => {
+        c.tiltAngle += c.tiltAngleIncremental;
+        c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+        c.x += Math.sin(c.tiltAngle);
+        c.tilt = Math.sin(c.tiltAngle - index / 3) * 15;
+        
+        if (c.y > canvas.height) {
+          confetis[index] = {
+            x: Math.random() * canvas.width,
+            y: -20,
+            r: c.r,
+            d: c.d,
+            color: c.color,
+            tilt: c.tilt,
+            tiltAngleIncremental: c.tiltAngleIncremental,
+            tiltAngle: c.tiltAngle
+          };
+        }
+        
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    // Desliga após 8 segundos automaticamente
+    confettiInterval = setTimeout(() => {
+      pararConfetes();
+    }, 8000);
+  }
+
+  function pararConfetes() {
+    confettiActive = false;
+    clearTimeout(confettiInterval);
+    const canvas = document.getElementById('confetti-canvas');
+    if (canvas) {
+      canvas.classList.add('hidden');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+</script>
+
+<style>
+  /* Efeito de Scroll customizado e elegante para chaves */
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.4);
+  }
+
+  /* Animações de esvanecimento e escala de alta fidelidade */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+</style>

@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   end
 
   get "/perfil", to: "users#perfil", as: :perfil
+  get "/simulador", to: "simulador#index", as: :simulador
   get "/perfil/editar", to: "users#edit_perfil", as: :edit_perfil
   patch "/perfil", to: "users#update_perfil"
   patch "/perfil/conquistas", to: "users#update_conquistas", as: :update_perfil_conquistas
@@ -102,6 +103,8 @@ Rails.application.routes.draw do
     collection do
       post :sync_odds
       post :sync_all_statistics
+      post :salvar_placares
+      post :realocar_placares
     end
 
     member do

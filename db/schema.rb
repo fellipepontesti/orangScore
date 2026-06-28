@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_25_030856) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_28_035410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -192,6 +192,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_25_030856) do
     t.bigint "gols"
     t.bigint "gols_sofridos"
     t.uuid "uuid", null: false
+    t.boolean "desclassificada", default: false, null: false
   end
 
   create_table "user_conquistas", force: :cascade do |t|

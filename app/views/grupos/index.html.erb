@@ -229,8 +229,11 @@
                       </div>
                     </div>
                     
-                    <div class="font-bold text-lg group-hover:underline flex items-center gap-2">
-                      <span><%= selecao_data[:nome] %></span>
+                    <div class="font-bold text-lg group-hover:underline flex items-center gap-2 <%= 'opacity-40' if selecao.desclassificada %>">
+                      <span class="<%= 'line-through opacity-60' if selecao.desclassificada %>"><%= selecao_data[:nome] %></span>
+                      <% if selecao.desclassificada %>
+                        <span class="badge badge-error badge-xs font-black uppercase text-white p-1.5 shrink-0">Eliminada</span>
+                      <% end %>
                       <% if selecao_data[:em_andamento] %>
                         <span class="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase animate-pulse">
                           <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
@@ -267,6 +270,17 @@
                         <span class="font-semibold text-lg"><%= selecao_data[:gols] - selecao_data[:gols_sofridos] %></span>
                       </div>
                     </div>
+                    <% if current_user.root? %>
+                      <div class="flex items-center gap-2 border-l border-base-300 pl-4 shrink-0" onclick="event.stopPropagation()">
+                        <label class="label cursor-pointer justify-start gap-2 py-0">
+                          <input type="checkbox" 
+                                 class="checkbox checkbox-error checkbox-sm" 
+                                 <%= 'checked' if selecao.desclassificada %> 
+                                 onchange="toggleDesclassificada('<%= selecao.uuid %>', this.checked)">
+                          <span class="label-text text-xs font-black uppercase text-error">Eliminada</span>
+                        </label>
+                      </div>
+                    <% end %>
                   </div>
                 </li>
               <% end %>
@@ -279,3 +293,28 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  async function toggleDesclassificada(uuid, desclassificada) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    try {
+      const response = await fetch(`/selecoes/${uuid}.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ selecao: { desclassificada } })
+      });
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('Erro ao atualizar status de eliminação da seleção.');
+      }
+    } catch(e) {
+      console.error(e);
+      alert('Erro de conexão ao atualizar status de eliminação.');
+    }
+  }
+</script>
