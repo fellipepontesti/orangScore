@@ -254,10 +254,10 @@
             <% @usuarios_sem_palpite.each do |usuario| %>
               <div class="flex items-center justify-between gap-2 bg-base-200/60 rounded-xl p-2.5 border border-base-300/50">
                 <div class="flex items-center gap-2 min-w-0">
-                  <% if usuario.avatar_url.present? %>
+                  <% if usuario.logo_selecao.present? %>
                     <div class="avatar shrink-0">
                       <div class="mask mask-squircle w-7 h-7">
-                        <%= image_tag usuario.avatar_url, class: "object-cover w-full h-full" %>
+                        <%= image_tag "selecoes/#{usuario.logo_selecao}", class: "object-cover w-full h-full" %>
                       </div>
                     </div>
                   <% else %>
