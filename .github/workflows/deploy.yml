@@ -1,0 +1,40 @@
+name: Deploy para DigitalOcean
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Executar deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            APP_DIR="/home/deploy/orangScore"
+            cd $APP_DIR
+
+            git pull origin master
+
+            set -a
+            source /etc/orangscore.env
+            set +a
+
+            bundle config set without 'development test'
+            bundle install
+
+            bundle exec rails tmp:clear
+            bundle exec rails log:clear
+            bundle exec rails db:migrate
+            bundle exec rails assets:precompile
+
+            # Evita downtime reiniciando de forma suave (Phased Restart)
+            sudo systemctl reload orangscore

@@ -63,28 +63,59 @@
         </div>
 
           <% unless @jogo.grupo? %>
-          <!-- Container de Vencedor nos Pênaltis para o Admin -->
-          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless @jogo.gols_mandante.present? && @jogo.gols_visitante.present? && @jogo.gols_mandante.to_i == @jogo.gols_visitante.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-3.5 shadow-inner">
+          <!-- Container de Detalhes dos Pênaltis para o Admin -->
+          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless @jogo.gols_mandante.present? && @jogo.gols_visitante.present? && @jogo.gols_mandante.to_i == @jogo.gols_visitante.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-6 max-w-2xl mx-auto text-center space-y-6 shadow-inner">
             <div class="flex items-center justify-center gap-2 text-warning font-black text-xs uppercase tracking-wider">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
               </svg>
               Decisão nos Pênaltis (Mata-Mata)
             </div>
-            <p class="text-xs opacity-75">O placar informado é de empate! Escolha quem avançou de fase nos pênaltis:</p>
             
-            <div class="flex items-center justify-center gap-3">
-              <!-- Mandante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
-                <%= form.radio_button :vencedor_penaltis_id, @jogo.mandante_id, class: "hidden" %>
-                <span><%= @jogo.mandante&.nome || 'Mandante' %></span>
-              </label>
+            <p class="text-xs opacity-75">O placar informado é de empate! Preencha o placar e a sequência das cobranças de pênaltis:</p>
+            
+            <!-- Placar Numérico dos Pênaltis -->
+            <div class="flex items-center justify-center gap-6 max-w-md mx-auto bg-base-200/50 p-4 rounded-2xl border border-base-300">
+              <div class="flex-1 flex flex-col items-center">
+                <span class="text-xs font-bold text-slate-400 mb-1"><%= @jogo.mandante&.nome || 'Mandante' %></span>
+                <%= form.number_field :gols_penaltis_mandante, id: 'gols_penaltis_mandante', min: 0, class: "input input-bordered w-20 text-center font-black text-lg", placeholder: "0" %>
+              </div>
+              <span class="text-xl font-bold opacity-40">x</span>
+              <div class="flex-1 flex flex-col items-center">
+                <span class="text-xs font-bold text-slate-400 mb-1"><%= @jogo.visitante&.nome || 'Visitante' %></span>
+                <%= form.number_field :gols_penaltis_visitante, id: 'gols_penaltis_visitante', min: 0, class: "input input-bordered w-20 text-center font-black text-lg", placeholder: "0" %>
+              </div>
+            </div>
 
-              <!-- Visitante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
-                <%= form.radio_button :vencedor_penaltis_id, @jogo.visitante_id, class: "hidden" %>
-                <span><%= @jogo.visitante&.nome || 'Visitante' %></span>
-              </label>
+            <!-- Construtor Sequência de Pênaltis -->
+            <div class="space-y-4 text-left border-t border-warning/10 pt-4">
+              <h4 class="text-xs uppercase font-extrabold text-warning tracking-wider text-center">Sequência de Cobranças (Bolinhas e X)</h4>
+              
+              <!-- Hidden fields para salvar as strings -->
+              <%= form.hidden_field :sequencia_penaltis_mandante, id: 'hidden_sequencia_mandante', value: @jogo.sequencia_penaltis_mandante %>
+              <%= form.hidden_field :sequencia_penaltis_visitante, id: 'hidden_sequencia_visitante', value: @jogo.sequencia_penaltis_visitante %>
+
+              <!-- Time Mandante Cobranças -->
+              <div class="bg-base-200/40 p-4 rounded-2xl border border-base-300 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-white"><%= @jogo.mandante&.nome || 'Mandante' %></span>
+                  <button type="button" onclick="adicionarCobranca('mandante')" class="btn btn-xs btn-outline btn-warning rounded-lg">+ Chute</button>
+                </div>
+                <div id="cobrancas_mandante" class="flex flex-wrap gap-2 min-h-10 items-center">
+                  <!-- Inseridos por JS -->
+                </div>
+              </div>
+
+              <!-- Time Visitante Cobranças -->
+              <div class="bg-base-200/40 p-4 rounded-2xl border border-base-300 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-white"><%= @jogo.visitante&.nome || 'Visitante' %></span>
+                  <button type="button" onclick="adicionarCobranca('visitante')" class="btn btn-xs btn-outline btn-warning rounded-lg">+ Chute</button>
+                </div>
+                <div id="cobrancas_visitante" class="flex flex-wrap gap-2 min-h-10 items-center">
+                  <!-- Inseridos por JS -->
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
@@ -93,6 +124,11 @@
 
         <script>
           (function() {
+            let sequencias = {
+              mandante: [],
+              visitante: []
+            };
+
             function setupPenaltis() {
               const inputCasa = document.getElementById('gols_mandante');
               const inputFora = document.getElementById('gols_visitante');
@@ -107,38 +143,115 @@
                   container.classList.remove('hidden');
                 } else {
                   container.classList.add('hidden');
-                  // Limpa seleções de pênaltis se não for empate
-                  const radios = container.querySelectorAll('input[type="radio"]');
-                  radios.forEach(r => r.checked = false);
-                  atualizarBotoesEstilo();
+                  // Limpa os campos se não for empate
+                  const golsM = document.getElementById('gols_penaltis_mandante');
+                  const golsV = document.getElementById('gols_penaltis_visitante');
+                  if (golsM) golsM.value = '';
+                  if (golsV) golsV.value = '';
+                  const hiddenM = document.getElementById('hidden_sequencia_mandante');
+                  const hiddenV = document.getElementById('hidden_sequencia_visitante');
+                  if (hiddenM) hiddenM.value = '';
+                  if (hiddenV) hiddenV.value = '';
+                  sequencias.mandante = [];
+                  sequencias.visitante = [];
+                  renderizarCobrancas('mandante');
+                  renderizarCobrancas('visitante');
                 }
-              }
-
-              function atualizarBotoesEstilo() {
-                const labels = container.querySelectorAll('label');
-                labels.forEach(label => {
-                  const radio = label.querySelector('input[type="radio"]');
-                  if (radio && radio.checked) {
-                    label.classList.add('bg-warning', 'text-warning-content');
-                    label.classList.remove('btn-outline');
-                  } else {
-                    label.classList.remove('bg-warning', 'text-warning-content');
-                    label.classList.add('btn-outline');
-                  }
-                });
               }
 
               inputCasa.addEventListener('input', checkValues);
               inputFora.addEventListener('input', checkValues);
 
-              container.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', atualizarBotoesEstilo);
-              });
+              // Inicializa sequências a partir dos valores dos campos ocultos
+              const hiddenM = document.getElementById('hidden_sequencia_mandante');
+              const hiddenV = document.getElementById('hidden_sequencia_visitante');
+              
+              if (hiddenM && hiddenM.value) {
+                sequencias.mandante = hiddenM.value.split(',').map(Number);
+              } else {
+                sequencias.mandante = [];
+              }
+
+              if (hiddenV && hiddenV.value) {
+                sequencias.visitante = hiddenV.value.split(',').map(Number);
+              } else {
+                sequencias.visitante = [];
+              }
+
+              renderizarCobrancas('mandante');
+              renderizarCobrancas('visitante');
 
               // Executa inicialmente
               checkValues();
-              atualizarBotoesEstilo();
             }
+
+            function renderizarCobrancas(time) {
+              const container = document.getElementById('cobrancas_' + time);
+              if (!container) return;
+
+              container.innerHTML = '';
+              
+              sequencias[time].forEach((val, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'relative flex items-center';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                if (val === 1) {
+                  btn.className = 'w-9 h-9 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-md cursor-pointer transition';
+                  btn.innerHTML = '🟢';
+                } else {
+                  btn.className = 'w-9 h-9 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center text-sm font-bold shadow-md cursor-pointer transition';
+                  btn.innerHTML = '❌';
+                }
+
+                btn.onclick = () => {
+                  sequencias[time][idx] = sequencias[time][idx] === 1 ? 0 : 1;
+                  salvarEAtualizar(time);
+                };
+
+                const delBtn = document.createElement('span');
+                delBtn.className = 'absolute -top-1.5 -right-1.5 w-4 h-4 bg-neutral text-neutral-content hover:bg-neutral-focus rounded-full flex items-center justify-center text-[10px] font-black cursor-pointer shadow border border-base-100 transition';
+                delBtn.innerHTML = '×';
+                delBtn.onclick = (e) => {
+                  e.stopPropagation();
+                  sequencias[time].splice(idx, 1);
+                  salvarEAtualizar(time);
+                };
+
+                wrapper.appendChild(btn);
+                wrapper.appendChild(delBtn);
+                container.appendChild(wrapper);
+              });
+
+              if (sequencias[time].length === 0) {
+                const placeholder = document.createElement('span');
+                placeholder.className = 'text-xs opacity-40 font-medium italic';
+                placeholder.innerHTML = 'Nenhum chute adicionado';
+                container.appendChild(placeholder);
+              }
+            }
+
+            function salvarEAtualizar(time) {
+              const hiddenInput = document.getElementById('hidden_sequencia_' + time);
+              if (hiddenInput) {
+                hiddenInput.value = sequencias[time].join(',');
+              }
+              
+              const totalGols = sequencias[time].filter(val => val === 1).length;
+              const placarInput = document.getElementById('gols_penaltis_' + time);
+              if (placarInput) {
+                placarInput.value = totalGols;
+              }
+
+              renderizarCobrancas(time);
+            }
+
+            // Disponibilizar globalmente no escopo do IIFE para os botões do HTML
+            window.adicionarCobranca = function(time) {
+              sequencias[time].push(1);
+              salvarEAtualizar(time);
+            };
 
             document.addEventListener("turbo:load", setupPenaltis);
             setupPenaltis();

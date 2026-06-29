@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_28_060000) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_29_232159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -111,6 +111,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_28_060000) do
     t.integer "prob_empate"
     t.integer "prob_visitante"
     t.bigint "vencedor_penaltis_id"
+    t.integer "gols_penaltis_mandante"
+    t.integer "gols_penaltis_visitante"
+    t.string "sequencia_penaltis_mandante"
+    t.string "sequencia_penaltis_visitante"
     t.index ["vencedor_penaltis_id"], name: "index_jogos_on_vencedor_penaltis_id"
   end
 
@@ -178,6 +182,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_28_060000) do
     t.datetime "updated_at"
     t.uuid "uuid", null: false
     t.bigint "vencedor_penaltis_id"
+    t.integer "gols_penaltis_casa"
+    t.integer "gols_penaltis_fora"
     t.index ["vencedor_penaltis_id"], name: "index_palpites_on_vencedor_penaltis_id"
   end
 

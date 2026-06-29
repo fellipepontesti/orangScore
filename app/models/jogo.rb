@@ -17,6 +17,7 @@ class Jogo < ApplicationRecord
   end
 
   before_validation :ajustar_definicao_e_status, if: :pode_ajustar_definicao_e_status?
+  before_validation :definir_vencedor_penaltis, if: :tem_placar_penaltis?
 
   validates :data, presence: true
   validates :tipo, presence: true
@@ -25,6 +26,7 @@ class Jogo < ApplicationRecord
 
   validate :times_diferentes, unless: :definir?
   validate :definir_apenas_no_mata_mata
+  validate :placar_penaltis_diferente, if: :tem_placar_penaltis?
 
   ESTADIOS_2026 = [
     "MetLife Stadium (New York/New Jersey, EUA)",
@@ -122,5 +124,23 @@ class Jogo < ApplicationRecord
   def ajustar_definicao_e_status
     self.definir = false
     self.status = :programado if times_a_definir?
+  end
+
+  def tem_placar_penaltis?
+    gols_penaltis_mandante.present? && gols_penaltis_visitante.present?
+  end
+
+  def definir_vencedor_penaltis
+    if gols_penaltis_mandante > gols_penaltis_visitante
+      self.vencedor_penaltis_id = mandante_id
+    elsif gols_penaltis_visitante > gols_penaltis_mandante
+      self.vencedor_penaltis_id = visitante_id
+    end
+  end
+
+  def placar_penaltis_diferente
+    if gols_penaltis_mandante == gols_penaltis_visitante
+      errors.add(:base, "A disputa de pênaltis não pode terminar empatada.")
+    end
   end
 end

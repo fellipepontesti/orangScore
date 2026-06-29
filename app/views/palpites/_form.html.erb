@@ -92,28 +92,28 @@
         </div>
 
         <% if @jogo.present? && !@jogo.grupo? %>
-          <!-- Container de Vencedor nos Pênaltis -->
-          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless form.object.gols_casa.present? && form.object.gols_fora.present? && form.object.gols_casa.to_i == form.object.gols_fora.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-3.5 shadow-inner">
+          <!-- Container de Placar dos Pênaltis para o Usuário -->
+          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless form.object.gols_casa.present? && form.object.gols_fora.present? && form.object.gols_casa.to_i == form.object.gols_fora.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-4 shadow-inner">
             <div class="flex items-center justify-center gap-2 text-warning font-black text-xs uppercase tracking-wider">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
               </svg>
               Decisão nos Pênaltis (+1 Ponto Extra)
             </div>
-            <p class="text-xs opacity-75">Seu palpite é de empate! Escolha quem avança de fase nos pênaltis:</p>
+            <p class="text-xs opacity-75 text-amber-200/90 leading-relaxed">
+              Seu palpite é de empate no tempo normal! Palpite também o placar da disputa de pênaltis para concorrer ao ponto extra:
+            </p>
             
-            <div class="flex items-center justify-center gap-3">
-              <!-- Mandante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
-                <%= form.radio_button :vencedor_penaltis_id, @jogo.mandante_id, class: "hidden" %>
-                <span><%= @jogo.mandante&.nome || 'Mandante' %></span>
-              </label>
-
-              <!-- Visitante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
-                <%= form.radio_button :vencedor_penaltis_id, @jogo.visitante_id, class: "hidden" %>
-                <span><%= @jogo.visitante&.nome || 'Visitante' %></span>
-              </label>
+            <div class="flex items-center justify-center gap-4 bg-base-200/60 p-4 rounded-2xl border border-base-300">
+              <div class="flex-1 flex flex-col items-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5"><%= @jogo.mandante&.nome || 'Mandante' %></span>
+                <%= form.number_field :gols_penaltis_casa, id: 'gols_penaltis_casa', min: 0, class: "input input-bordered w-16 text-center font-black text-sm", placeholder: "0" %>
+              </div>
+              <span class="text-sm font-bold opacity-30">x</span>
+              <div class="flex-1 flex flex-col items-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5"><%= @jogo.visitante&.nome || 'Visitante' %></span>
+                <%= form.number_field :gols_penaltis_fora, id: 'gols_penaltis_fora', min: 0, class: "input input-bordered w-16 text-center font-black text-sm", placeholder: "0" %>
+              </div>
             </div>
           </div>
         <% end %>
@@ -136,37 +136,19 @@
                   container.classList.remove('hidden');
                 } else {
                   container.classList.add('hidden');
-                  // Limpa seleções de pênaltis se não for empate
-                  const radios = container.querySelectorAll('input[type="radio"]');
-                  radios.forEach(r => r.checked = false);
-                  atualizarBotoesEstilo();
+                  // Limpa os campos se não for empate
+                  const penCasa = document.getElementById('gols_penaltis_casa');
+                  const penFora = document.getElementById('gols_penaltis_fora');
+                  if (penCasa) penCasa.value = '';
+                  if (penFora) penFora.value = '';
                 }
-              }
-
-              function atualizarBotoesEstilo() {
-                const labels = container.querySelectorAll('label');
-                labels.forEach(label => {
-                  const radio = label.querySelector('input[type="radio"]');
-                  if (radio && radio.checked) {
-                    label.classList.add('bg-warning', 'text-warning-content');
-                    label.classList.remove('btn-outline');
-                  } else {
-                    label.classList.remove('bg-warning', 'text-warning-content');
-                    label.classList.add('btn-outline');
-                  }
-                });
               }
 
               inputCasa.addEventListener('input', checkValues);
               inputFora.addEventListener('input', checkValues);
 
-              container.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', atualizarBotoesEstilo);
-              });
-
               // Executa inicialmente
               checkValues();
-              atualizarBotoesEstilo();
             }
 
             document.addEventListener("turbo:load", setupPenaltis);

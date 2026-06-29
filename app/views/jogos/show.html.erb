@@ -71,13 +71,23 @@
         <% if @jogo.programado? || @jogo.times_a_definir? %>
           <span class="text-sm sm:text-2xl font-black opacity-30 px-3 py-1 bg-base-200 rounded-xl">VS</span>
         <% else %>
-          <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
-            <%= @jogo.gols_mandante %>
-          </span>
+          <div class="flex items-center gap-1 sm:gap-2">
+            <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
+              <%= @jogo.gols_mandante %>
+            </span>
+            <% if @jogo.gols_penaltis_mandante.present? && @jogo.gols_penaltis_visitante.present? %>
+              <span class="text-sm sm:text-xl font-black text-warning" title="Pênaltis">(<%= @jogo.gols_penaltis_mandante %>)</span>
+            <% end %>
+          </div>
           <span class="text-sm sm:text-xl opacity-40 font-bold">:</span>
-          <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
-            <%= @jogo.gols_visitante %>
-          </span>
+          <div class="flex items-center gap-1 sm:gap-2">
+            <% if @jogo.gols_penaltis_mandante.present? && @jogo.gols_penaltis_visitante.present? %>
+              <span class="text-sm sm:text-xl font-black text-warning" title="Pênaltis">(<%= @jogo.gols_penaltis_visitante %>)</span>
+            <% end %>
+            <span class="text-xl sm:text-4xl font-black px-2.5 sm:px-4 bg-base-200 rounded-xl sm:rounded-2xl py-1 sm:py-2 shadow-inner min-w-[2.2rem] sm:min-w-[3.5rem] text-center">
+              <%= @jogo.gols_visitante %>
+            </span>
+          </div>
         <% end %>
       </div>
 
@@ -128,6 +138,51 @@
         </span>
       <% end %>
     </div>
+
+    <% if @jogo.finalizado? && @jogo.gols_penaltis_mandante.present? && @jogo.gols_penaltis_visitante.present? %>
+      <div class="border-t border-base-200 pt-6 max-w-xl mx-auto space-y-4">
+        <h4 class="text-xs uppercase font-extrabold text-warning tracking-widest">Cobranças de Pênaltis</h4>
+        
+        <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-center">
+          <!-- Sequência Mandante -->
+          <div class="flex flex-col items-end gap-2">
+            <span class="text-xs font-bold opacity-60"><%= @jogo.mandante&.nome || 'Mandante' %></span>
+            <div class="flex flex-row-reverse gap-1.5 flex-wrap justify-start">
+              <% if @jogo.sequencia_penaltis_mandante.present? %>
+                <% @jogo.sequencia_penaltis_mandante.split(',').map(&:to_i).each do |cobranca| %>
+                  <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-inner font-bold <%= cobranca == 1 ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-500 border border-rose-500/30' %>">
+                    <%= cobranca == 1 ? '🟢' : '❌' %>
+                  </span>
+                <% end %>
+              <% else %>
+                <span class="text-xs opacity-50 italic">Sem detalhe</span>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Divisor / Placar -->
+          <div class="px-4 py-2 bg-warning/10 border border-warning/20 text-warning font-black rounded-2xl text-lg sm:text-xl shrink-0">
+            <%= @jogo.gols_penaltis_mandante %> x <%= @jogo.gols_penaltis_visitante %>
+          </div>
+
+          <!-- Sequência Visitante -->
+          <div class="flex flex-col items-start gap-2">
+            <span class="text-xs font-bold opacity-60"><%= @jogo.visitante&.nome || 'Visitante' %></span>
+            <div class="flex gap-1.5 flex-wrap justify-start">
+              <% if @jogo.sequencia_penaltis_visitante.present? %>
+                <% @jogo.sequencia_penaltis_visitante.split(',').map(&:to_i).each do |cobranca| %>
+                  <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-inner font-bold <%= cobranca == 1 ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-500 border border-rose-500/30' %>">
+                    <%= cobranca == 1 ? '🟢' : '❌' %>
+                  </span>
+                <% end %>
+              <% else %>
+                <span class="text-xs opacity-50 italic">Sem detalhe</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 
   <% if @jogo.prob_mandante.present? && !current_user.esconder_odds %>
@@ -170,9 +225,19 @@
             <span class="text-sm font-semibold opacity-70">Casa</span>
           <% end %>
           
-          <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_casa %></span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_casa %></span>
+            <% if @palpite.gols_penaltis_casa.present? && @palpite.gols_penaltis_fora.present? %>
+              <span class="text-sm font-black text-warning" title="Palpite Pênaltis">(<%= @palpite.gols_penaltis_casa %>)</span>
+            <% end %>
+          </div>
           <span class="opacity-40">x</span>
-          <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_fora %></span>
+          <div class="flex items-center gap-1.5">
+            <% if @palpite.gols_penaltis_casa.present? && @palpite.gols_penaltis_fora.present? %>
+              <span class="text-sm font-black text-warning" title="Palpite Pênaltis">(<%= @palpite.gols_penaltis_fora %>)</span>
+            <% end %>
+            <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_fora %></span>
+          </div>
           
           <% if @jogo.visitante.present? %>
             <%= link_to @jogo.visitante.nome, selecao_path(@jogo.visitante), class: "text-sm font-semibold opacity-70 hover:underline hover:text-primary" %>

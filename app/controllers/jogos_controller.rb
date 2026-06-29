@@ -378,7 +378,11 @@ class JogosController < ApplicationController
         :nome_provisorio_visitante,
         :status,
         :grupo_id,
-        :vencedor_penaltis_id
+        :vencedor_penaltis_id,
+        :gols_penaltis_mandante,
+        :gols_penaltis_visitante,
+        :sequencia_penaltis_mandante,
+        :sequencia_penaltis_visitante
       )
     end
 end
