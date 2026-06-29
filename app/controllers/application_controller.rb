@@ -70,6 +70,7 @@ class ApplicationController < ActionController::Base
       { controller: "jogos", action: "palpites" },
       { controller: "jogos", action: "sync_statistics" },
       { controller: "users", action: "update_password" },
+      { controller: "users", action: "dismiss_penaltis_scoring_notice" },
       { controller: "devise/sessions", action: "destroy" }
     ]
 

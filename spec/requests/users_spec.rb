@@ -124,4 +124,15 @@ RSpec.describe "Users", type: :request do
     # O usuário logado deve ter os 12 pontos computados
     expect(response.body).to include("12")
   end
+
+  it "semi-admin (semi_root) should be able to dismiss penalty scoring notice" do
+    user.update!(tipo: :semi_root, penaltis_scoring_notice_seen_at: nil)
+    sign_in user
+
+    patch dismiss_penaltis_scoring_notice_path
+    
+    expect(response).to redirect_to(authenticated_root_path)
+    expect(flash[:alert]).to be_nil
+    expect(user.reload.penaltis_scoring_notice_seen_at).not_to be_nil
+  end
 end
