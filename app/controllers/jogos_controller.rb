@@ -142,6 +142,12 @@ class JogosController < ApplicationController
   end
 
   def finalize
+    if params[:gols_mandante].present?
+      @jogo.gols_mandante = params[:gols_mandante].to_i
+    end
+    if params[:gols_visitante].present?
+      @jogo.gols_visitante = params[:gols_visitante].to_i
+    end
   end
 
   def finish

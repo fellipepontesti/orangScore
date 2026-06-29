@@ -177,7 +177,7 @@
                         <button type="button" class="btn btn-sm btn-outline btn-error flex-1 font-bold" onclick="suspendGame('<%= jogo.uuid %>')">
                           Suspender Jogo
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline btn-warning flex-1 font-bold" onclick="finalizeGame('<%= jogo.uuid %>', '<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>', '<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>')">
+                         <button type="button" class="btn btn-sm btn-outline btn-warning flex-1 font-bold" onclick="finalizeGame(<%= jogo.id %>, '<%= jogo.uuid %>', '<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>', '<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>', <%= jogo.grupo? %>)">
                           Finalizar Jogo
                         </button>
                       </div>
@@ -245,7 +245,7 @@
                       <button type="button" class="btn btn-xs btn-success text-white font-bold flex-1" onclick="resumeGameSusp('<%= jogo.uuid %>')">
                         Continuar
                       </button>
-                      <button type="button" class="btn btn-xs btn-outline btn-warning flex-1 font-bold" onclick="finalizeGameSusp('<%= jogo.uuid %>', '<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>', '<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>', <%= jogo.gols_mandante.to_i %>, <%= jogo.gols_visitante.to_i %>)">
+                      <button type="button" class="btn btn-xs btn-outline btn-warning flex-1 font-bold" onclick="finalizeGameSusp(<%= jogo.id %>, '<%= jogo.uuid %>', '<%= jogo.mandante&.nome || jogo.nome_provisorio_mandante %>', '<%= jogo.visitante&.nome || jogo.nome_provisorio_visitante %>', <%= jogo.gols_mandante.to_i %>, <%= jogo.gols_visitante.to_i %>, <%= jogo.grupo? %>)">
                         Finalizar
                       </button>
                     <% end %>
@@ -304,10 +304,18 @@
         }
       }
 
-      function finalizeGame(uuid, mandanteNome, visitanteNome) {
+      function finalizeGame(id, uuid, mandanteNome, visitanteNome, isGrupo) {
         const gM = document.getElementById(`gols_mandante_${uuid}`).value;
         const gV = document.getElementById(`gols_visitante_${uuid}`).value;
         
+        // Se for mata-mata (não grupo) e for empate, obriga a ir para a tela de finalização de pênaltis
+        if (!isGrupo && parseInt(gM) === parseInt(gV)) {
+          if (confirm(`Este jogo é de Mata-Mata e terminou empatado em ${gM} x ${gV}.\nVocê precisa preencher o placar e sequência das cobranças de pênaltis.\nRedirecionar para a tela de detalhes de pênaltis?`)) {
+            window.location.href = `/jogos/${id}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
+          }
+          return;
+        }
+
         let resMessage = "";
         if (parseInt(gM) > parseInt(gV)) {
           resMessage = `Vitória do ${mandanteNome} por ${gM} x ${gV}`;
@@ -326,7 +334,15 @@
         }
       }
 
-      function finalizeGameSusp(uuid, mandanteNome, visitanteNome, gM, gV) {
+      function finalizeGameSusp(id, uuid, mandanteNome, visitanteNome, gM, gV, isGrupo) {
+        // Se for mata-mata (não grupo) e for empate, obriga a ir para a tela de finalização de pênaltis
+        if (!isGrupo && parseInt(gM) === parseInt(gV)) {
+          if (confirm(`Este jogo é de Mata-Mata e terminou empatado em ${gM} x ${gV}.\nVocê precisa preencher o placar e sequência das cobranças de pênaltis.\nRedirecionar para a tela de detalhes de pênaltis?`)) {
+            window.location.href = `/jogos/${id}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
+          }
+          return;
+        }
+
         let resMessage = "";
         if (parseInt(gM) > parseInt(gV)) {
           resMessage = `Vitória do ${mandanteNome} por ${gM} x ${gV}`;
