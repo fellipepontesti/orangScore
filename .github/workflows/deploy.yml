@@ -19,11 +19,14 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /orangScore
+            # Carrega o ambiente do Ruby (rbenv / rvm) e caminhos da VPS
+            export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$HOME/.rvm/bin:$PATH"
+            if [ -f "$HOME/.profile" ]; then source "$HOME/.profile"; fi
+            if [ -f "$HOME/.bashrc" ]; then source "$HOME/.bashrc"; fi
 
             APP_DIR="/home/deploy/orangScore"
-
             cd $APP_DIR
+
             git pull origin master
 
             set -a
@@ -35,11 +38,10 @@ jobs:
 
             yarn install
 
-            RAILS_ENV=production rails tmp:clear
-            RAILS_ENV=production rails log:clear
+            RAILS_ENV=production bundle exec rails tmp:clear
+            RAILS_ENV=production bundle exec rails log:clear
+            RAILS_ENV=production bundle exec rails db:migrate
+            RAILS_ENV=production bundle exec rails assets:precompile
 
-            RAILS_ENV=production rails db:migrate
-
-            RAILS_ENV=production rails assets:precompile
-
-            sudo systemctl restart orangscore
+            # Reinicia o Puma de forma suave tocando no arquivo restart.txt (não exige sudo/senha)
+            touch tmp/restart.txt
