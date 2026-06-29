@@ -311,7 +311,7 @@
         // Se for mata-mata (não grupo) e for empate, obriga a ir para a tela de finalização de pênaltis
         if (!isGrupo && parseInt(gM) === parseInt(gV)) {
           if (confirm(`Este jogo é de Mata-Mata e terminou empatado em ${gM} x ${gV}.\nVocê precisa preencher o placar e sequência das cobranças de pênaltis.\nRedirecionar para a tela de detalhes de pênaltis?`)) {
-            window.location.href = `/jogos/${id}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
+            window.location.href = `/jogos/${uuid}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
           }
           return;
         }
@@ -338,7 +338,7 @@
         // Se for mata-mata (não grupo) e for empate, obriga a ir para a tela de finalização de pênaltis
         if (!isGrupo && parseInt(gM) === parseInt(gV)) {
           if (confirm(`Este jogo é de Mata-Mata e terminou empatado em ${gM} x ${gV}.\nVocê precisa preencher o placar e sequência das cobranças de pênaltis.\nRedirecionar para a tela de detalhes de pênaltis?`)) {
-            window.location.href = `/jogos/${id}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
+            window.location.href = `/jogos/${uuid}/finalize?gols_mandante=${gM}&gols_visitante=${gV}`;
           }
           return;
         }
