@@ -43,5 +43,5 @@ jobs:
             RAILS_ENV=production bundle exec rails db:migrate
             RAILS_ENV=production bundle exec rails assets:precompile
 
-            # Reinicia o Puma de forma suave tocando no arquivo restart.txt (não exige sudo/senha)
-            touch tmp/restart.txt
+            # Reinicia o Puma pelo systemd (garante o boot mesmo se tiver caído por falta de memória)
+            sudo systemctl restart orangscore
