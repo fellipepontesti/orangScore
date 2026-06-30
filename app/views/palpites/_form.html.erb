@@ -93,8 +93,8 @@
 
         <% if @jogo.present? && !@jogo.grupo? %>
           <!-- Container de Vencedor nos Pênaltis para o Usuário -->
-          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless form.object.gols_casa.present? && form.object.gols_fora.present? && form.object.gols_casa.to_i == form.object.gols_fora.to_i %> bg-warning/5 border border-warning/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-3.5 shadow-inner">
-            <div class="flex items-center justify-center gap-2 text-warning font-black text-xs uppercase tracking-wider">
+          <div id="vencedor-penaltis-container" class="<%= 'hidden' unless form.object.gols_casa.present? && form.object.gols_fora.present? && form.object.gols_casa.to_i == form.object.gols_fora.to_i %> bg-primary/5 border border-primary/20 rounded-3xl p-5 max-w-md mx-auto text-center space-y-3.5 shadow-inner">
+            <div class="flex items-center justify-center gap-2 text-primary font-black text-xs uppercase tracking-wider">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 21l8.982-2.246M18 19.086L18 21M21 15v4.5m-3-12h.008v.008H18V7.5Zm-3 3h.008v.008H15v-.008Zm6 0h.008v.008H21v-.008Zm-3 3h.008v.008H18v-.008Zm-3 3h.008v.008H15v-.008Z" />
               </svg>
@@ -104,13 +104,13 @@
             
             <div class="flex items-center justify-center gap-3">
               <!-- Mandante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
+              <label class="btn btn-outline btn-primary btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
                 <%= form.radio_button :vencedor_penaltis_id, @jogo.mandante_id, class: "hidden" %>
                 <span><%= @jogo.mandante&.nome || 'Mandante' %></span>
               </label>
 
               <!-- Visitante -->
-              <label class="btn btn-outline btn-warning btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
+              <label class="btn btn-outline btn-primary btn-sm rounded-xl cursor-pointer flex-1 font-bold h-10 px-4">
                 <%= form.radio_button :vencedor_penaltis_id, @jogo.visitante_id, class: "hidden" %>
                 <span><%= @jogo.visitante&.nome || 'Visitante' %></span>
               </label>
@@ -148,10 +148,10 @@
                 labels.forEach(label => {
                   const radio = label.querySelector('input[type="radio"]');
                   if (radio && radio.checked) {
-                    label.classList.add('bg-warning', 'text-warning-content');
+                    label.classList.add('bg-primary', 'text-primary-content');
                     label.classList.remove('btn-outline');
                   } else {
-                    label.classList.remove('bg-warning', 'text-warning-content');
+                    label.classList.remove('bg-primary', 'text-primary-content');
                     label.classList.add('btn-outline');
                   }
                 });

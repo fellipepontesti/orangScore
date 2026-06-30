@@ -202,7 +202,7 @@
                             <% end %>
                           </div>
                           <% if jogo.finalizado? && jogo.gols_penaltis_mandante.present? && jogo.gols_penaltis_visitante.present? %>
-                            <span class="text-[9px] font-black text-warning uppercase tracking-wider bg-warning/10 px-1.5 py-0.5 rounded border border-warning/20">
+                            <span class="text-[9px] font-black text-primary uppercase tracking-wider bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
                               Pen: <%= jogo.gols_penaltis_mandante %>x<%= jogo.gols_penaltis_visitante %>
                             </span>
                           <% end %>
@@ -374,7 +374,7 @@
                       <div class="text-[10px] sm:text-xs uppercase font-bold text-primary mb-1">
                         Palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
                         <% if palpite.gols_penaltis_casa.present? && palpite.gols_penaltis_fora.present? %>
-                          <span class="text-warning font-black">(<%= palpite.gols_penaltis_casa %>x<%= palpite.gols_penaltis_fora %>)</span>
+                          <span class="text-primary font-black">(<%= palpite.gols_penaltis_casa %>x<%= palpite.gols_penaltis_fora %>)</span>
                         <% end %>
                       </div>
                     <% end %>
@@ -382,7 +382,7 @@
                       <%= jogo.gols_mandante %> - <%= jogo.gols_visitante %>
                     </div>
                     <% if jogo.finalizado? && jogo.gols_penaltis_mandante.present? && jogo.gols_penaltis_visitante.present? %>
-                      <div class="text-[10px] sm:text-xs font-black text-warning uppercase tracking-wider bg-warning/10 px-2 py-0.5 rounded border border-warning/20 mt-1">
+                      <div class="text-[10px] sm:text-xs font-black text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded border border-primary/20 mt-1">
                         Pen: <%= jogo.gols_penaltis_mandante %> x <%= jogo.gols_penaltis_visitante %>
                       </div>
                     <% end %>
