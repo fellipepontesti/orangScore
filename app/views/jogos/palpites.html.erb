@@ -254,9 +254,16 @@
             
             <!-- Palpite e Pontuação -->
             <div class="flex items-center gap-2 sm:gap-8 text-right shrink-0">
-              <span class="w-14 sm:w-24 font-bold text-xs sm:text-base text-center bg-base-200/50 rounded-lg py-1 px-1 sm:px-3">
-                <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
-              </span>
+              <div class="flex flex-col items-center gap-1 shrink-0">
+                <span class="w-14 sm:w-24 font-bold text-xs sm:text-base text-center bg-base-200/50 rounded-lg py-1 px-1 sm:px-3">
+                  <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
+                </span>
+                <% if palpite.gols_penaltis_casa.present? && palpite.gols_penaltis_fora.present? %>
+                  <span class="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-wider bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 leading-none">
+                    Pen: <%= palpite.gols_penaltis_casa %>x<%= palpite.gols_penaltis_fora %>
+                  </span>
+                <% end %>
+              </div>
               
               <span class="w-10 sm:w-16 text-sm sm:text-xl font-black <%= pontos > 0 ? 'text-success' : 'text-base-content/40' %>">
                 <% if @jogo.programado? %>
