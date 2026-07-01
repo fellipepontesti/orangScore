@@ -223,6 +223,25 @@
     }
   }
 
-  document.addEventListener("turbo:load", setupAchievementCheckboxes);
-  document.addEventListener("DOMContentLoaded", setupAchievementCheckboxes);
+  function checkOpenConquistas() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('open_conquistas') === 'true') {
+      const modal = document.getElementById("modal_conquistas");
+      if (modal && typeof modal.showModal === "function") {
+        modal.showModal();
+        
+        // Remove o parâmetro da URL de forma amigável
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }
+    }
+  }
+
+  function initProfilePage() {
+    setupAchievementCheckboxes();
+    checkOpenConquistas();
+  }
+
+  document.addEventListener("turbo:load", initProfilePage);
+  document.addEventListener("DOMContentLoaded", initProfilePage);
 </script>

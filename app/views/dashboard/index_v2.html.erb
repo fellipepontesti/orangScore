@@ -36,11 +36,13 @@
                 </span>
               <% end %>
               <% if @conquistas_usuario.present? && @conquistas_usuario.any? %>
-                <div class="flex items-center gap-1 ml-1" title="Suas Conquistas">
+                <div class="flex items-center gap-1 ml-1" title="Clique para ver suas Conquistas">
                   <% @conquistas_usuario.each do |uc| %>
-                    <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-6 w-6 text-xs flex items-center justify-center rounded-lg shadow-sm cursor-help hover:scale-110 transition duration-150" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
-                      <%= uc.conquista.icon %>
-                    </div>
+                    <%= link_to perfil_path(open_conquistas: true), class: "hover:scale-110 transition duration-150 active:scale-95" do %>
+                      <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-6 w-6 text-xs flex items-center justify-center rounded-lg shadow-sm cursor-pointer" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                        <%= uc.conquista.icon %>
+                      </div>
+                    <% end %>
                   <% end %>
                 </div>
               <% end %>
