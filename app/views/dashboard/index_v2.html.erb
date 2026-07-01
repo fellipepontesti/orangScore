@@ -127,7 +127,7 @@
                   <div class="flex items-center gap-3 justify-end w-full sm:w-auto col-span-12 sm:col-span-4 border-t sm:border-t-0 border-base-200 pt-2 sm:pt-0">
                     <% if palpite.present? %>
                       <span class="text-[10px] font-bold text-slate-400 bg-base-200 px-2 py-1 rounded">
-                        Meu Palpite: <%= palpite.gols_casa %>-<%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? %>
+                        Meu Palpite: <%= palpite.gols_casa %>-<%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %>
                       </span>
                     <% end %>
                     <%= link_to "Acompanhar", jogo_path(jogo), class: "btn btn-xs btn-primary text-white font-bold" %>
@@ -208,7 +208,7 @@
                   <div class="flex items-center gap-3 justify-end w-full sm:w-auto col-span-12 sm:col-span-4 border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                     <% if palpite.present? %>
                       <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                        Palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? %></strong>
+                        Palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %></strong>
                         <% if jogo.finalizado? %>
                           <% user_point = @pontos_por_jogo_id[jogo.id] %>
                           <% pontos = user_point ? user_point.pontos.to_i : 0 %>

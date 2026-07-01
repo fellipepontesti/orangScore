@@ -240,7 +240,7 @@
           <% end %>
         </div>
         
-        <% if @palpite.vencedor_penaltis_id.present? %>
+        <% if @palpite.vencedor_penaltis_id.present? && @palpite.gols_casa.to_i == @palpite.gols_fora.to_i %>
           <div class="text-xs font-bold text-primary">
             Vencedor nos Pênaltis: <%= @palpite.vencedor_penaltis.nome %>
           </div>

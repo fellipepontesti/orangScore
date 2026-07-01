@@ -51,7 +51,7 @@
             <span class="mx-0.5 sm:mx-1 opacity-40 text-sm sm:text-xl font-medium">x</span>
             <%= palpite.gols_fora %>
           </div>
-          <% if palpite.vencedor_penaltis_id.present? %>
+          <% if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %>
             <div class="text-[10px] font-bold text-primary mt-1">
               (<%= palpite.vencedor_penaltis.nome %>)
             </div>

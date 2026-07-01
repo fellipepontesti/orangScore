@@ -115,7 +115,7 @@
               <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
                   <span class="text-[10px] font-bold text-slate-400">
-                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? %>
+                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %>
                   </span>
                 <% end %>
                 <div class="flex gap-2 w-full sm:w-auto justify-end">
@@ -207,7 +207,7 @@
               <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
                   <span class="text-[10px] font-bold text-slate-400">
-                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? %>
+                    Seu palpite: <%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %>
                   </span>
                 <% end %>
                 <div class="flex gap-2 w-full sm:w-auto justify-end">
@@ -315,7 +315,7 @@
               <div class="shrink-0 w-full sm:w-64 sm:min-w-[256px] flex flex-col sm:flex-row items-center gap-2 sm:gap-3 justify-end border-t sm:border-t-0 border-base-200 pt-3 sm:pt-0">
                 <% if palpite.present? %>
                   <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap shrink-0">
-                    Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? %></strong>
+                    Seu palpite: <strong class="font-mono text-slate-200 bg-base-200 px-1.5 py-0.5 rounded"><%= palpite.gols_casa %> - <%= palpite.gols_fora %><%= " (#{palpite.vencedor_penaltis.nome})" if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %></strong>
                     <% if jogo.finalizado? %>
                       <% user_point = @pontos_por_jogo_id[jogo.id] %>
                       <% pontos = user_point ? user_point.pontos.to_i : 0 %>

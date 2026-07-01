@@ -15,7 +15,7 @@
     <strong class="block font-medium mb-1">Gols fora:</strong>
     <%= palpite.gols_fora %>
   </div>
-  <% if palpite.vencedor_penaltis_id.present? %>
+  <% if palpite.vencedor_penaltis_id.present? && palpite.gols_casa.to_i == palpite.gols_fora.to_i %>
     <div>
       <strong class="block font-medium mb-1">Vencedor penaltis:</strong>
       <%= palpite.vencedor_penaltis.nome %>
