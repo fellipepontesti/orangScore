@@ -245,7 +245,7 @@
           </div>
           
           <!-- LISTA 1: RANKING GLOBAL (Oculta por padrão) -->
-          <div id="ranking-list-global" class="space-y-3 hidden">
+          <div id="ranking-list-global" class="space-y-3 hidden cursor-pointer hover:opacity-90 transition duration-150" onclick="window.location='<%= ranking_users_path(periodo: 'global') %>'">
             <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
               <span>Usuário</span>
               <span>Pontos</span>
@@ -285,7 +285,7 @@
           </div>
           
           <!-- LISTA 2: RANKING DIÁRIO -->
-          <div id="ranking-list-diario" class="space-y-3">
+          <div id="ranking-list-diario" class="space-y-3 cursor-pointer hover:opacity-90 transition duration-150" onclick="window.location='<%= ranking_users_path(periodo: 'diario') %>'">
             <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
               <span>Quem pontuou em <%= @data_ranking.strftime('%d/%m') %></span>
               <span>Pontos</span>
@@ -322,8 +322,7 @@
                   <span class="font-bold text-white"><%= current_user.name %></span>
                 </div>
                 <span class="font-black text-primary font-mono">
-                  <% my_daily_points = @ranking_diario.find { |u| u.id == current_user.id }&.total_pontos_ranking.to_i %>
-                  <%= my_daily_points %> pts
+                  <%= @user_diario_pontos %> pts
                 </span>
               </div>
             <% end %>

@@ -127,6 +127,8 @@ class DashboardController < ApplicationController
 
     @ranking_diario = ranking_diario_todos.first(5)
     @user_diario_rank = ranking_diario_todos.index(current_user) ? ranking_diario_todos.index(current_user) + 1 : "-"
+    user_no_ranking = ranking_diario_todos.find { |u| u.id == current_user.id }
+    @user_diario_pontos = user_no_ranking ? user_no_ranking.total_pontos_ranking.to_i : 0
 
     if current_user.premium? || current_user.root?
       @dados_grafico = Users::RankingHistoryService.new(user: current_user).call
