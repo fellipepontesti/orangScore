@@ -62,6 +62,7 @@ class DashboardController < ApplicationController
     @next_jogo_rapido = next_jogo_rapido(current_user)
     @jogos_pendentes = jogos_pendentes_count(current_user)
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
+    @conquistas_usuario = current_user.user_conquistas.includes(:conquista).order(destacada: :desc, created_at: :desc).limit(4)
     hoje = Time.zone.today
     periodo_hoje = hoje.beginning_of_day..hoje.end_of_day
     
@@ -135,10 +136,10 @@ class DashboardController < ApplicationController
 
     MetricaAcesso.registrar("dashboard_user", "Painel Principal (Usuário)")
 
-    if session[:use_dashboard_v2]
-      render :index_v2
-    else
+    if session[:use_dashboard_v2] == false
       render :index
+    else
+      render :index_v2
     end
   end
 

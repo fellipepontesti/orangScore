@@ -30,16 +30,30 @@
               <span class="font-mono font-bold bg-base-200 px-2 py-0.5 rounded text-slate-300">
                 🏆 <%= current_user.total_pontos %> pts
               </span>
-              <span class="font-mono font-bold bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20">
-                📈 Rank #<%= @user_global_rank %>
-              </span>
+              <% if current_user.premium? %>
+                <span class="font-mono font-bold bg-primary/10 text-primary px-2 py-0.5 rounded border border-primary/20">
+                  📈 Rank #<%= @user_global_rank %>
+                </span>
+              <% end %>
+              <% if @conquistas_usuario.present? && @conquistas_usuario.any? %>
+                <div class="flex items-center gap-1 ml-1" title="Suas Conquistas">
+                  <% @conquistas_usuario.each do |uc| %>
+                    <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-6 w-6 text-xs flex items-center justify-center rounded-lg shadow-sm cursor-help hover:scale-110 transition duration-150" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                      <%= uc.conquista.icon %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
-          <%= link_to authenticated_root_path(v2: false), class: "btn btn-ghost border-base-300 btn-sm rounded-xl font-bold gap-1.5 w-full sm:w-auto hover:bg-base-200 transition" do %>
-            <span>Voltar ao v1 ↩️</span>
+          <% if false %>
+            <%# BOTÃO DE VOLTAR AO V1 DESATIVADO (MANTIDO APENAS PARA HISTÓRICO/TESTES) %>
+            <%= link_to authenticated_root_path(v2: false), class: "btn btn-ghost border-base-300 btn-sm rounded-xl font-bold gap-1.5 w-full sm:w-auto hover:bg-base-200 transition" do %>
+              <span>Voltar ao v1 ↩️</span>
+            <% end %>
           <% end %>
           
           <% if current_user.assinatura&.basic? %>
@@ -213,74 +227,30 @@
     <!-- COLUNA LATERAL (DIREITA) - lg:col-span-4 -->
     <div class="lg:col-span-4 space-y-6">
       
-      <!-- Widget de Ranking com Abas (Geral & Diário) -->
-      <div class="bg-base-100 rounded-3xl border border-base-200 p-5 shadow-xl flex flex-col">
-        <h2 class="text-lg font-black text-white mb-3 flex items-center gap-2">
-          📊 Ranking Geral & Diário
-        </h2>
-        
-        <!-- Abas com Badge Animado na Diária -->
-        <div class="tabs tabs-boxed bg-base-200 p-1 rounded-xl mb-4 select-none flex">
-          <button onclick="switchRankingTab('global')" id="btn-tab-global" class="tab tab-active flex-1 font-bold text-xs uppercase transition duration-200">Geral</button>
-          <button onclick="switchRankingTab('diario')" id="btn-tab-diario" class="tab flex-1 font-bold text-xs uppercase transition duration-200 relative">
-            Diário
-            <span class="absolute -top-1.5 -right-1 flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-            </span>
-          </button>
-        </div>
-        
-        <!-- LISTA 1: RANKING GLOBAL -->
-        <div id="ranking-list-global" class="space-y-3">
-          <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
-            <span>Usuário</span>
-            <span>Pontos</span>
+      <% if current_user.premium? %>
+        <!-- Widget de Ranking com Abas (Geral & Diário) -->
+        <div class="bg-base-100 rounded-3xl border border-base-200 p-5 shadow-xl flex flex-col">
+          <h2 class="text-lg font-black text-white mb-3 flex items-center gap-2">
+            📊 Ranking Geral & Diário
+          </h2>
+          
+          <!-- Abas com Diária como padrão -->
+          <div class="tabs tabs-boxed bg-base-200 p-1 rounded-xl mb-4 select-none flex">
+            <button onclick="switchRankingTab('global')" id="btn-tab-global" class="tab flex-1 font-bold text-xs uppercase transition duration-200">Geral</button>
+            <button onclick="switchRankingTab('diario')" id="btn-tab-diario" class="tab tab-active flex-1 font-bold text-xs uppercase transition duration-200 relative">
+              Diário
+            </button>
           </div>
           
-          <div class="divide-y divide-base-200/50">
-            <% @ranking_global.each_with_index do |user, index| %>
-              <div class="py-2.5 flex items-center justify-between gap-3 text-sm">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="w-6 text-center font-black font-mono <%= index < 3 ? 'text-primary' : 'opacity-40' %>">
-                    <%= index + 1 %>º
-                  </span>
-                  <span class="font-semibold truncate <%= 'text-primary font-bold' if user.id == current_user.id %>"><%= user.name %></span>
-                  <% if user.id == current_user.id %>
-                    <span class="badge badge-primary badge-xs rounded text-[9px]">Você</span>
-                  <% end %>
-                </div>
-                <span class="font-bold font-mono text-slate-200"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %> pts</span>
-              </div>
-            <% end %>
-          </div>
-          
-          <!-- Rodapé com minha colocação se não estiver no Top 5 -->
-          <% if @user_global_rank.is_a?(Integer) && @user_global_rank > 5 %>
-            <div class="mt-2 pt-2.5 border-t border-dashed border-primary/20 flex items-center justify-between text-sm bg-primary/5 p-3 rounded-2xl">
-              <div class="flex items-center gap-2">
-                <span class="font-black text-primary font-mono"><%= @user_global_rank %>º</span>
-                <span class="font-bold text-white"><%= current_user.name %></span>
-              </div>
-              <span class="font-black text-primary font-mono"><%= current_user.total_pontos %> pts</span>
+          <!-- LISTA 1: RANKING GLOBAL (Oculta por padrão) -->
+          <div id="ranking-list-global" class="space-y-3 hidden">
+            <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
+              <span>Usuário</span>
+              <span>Pontos</span>
             </div>
-          <% end %>
-
-          <div class="pt-3 text-center">
-            <%= link_to "Ver Ranking Geral Completo →", ranking_users_path(periodo: 'global'), class: "text-xs font-bold text-primary hover:underline" %>
-          </div>
-        </div>
-        
-        <!-- LISTA 2: RANKING DIÁRIO (Oculta por padrão) -->
-        <div id="ranking-list-diario" class="space-y-3 hidden">
-          <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
-            <span>Quem pontuou em <%= @data_ranking.strftime('%d/%m') %></span>
-            <span>Pontos</span>
-          </div>
-          
-          <div class="divide-y divide-base-200/50">
-            <% if @ranking_diario.any? { |u| u.total_pontos_ranking.to_i > 0 } %>
-              <% @ranking_diario.each_with_index do |user, index| %>
+            
+            <div class="divide-y divide-base-200/50">
+              <% @ranking_global.each_with_index do |user, index| %>
                 <div class="py-2.5 flex items-center justify-between gap-3 text-sm">
                   <div class="flex items-center gap-2 min-w-0">
                     <span class="w-6 text-center font-black font-mono <%= index < 3 ? 'text-primary' : 'opacity-40' %>">
@@ -291,36 +261,78 @@
                       <span class="badge badge-primary badge-xs rounded text-[9px]">Você</span>
                     <% end %>
                   </div>
-                  <span class="font-bold font-mono text-slate-200"><%= user.total_pontos_ranking.to_i %> pts</span>
+                  <span class="font-bold font-mono text-slate-200"><%= user.try(:total_pontos_ranking) || user.total_pontos || 0 %> pts</span>
                 </div>
               <% end %>
-            <% else %>
-              <div class="py-6 text-center text-xs opacity-50 italic">
-                Ainda não há pontuações registradas para o ranking diário deste dia.
+            </div>
+            
+            <!-- Rodapé com minha colocação se não estiver no Top 5 -->
+            <% if @user_global_rank.is_a?(Integer) && @user_global_rank > 5 %>
+              <div class="mt-2 pt-2.5 border-t border-dashed border-primary/20 flex items-center justify-between text-sm bg-primary/5 p-3 rounded-2xl">
+                <div class="flex items-center gap-2">
+                  <span class="font-black text-primary font-mono"><%= @user_global_rank %>º</span>
+                  <span class="font-bold text-white"><%= current_user.name %></span>
+                </div>
+                <span class="font-black text-primary font-mono"><%= current_user.total_pontos %> pts</span>
               </div>
             <% end %>
+
+            <div class="pt-3 text-center">
+              <%= link_to "Ver Ranking Geral Completo →", ranking_users_path(periodo: 'global'), class: "text-xs font-bold text-primary hover:underline" %>
+            </div>
           </div>
           
-          <!-- Rodapé com minha colocação diária se não estiver no Top 5 -->
-          <% if @user_diario_rank.is_a?(Integer) && @user_diario_rank > 5 %>
-            <div class="mt-2 pt-2.5 border-t border-dashed border-primary/20 flex items-center justify-between text-sm bg-primary/5 p-3 rounded-2xl">
-              <div class="flex items-center gap-2">
-                <span class="font-black text-primary font-mono"><%= @user_diario_rank %>º</span>
-                <span class="font-bold text-white"><%= current_user.name %></span>
-              </div>
-              <span class="font-black text-primary font-mono">
-                <% my_daily_points = @ranking_diario.find { |u| u.id == current_user.id }&.total_pontos_ranking.to_i %>
-                <%= my_daily_points %> pts
-              </span>
+          <!-- LISTA 2: RANKING DIÁRIO -->
+          <div id="ranking-list-diario" class="space-y-3">
+            <div class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-base-200 pb-1.5">
+              <span>Quem pontuou em <%= @data_ranking.strftime('%d/%m') %></span>
+              <span>Pontos</span>
             </div>
-          <% end %>
+            
+            <div class="divide-y divide-base-200/50">
+              <% if @ranking_diario.any? { |u| u.total_pontos_ranking.to_i > 0 } %>
+                <% @ranking_diario.each_with_index do |user, index| %>
+                  <div class="py-2.5 flex items-center justify-between gap-3 text-sm">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 text-center font-black font-mono <%= index < 3 ? 'text-primary' : 'opacity-40' %>">
+                        <%= index + 1 %>º
+                      </span>
+                      <span class="font-semibold truncate <%= 'text-primary font-bold' if user.id == current_user.id %>"><%= user.name %></span>
+                      <% if user.id == current_user.id %>
+                        <span class="badge badge-primary badge-xs rounded text-[9px]">Você</span>
+                      <% end %>
+                    </div>
+                    <span class="font-bold font-mono text-slate-200"><%= user.total_pontos_ranking.to_i %> pts</span>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="py-6 text-center text-xs opacity-50 italic">
+                  Ainda não há pontuações registradas para o ranking diário deste dia.
+                </div>
+              <% end %>
+            </div>
+            
+            <!-- Rodapé com minha colocação diária se não estiver no Top 5 -->
+            <% if @user_diario_rank.is_a?(Integer) && @user_diario_rank > 5 %>
+              <div class="mt-2 pt-2.5 border-t border-dashed border-primary/20 flex items-center justify-between text-sm bg-primary/5 p-3 rounded-2xl">
+                <div class="flex items-center gap-2">
+                  <span class="font-black text-primary font-mono"><%= @user_diario_rank %>º</span>
+                  <span class="font-bold text-white"><%= current_user.name %></span>
+                </div>
+                <span class="font-black text-primary font-mono">
+                  <% my_daily_points = @ranking_diario.find { |u| u.id == current_user.id }&.total_pontos_ranking.to_i %>
+                  <%= my_daily_points %> pts
+                </span>
+              </div>
+            <% end %>
 
-          <div class="pt-3 text-center">
-            <%= link_to "Ver Ranking Diário Completo →", ranking_users_path(periodo: 'diario'), class: "text-xs font-bold text-primary hover:underline" %>
+            <div class="pt-3 text-center">
+              <%= link_to "Ver Ranking Diário Completo →", ranking_users_path(periodo: 'diario'), class: "text-xs font-bold text-primary hover:underline" %>
+            </div>
           </div>
-        </div>
 
-      </div>
+        </div>
+      <% end %>
 
       <!-- Gráfico de Evolução no Ranking -->
       <% if current_user.premium? || current_user.root? %>
