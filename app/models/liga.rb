@@ -25,6 +25,8 @@ class Liga < ApplicationRecord
   }
 
   validates :nome, presence: true
+  validates :nome, length: { maximum: 30, message: "deve ter no máximo 30 caracteres" }
+  validate :nome_must_not_contain_consecutive_spaces
 
   def limite_participantes
     owner.limite_usuarios_por_liga
@@ -67,5 +69,11 @@ class Liga < ApplicationRecord
 
   def generate_invite_token
     self.invite_token = SecureRandom.hex(10)
+  end
+
+  def nome_must_not_contain_consecutive_spaces
+    if nome.present? && nome.match?(/\s{2,}/)
+      errors.add(:nome, "não pode conter espaços em branco consecutivos")
+    end
   end
 end

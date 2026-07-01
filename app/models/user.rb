@@ -71,6 +71,7 @@ class User < ApplicationRecord
   
   validates :terms_of_service, acceptance: true
   validate :name_must_be_appropriate
+  validate :name_must_not_contain_consecutive_spaces
         
   validates :password,
   format: {
@@ -201,6 +202,12 @@ class User < ApplicationRecord
         errors.add(:name, "contém termo impróprio")
         break
       end
+    end
+  end
+
+  def name_must_not_contain_consecutive_spaces
+    if name.present? && name.match?(/\s{2,}/)
+      errors.add(:name, "não pode conter espaços em branco consecutivos")
     end
   end
 end

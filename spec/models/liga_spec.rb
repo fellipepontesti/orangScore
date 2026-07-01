@@ -137,4 +137,54 @@ RSpec.describe Liga, type: :model do
     expect(liga.persisted?).to be_truthy
     expect(liga.pontuacao_zerada?).to be_truthy
   end
+
+  describe "validações de nome" do
+    it "não permite nome com mais de 30 caracteres" do
+      liga = Liga.new(owner: user, nome: "A" * 31, publica: true)
+      expect(liga.valid?).to be_falsey
+      expect(liga.errors[:nome]).to include("deve ter no máximo 30 caracteres")
+    end
+
+    it "não permite nome com dois ou mais espaços em branco consecutivos" do
+      liga = Liga.new(owner: user, nome: "Liga  Com  Espaço  Duplo", publica: true)
+      expect(liga.valid?).to be_falsey
+      expect(liga.errors[:nome]).to include("não pode conter espaços em branco consecutivos")
+    end
+
+    it "permite nome válido com espaços simples" do
+      liga = Liga.new(owner: user, nome: "Liga Válida Com Espaço", publica: true)
+      expect(liga.valid?).to be_truthy
+    end
+  end
+
+  describe "notificação ao tentar criar liga com nome longo" do
+    let!(:root_user) { User.create!(name: "Admin Root", email: "root@example.com", password: "Password123!", tipo: :root, selecao_id: Selecao.first&.id, logo_selecao: "default.png", esconder_odds: false) }
+    let(:test_user) { users(:two) }
+
+    before do
+      test_user.ligas.destroy_all
+      if test_user.assinatura
+        test_user.assinatura.update!(plano: :basic, ativa: true)
+      else
+        Assinatura.create!(usuario: test_user, plano: :basic, ativa: true)
+      end
+      test_user.reload
+    end
+
+    it "gera uma notificação para o usuário root se a criação falhar devido ao tamanho do nome" do
+      service = Ligas::Create.new(
+        current_user: test_user,
+        params: { nome: "A" * 31, publica: true, entrada_livre: true }
+      )
+      
+      expect {
+        liga = service.call
+        expect(liga.persisted?).to be_falsey
+      }.to change { Notificacao.where(user: root_user, tipo: :system).count }.by(1)
+      
+      notificacao = Notificacao.where(user: root_user, tipo: :system).last
+      expect(notificacao.texto).to include("tentou criar a liga")
+      expect(notificacao.texto).to include("excedendo o limite de 30 caracteres")
+    end
+  end
 end
