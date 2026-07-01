@@ -258,9 +258,9 @@
                 <span class="w-14 sm:w-24 font-bold text-xs sm:text-base text-center bg-base-200/50 rounded-lg py-1 px-1 sm:px-3">
                   <%= palpite.gols_casa %> - <%= palpite.gols_fora %>
                 </span>
-                <% if palpite.gols_penaltis_casa.present? && palpite.gols_penaltis_fora.present? %>
-                  <span class="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-wider bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 leading-none">
-                    Pen: <%= palpite.gols_penaltis_casa %>x<%= palpite.gols_penaltis_fora %>
+                <% if palpite.vencedor_penaltis_id.present? %>
+                  <span class="text-[10px] font-bold text-primary">
+                    (<%= palpite.vencedor_penaltis.nome %>)
                   </span>
                 <% end %>
               </div>
