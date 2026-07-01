@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_29_232159) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_01_130142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -140,6 +140,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_29_232159) do
     t.boolean "entrada_livre", null: false
     t.uuid "uuid", null: false
     t.boolean "pontuacao_zerada", default: false, null: false
+  end
+
+  create_table "metricas_acessos", force: :cascade do |t|
+    t.string "key"
+    t.string "nome"
+    t.integer "acessos"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_metricas_acessos_on_key", unique: true
   end
 
   create_table "notificacoes", force: :cascade do |t|

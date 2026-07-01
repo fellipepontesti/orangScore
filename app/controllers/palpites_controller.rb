@@ -57,6 +57,7 @@ class PalpitesController < ApplicationController
 
   # GET /palpites/new
   def new
+    MetricaAcesso.registrar("novo_palpite", "Formulário de Palpite")
     @jogo = Jogo.find_by_uuid_param!(params[:jogo_id])
     
     if params[:target_user_id].present? && current_user.root?
@@ -72,6 +73,7 @@ class PalpitesController < ApplicationController
 
   # GET /palpites/1/edit
   def edit
+    MetricaAcesso.registrar("editar_palpite", "Edição de Palpite")
     @jogo = @palpite.jogo
   end
 

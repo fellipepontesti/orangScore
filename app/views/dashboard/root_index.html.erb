@@ -706,6 +706,45 @@
     </div>
   </div>
 
+  <!-- Seção: Métricas de Uso e Funcionalidades -->
+  <div class="card bg-base-100 shadow-xl border border-base-200 mt-8">
+    <div class="card-body p-6">
+      <h2 class="text-2xl font-bold flex items-center gap-2 mb-4 text-white">
+        📊 Métricas de Uso e Funcionalidades (Telas Mais Acessadas)
+      </h2>
+      <p class="text-xs opacity-60 mb-6">Esta tabela exibe em tempo real a quantidade de vezes que cada tela ou recurso do OrangScore foi acessado pelos usuários comuns.</p>
+      
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full text-sm">
+          <thead>
+            <tr class="bg-base-200 text-slate-400 font-bold">
+              <th class="w-12 text-center">Posição</th>
+              <th>Nome da Funcionalidade / Tela</th>
+              <th class="w-32 text-center">Código da Chave</th>
+              <th class="w-32 text-center">Total de Acessos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @metricas.present? && @metricas.any? %>
+              <% @metricas.each_with_index do |metrica, index| %>
+                <tr class="hover:bg-base-200/50 transition">
+                  <td class="text-center font-black opacity-60"><%= index + 1 %>º</td>
+                  <td class="font-bold text-white"><%= metrica.nome %></td>
+                  <td class="text-center font-mono text-xs opacity-60"><%= metrica.key %></td>
+                  <td class="text-center font-mono font-black text-primary text-base"><%= metrica.acessos %></td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="4" class="text-center py-6 opacity-50 italic">Nenhum acesso registrado ainda nas métricas.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <dialog id="modal_usuarios_online" class="modal">
     <div class="modal-box max-w-md bg-base-100 border border-base-300 shadow-2xl p-6 rounded-3xl">
       <div class="flex justify-between items-start mb-6">

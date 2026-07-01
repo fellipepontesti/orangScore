@@ -6,6 +6,7 @@ class JogosController < ApplicationController
   before_action :authorize_root!, except: %i[index show start update finish sync_statistics palpites]
 
   def index
+    MetricaAcesso.registrar("jogos_lista", "Lista de Jogos")
     filtro_por_data = params[:data].present? || params[:start_date].present? || params[:end_date].present?
     @view_mode = params[:view_mode].presence || 'lista'
     
@@ -36,6 +37,7 @@ class JogosController < ApplicationController
   end
 
   def show
+    MetricaAcesso.registrar("jogo_detalhes", "Detalhes da Partida")
     @palpite = current_user.palpites.find_by(jogo_id: @jogo.id)
     @user_point = current_user.user_points.find_by(jogo_id: @jogo.id)
 

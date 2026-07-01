@@ -28,6 +28,9 @@ class DashboardController < ApplicationController
       @next_jogo_rapido = next_jogo_rapido(current_user)
       @jogos_pendentes = jogos_pendentes_count(current_user)
 
+      @metricas = MetricaAcesso.order(acessos: :desc)
+      MetricaAcesso.registrar("dashboard_root", "Painel Administrativo (Root)")
+
       caminho_placares = Rails.root.join("tmp/placares_salvos_28_junho.json")
       if File.exist?(caminho_placares)
         begin
@@ -52,6 +55,10 @@ class DashboardController < ApplicationController
 
       return render :root_index
     end
+    if params[:v2].present?
+      session[:use_dashboard_v2] = (params[:v2] == 'true')
+    end
+
     @next_jogo_rapido = next_jogo_rapido(current_user)
     @jogos_pendentes = jogos_pendentes_count(current_user)
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
@@ -80,7 +87,6 @@ class DashboardController < ApplicationController
     @ligas_publicas = Liga.where(publica: true).order(membros: :desc).limit(5)
 
     # Ranking Global para todos
-    # Ranking Global com as regras oficiais (Pontos > Palpites > Antiguidade)
     todos_usuarios = User
                       .select("users.*,
                                COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = users.id), 0) AS total_pontos_ranking,
@@ -90,10 +96,49 @@ class DashboardController < ApplicationController
 
     @ranking_global = todos_usuarios.first(5)
     @user_global_rank = todos_usuarios.index(current_user) ? todos_usuarios.index(current_user) + 1 : "-"
+
+    # Ranking Diário (baseado nos pontos do dia anterior)
+    ultimo_jogo_data = Jogo.where("data < ?", Time.current.beginning_of_day).order(data: :desc).pick(:data)
+    @data_ranking = ultimo_jogo_data ? ultimo_jogo_data.in_time_zone.to_date : (Time.current.in_time_zone.to_date - 1.day)
+    start_date = @data_ranking.beginning_of_day
+    end_date = @data_ranking.end_of_day
+
+    points_subquery_sql = UserPoint.joins(:jogo)
+                                   .where(jogos: { data: start_date..end_date })
+                                   .select(:user_id, "SUM(user_points.pontos) as total_points")
+                                   .group(:user_id)
+                                   .to_sql
+
+    palpites_subquery_sql = Palpite.joins(:jogo)
+                                   .where(jogos: { data: start_date..end_date })
+                                   .select(:user_id, "COUNT(palpites.id) as total_palpites")
+                                   .group(:user_id)
+                                   .to_sql
+
+    ranking_diario_todos = User
+                            .joins("LEFT JOIN (#{points_subquery_sql}) points_summary ON points_summary.user_id = users.id")
+                            .joins("LEFT JOIN (#{palpites_subquery_sql}) palpites_summary ON palpites_summary.user_id = users.id")
+                            .select("users.*, 
+                                     COALESCE(points_summary.total_points, 0) as total_pontos_ranking, 
+                                     COALESCE(palpites_summary.total_palpites, 0) as total_palpites")
+                            .order("total_pontos_ranking DESC, total_palpites DESC, users.created_at ASC")
+                            .to_a
+
+    @ranking_diario = ranking_diario_todos.first(5)
+    @user_diario_rank = ranking_diario_todos.index(current_user) ? ranking_diario_todos.index(current_user) + 1 : "-"
+
     if current_user.premium? || current_user.root?
       @dados_grafico = Users::RankingHistoryService.new(user: current_user).call
     else
       @dados_grafico = []
+    end
+
+    MetricaAcesso.registrar("dashboard_user", "Painel Principal (Usuário)")
+
+    if session[:use_dashboard_v2]
+      render :index_v2
+    else
+      render :index
     end
   end
 

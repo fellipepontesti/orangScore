@@ -5,6 +5,7 @@ class LigasController < ApplicationController
   before_action :validar_admin_da_liga!, only: %i[ accept_member invite_member remove_member ]
 
   def index
+    MetricaAcesso.registrar("ligas_index", "Lista de Ligas")
     @ligas = ligas_visiveis.ordenadas_por_pontos
 
     if params[:nome].present?
@@ -116,6 +117,7 @@ class LigasController < ApplicationController
   end
 
   def show
+    MetricaAcesso.registrar("liga_detalhes", "Detalhes da Liga")
     # TODO: CONSIDERAR A ORDENACAO DE PONTOS DE ACORDO COM A TABELA DE PONTOS DO USUARIO
     if @liga.pontuacao_zerada?
       pontos_subquery = "COALESCE((SELECT SUM(up.pontos) FROM user_points up WHERE up.user_id = liga_membros.user_id AND up.created_at >= liga_membros.created_at), 0)"

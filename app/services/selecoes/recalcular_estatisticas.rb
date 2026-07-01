@@ -20,36 +20,42 @@ module Selecoes
 
       # Jogos como mandante na fase de grupos
       Jogo.grupo.where(mandante_id: selecao.id).find_each do |jogo|
-        if jogo.finalizado?
+        if jogo.finalizado? || jogo.em_andamento?
           gols += jogo.gols_mandante || 0
           gols_sofridos += jogo.gols_visitante || 0
-          qtd_jogos += 1
-          if (jogo.gols_mandante || 0) > (jogo.gols_visitante || 0)
-            vitorias += 1
-            pontos += 3
-          elsif (jogo.gols_mandante || 0) < (jogo.gols_visitante || 0)
-            derrotas += 1
-          else
-            empates += 1
-            pontos += 1
+          
+          if jogo.finalizado?
+            qtd_jogos += 1
+            if (jogo.gols_mandante || 0) > (jogo.gols_visitante || 0)
+              vitorias += 1
+              pontos += 3
+            elsif (jogo.gols_mandante || 0) < (jogo.gols_visitante || 0)
+              derrotas += 1
+            else
+              empates += 1
+              pontos += 1
+            end
           end
         end
       end
 
       # Jogos como visitante na fase de grupos
       Jogo.grupo.where(visitante_id: selecao.id).find_each do |jogo|
-        if jogo.finalizado?
+        if jogo.finalizado? || jogo.em_andamento?
           gols += jogo.gols_visitante || 0
           gols_sofridos += jogo.gols_mandante || 0
-          qtd_jogos += 1
-          if (jogo.gols_visitante || 0) > (jogo.gols_mandante || 0)
-            vitorias += 1
-            pontos += 3
-          elsif (jogo.gols_visitante || 0) < (jogo.gols_mandante || 0)
-            derrotas += 1
-          else
-            empates += 1
-            pontos += 1
+          
+          if jogo.finalizado?
+            qtd_jogos += 1
+            if (jogo.gols_visitante || 0) > (jogo.gols_mandante || 0)
+              vitorias += 1
+              pontos += 3
+            elsif (jogo.gols_visitante || 0) < (jogo.gols_mandante || 0)
+              derrotas += 1
+            else
+              empates += 1
+              pontos += 1
+            end
           end
         end
       end

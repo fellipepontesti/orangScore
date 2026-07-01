@@ -3,6 +3,7 @@ class SimuladorController < ApplicationController
   include JogosHelper
 
   def index
+    MetricaAcesso.registrar("simulador", "Simulador")
     # Carrega todos os jogos do mata-mata ordenados por data cronologicamente
     @jogos = Jogo.where.not(tipo: :grupo).includes(:mandante, :visitante).order(:data, :id)
 
@@ -11,6 +12,7 @@ class SimuladorController < ApplicationController
   end
 
   def mata_mata
+    MetricaAcesso.registrar("simulador", "Simulador")
     @jogos = Jogo.where.not(tipo: :grupo).includes(:mandante, :visitante).order(:data, :id)
     @jogos_json = jogos_mata_mata_json(@jogos)
   end

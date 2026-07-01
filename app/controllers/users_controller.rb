@@ -25,17 +25,20 @@ class UsersController < ApplicationController
 
     case @periodo
     when 'diario'
+      MetricaAcesso.registrar("ranking_diario", "Ranking Diário")
       ultimo_jogo_data = Jogo.where("data < ?", Time.current.beginning_of_day).order(data: :desc).pick(:data)
       @data_ranking = ultimo_jogo_data ? ultimo_jogo_data.in_time_zone.to_date : (Time.current.in_time_zone.to_date - 1.day)
       
       start_date = @data_ranking.beginning_of_day
       end_date = @data_ranking.end_of_day
     when 'semanal'
+      MetricaAcesso.registrar("ranking_semanal", "Ranking Semanal")
       start_date = Time.current.beginning_of_week
       end_date = Time.current.end_of_week
     end
 
     if @periodo == 'global'
+      MetricaAcesso.registrar("ranking_global", "Ranking Global / Geral")
       if current_user.root? || current_user.premium?
         @usuarios_ranking = User
                           .joins("LEFT JOIN (SELECT user_id, SUM(pontos) as total_points FROM user_points GROUP BY user_id) points_summary ON points_summary.user_id = users.id")
@@ -79,6 +82,7 @@ class UsersController < ApplicationController
   end
 
   def perfil
+    MetricaAcesso.registrar("perfil_usuario", "Perfil e Conquistas")
     @usuario = current_user
     @conquistas_desbloqueadas = current_user.user_conquistas.includes(:conquista).index_by(&:conquista_id)
     @todas_conquistas = Conquista.order(:id)
