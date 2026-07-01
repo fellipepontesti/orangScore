@@ -36,13 +36,30 @@
                 </span>
               <% end %>
               <% if @conquistas_usuario.present? && @conquistas_usuario.any? %>
-                <div class="flex items-center gap-1 ml-1" title="Clique para ver suas Conquistas">
+                <div class="flex items-center gap-1 ml-1">
                   <% @conquistas_usuario.each do |uc| %>
-                    <%= link_to perfil_path(open_conquistas: true), class: "hover:scale-110 transition duration-150 active:scale-95" do %>
-                      <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-6 w-6 text-xs flex items-center justify-center rounded-lg shadow-sm cursor-pointer" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                    <button type="button" onclick="document.getElementById('modal_conquista_<%= uc.id %>').showModal()" class="hover:scale-110 transition duration-150 active:scale-95 focus:outline-none" title="<%= uc.conquista.nome %>: <%= uc.conquista.descricao %>">
+                      <div class="badge <%= uc.conquista.cor %> border-none p-1.5 h-6 w-6 text-xs flex items-center justify-center rounded-lg shadow-sm cursor-pointer">
                         <%= uc.conquista.icon %>
                       </div>
-                    <% end %>
+                    </button>
+
+                    <!-- Modal de Detalhe da Conquista -->
+                    <dialog id="modal_conquista_<%= uc.id %>" class="modal">
+                      <div class="modal-box bg-base-100 border border-base-300 shadow-2xl p-6 rounded-3xl max-w-xs text-center relative">
+                        <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center text-3xl <%= uc.conquista.cor %> border-none shadow-md mb-4 animate-bounce">
+                          <%= uc.conquista.icon %>
+                        </div>
+                        <h3 class="text-base font-black text-white mb-1"><%= uc.conquista.nome %></h3>
+                        <p class="text-[11px] text-slate-300 leading-relaxed mb-6"><%= uc.conquista.descricao %></p>
+                        <div class="modal-action justify-center">
+                          <button type="button" class="btn btn-primary text-white font-bold px-6 rounded-xl btn-sm" onclick="document.getElementById('modal_conquista_<%= uc.id %>').close()">Fechar</button>
+                        </div>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
                   <% end %>
                 </div>
               <% end %>

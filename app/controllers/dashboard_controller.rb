@@ -62,7 +62,7 @@ class DashboardController < ApplicationController
     @next_jogo_rapido = next_jogo_rapido(current_user)
     @jogos_pendentes = jogos_pendentes_count(current_user)
     @ligas_ativas = current_user.liga_membros.where(status: :accepted).count
-    @conquistas_usuario = current_user.user_conquistas.includes(:conquista).order(destacada: :desc, created_at: :desc).limit(4)
+    @conquistas_usuario = current_user.user_conquistas.where(destacada: true).includes(:conquista).order(created_at: :desc)
     hoje = Time.zone.today
     periodo_hoje = hoje.beginning_of_day..hoje.end_of_day
     
