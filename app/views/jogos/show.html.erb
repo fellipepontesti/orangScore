@@ -227,15 +227,9 @@
           
           <div class="flex items-center gap-1.5">
             <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_casa %></span>
-            <% if @palpite.gols_penaltis_casa.present? && @palpite.gols_penaltis_fora.present? %>
-              <span class="text-sm font-black text-primary" title="Palpite Pênaltis">(<%= @palpite.gols_penaltis_casa %>)</span>
-            <% end %>
           </div>
           <span class="opacity-40">x</span>
           <div class="flex items-center gap-1.5">
-            <% if @palpite.gols_penaltis_casa.present? && @palpite.gols_penaltis_fora.present? %>
-              <span class="text-sm font-black text-primary" title="Palpite Pênaltis">(<%= @palpite.gols_penaltis_fora %>)</span>
-            <% end %>
             <span class="text-2xl font-black px-3 py-1 bg-base-200 rounded-xl"><%= @palpite.gols_fora %></span>
           </div>
           
@@ -245,6 +239,12 @@
             <span class="text-sm font-semibold opacity-70">Fora</span>
           <% end %>
         </div>
+        
+        <% if @palpite.vencedor_penaltis_id.present? %>
+          <div class="text-xs font-bold text-primary">
+            Vencedor nos Pênaltis: <%= @palpite.vencedor_penaltis.nome %>
+          </div>
+        <% end %>
 
         <div class="text-center sm:text-right">
           <% if @jogo.finalizado? %>

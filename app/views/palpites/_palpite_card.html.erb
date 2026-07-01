@@ -51,6 +51,11 @@
             <span class="mx-0.5 sm:mx-1 opacity-40 text-sm sm:text-xl font-medium">x</span>
             <%= palpite.gols_fora %>
           </div>
+          <% if palpite.vencedor_penaltis_id.present? %>
+            <div class="text-[10px] font-bold text-primary mt-1">
+              (<%= palpite.vencedor_penaltis.nome %>)
+            </div>
+          <% end %>
         </div>
 
         <div class="min-w-0 w-full">
